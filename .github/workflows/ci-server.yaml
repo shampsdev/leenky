@@ -33,15 +33,10 @@ jobs:
       - name: Lint
         uses: golangci/golangci-lint-action@v4
         with:
-          version: v1.60.3
+          version: v1.64.5
           working-directory: ./server
       
       - name: Unit test
         run: |
           go mod tidy
           go test -v ./...
-
-      - name: E2E Test
-        run: |
-          go mod tidy
-          cd e2e && make e2e

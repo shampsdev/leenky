@@ -17,7 +17,7 @@ jobs:
       id-token: write
     secrets: inherit
     with:
-      dockerfile_path: 'server'
+      dockerfile_path: 'server/Dockerfile.server'
       context_path: 'server'
       image_name: 'tglinked-server'
       environment: 'PROD'

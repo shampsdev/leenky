@@ -71,7 +71,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./${{ inputs.context_path }}
-          file: ./${{ inputs.dockerfile_path }}/Dockerfile
+          file: ./${{ inputs.dockerfile_path }}
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/${{ inputs.image_name }}:${{ env.VERSION_TAG }}
