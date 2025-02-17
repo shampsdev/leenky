@@ -2,12 +2,7 @@ name: deploy-bot
 
 on: 
   workflow_dispatch:
-    inputs:
-      environment:
-        required: true
-        description: Deploy only to PROD
-        type: choice
-        options: [PROD, PROD]
+
 
 jobs:
   deploy:
@@ -22,5 +17,5 @@ jobs:
       dockerfile_path: 'bot'
       context_path: 'bot'
       image_name: 'tglinked-bot'
-      environment: ${{ github.event.inputs.environment }}
-      secret-service-hash: ${{ github.event.inputs.environment == 'PROD' && 'BOT_SERVICE_HASH' || 'BOT_SERVICE_HASH_DEV' }}
+      environment: 'PROD'
+      secret-service-hash: 'BOT_SERVICE_HASH'

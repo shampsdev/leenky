@@ -2,12 +2,6 @@ name: deploy-server
 
 on: 
   workflow_dispatch:
-    inputs:
-      environment:
-        required: true
-        description: Deploy to DEV/PROD
-        type: choice
-        options: [DEV, PROD]
 
 jobs:
   ci:
@@ -26,5 +20,5 @@ jobs:
       dockerfile_path: 'server'
       context_path: 'server'
       image_name: 'tglinked-server'
-      environment: ${{ github.event.inputs.environment }}
-      secret-service-hash: ${{ github.event.inputs.environment == 'PROD' && 'SERVER_SERVICE_HASH' || 'SERVER_SERVICE_HASH_DEV' }}
+      environment: 'PROD'
+      secret-service-hash: 'SERVER_SERVICE_HASH'
