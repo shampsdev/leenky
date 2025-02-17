@@ -19,8 +19,8 @@ jobs:
       id-token: write
     secrets: inherit
     with:
-      dockerfile_path: 'tglink'
-      context_path: 'tglink'
-      image_name: 'tglink-client'
+      dockerfile_path: 'client'
+      context_path: 'client'
+      image_name: 'tglinked-client'
       environment: ${{ github.event.inputs.environment }}
       secret-service-hash: ${{ github.event.inputs.environment == 'PROD' && 'CLIENT_SERVICE_HASH' || 'CLIENT_SERVICE_HASH_DEV' }}

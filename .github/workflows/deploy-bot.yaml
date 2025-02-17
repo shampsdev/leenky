@@ -21,6 +21,6 @@ jobs:
     with:
       dockerfile_path: 'bot'
       context_path: 'bot'
-      image_name: 'tglink-bot'
+      image_name: 'tglinked-bot'
       environment: ${{ github.event.inputs.environment }}
       secret-service-hash: ${{ github.event.inputs.environment == 'PROD' && 'BOT_SERVICE_HASH' || 'BOT_SERVICE_HASH_DEV' }}
