@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+/* Telegram Theme Support */
+.bg-tg {
+  background-color: var(--tg-bg-color);
+}
+
+.text-tg {
+  color: var(--tg-text-color);
+}
+
+.text-hint {
+  color: var(--tg-hint-color);
+}
+
+.text-link {
+  color: var(--tg-link-color);
+}
+
+.bg-button {
+  background-color: var(--tg-button-color);
+}
+
+.text-button {
+  color: var(--tg-button-text-color);
+}
+
+.text-destructive {
+  color: var(--tg-destructive-text-color);
+}
