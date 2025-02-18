@@ -28,7 +28,7 @@ func (r *UserRepo) CreateUser(ctx context.Context, user *domain.User) error {
 	return nil
 }
 
-func (r *UserRepo) UpdateUser(ctx context.Context, user *domain.User) error {
+func (r *UserRepo) UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error) {
 	_, err := r.db.Exec(ctx, `
 		UPDATE "user" 
 		SET "first_name" = $1, "last_name" = $2, "company" = $3, "role" = $4, "bio" = $5
@@ -36,9 +36,9 @@ func (r *UserRepo) UpdateUser(ctx context.Context, user *domain.User) error {
 		user.FirstName, user.LastName, user.Company, user.Role, user.Bio, user.ID,
 	)
 	if err != nil {
-		return fmt.Errorf("failed to update user: %w", err)
+		return nil, fmt.Errorf("failed to update user: %w", err)
 	}
-	return nil
+	return user, nil
 }
 
 func (r *UserRepo) GetUserByID(ctx context.Context, id string) (*domain.User, error) {

@@ -7,8 +7,9 @@ import (
 	"os"
 	"os/signal"
 
+	"github.com/go-telegram/bot"
 	"github.com/jackc/pgx/v5/pgxpool"
-	"github.com/shampsdev/tglinked/server/cmd/server/config"
+	"github.com/shampsdev/tglinked/server/cmd/config"
 	"github.com/shampsdev/tglinked/server/pkg/gateways/rest"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
 	log "github.com/sirupsen/logrus"
@@ -42,7 +43,12 @@ func main() {
 	}
 	defer pool.Close()
 
-	s := rest.NewServer(cfg, usecase.Setup(pool))
+	tgbot, err := bot.New(cfg.TG.BotToken)
+	if err != nil {
+		log.Fatal("can't create new telegram bot")
+	}
+
+	s := rest.NewServer(cfg, usecase.Setup(pool, tgbot))
 	if err := s.Run(ctx); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.WithError(err).Error("error during server shutdown")
 	}

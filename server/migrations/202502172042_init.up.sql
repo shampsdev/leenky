@@ -10,7 +10,7 @@ CREATE TABLE "chat"
 CREATE TABLE "user"
 (
     "id"          varchar(255) NOT NULL DEFAULT gen_random_uuid(),
-    "telegram_id" varchar(255) NOT NULL,
+    "telegram_id" bigint       NOT NULL,
     "first_name"  varchar(255) NOT NULL,
     "last_name"   varchar(255) NOT NULL,
     "company"     varchar(255),

@@ -10,19 +10,23 @@ import (
 type Chat interface {
 	CreateChat(ctx context.Context, chat *domain.Chat) error
 	GetChatByID(ctx context.Context, id string) (*domain.Chat, error)
-	GetChatsForUser(ctx context.Context, userID string) ([]*domain.Chat, error)
+	GetChatsWithUser(ctx context.Context, userID string) ([]*domain.Chat, error)
 	SetChatUsers(ctx context.Context, chatID string, userIDs []string) error
+	AttachUserToChat(ctx context.Context, chatID, userID string) error
 	GetChatUsers(ctx context.Context, chatID string) ([]*domain.User, error)
 	IsUserInChat(ctx context.Context, userID, chatID string) (bool, error)
+	AreUsersShareSameChat(ctx context.Context, userIDs []string) (bool, error)
 }
 
 type User interface {
 	CreateUser(ctx context.Context, user *domain.User) error
-	UpdateUser(ctx context.Context, user *domain.User) error
+	UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error)
 	GetUserByID(ctx context.Context, id string) (*domain.User, error)
 	GetUserByTelegramID(ctx context.Context, telegramID int64) (*domain.User, error)
 }
 
 // ensure that pg repos implement the interfaces
-var _ User = &pg.UserRepo{}
-var _ Chat = &pg.ChatRepo{}
+var (
+	_ User = &pg.UserRepo{}
+	_ Chat = &pg.ChatRepo{}
+)

@@ -8,7 +8,8 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/penglongli/gin-metrics/ginmetrics"
-	"github.com/shampsdev/tglinked/server/cmd/server/config"
+	"github.com/shampsdev/tglinked/server/cmd/config"
+	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/middlewares"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
 	"github.com/tj/go-spin"
 	"golang.org/x/sync/errgroup"
@@ -37,6 +38,7 @@ func NewServer(cfg *config.Config, useCases usecase.Cases) *Server {
 		},
 	}
 
+	middlewares.BotToken = cfg.TG.BotToken
 	setupRouter(s.Router, useCases)
 
 	return s

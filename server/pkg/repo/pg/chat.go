@@ -35,7 +35,7 @@ func (r *ChatRepo) GetChatByID(ctx context.Context, id string) (*domain.Chat, er
 	return chat, nil
 }
 
-func (r *ChatRepo) GetChatsForUser(ctx context.Context, userID string) ([]*domain.Chat, error) {
+func (r *ChatRepo) GetChatsWithUser(ctx context.Context, userID string) ([]*domain.Chat, error) {
 	rows, err := r.db.Query(ctx, `
 		SELECT c."id", c."name", c."avatar" 
 		FROM "chat" c
@@ -63,7 +63,7 @@ func (r *ChatRepo) GetChatsForUser(ctx context.Context, userID string) ([]*domai
 	return chats, nil
 }
 
-func (tr *ChatRepo) SetChatUsers(ctx context.Context, chatID string, userIDs []string) error {
+func (r *ChatRepo) SetChatUsers(ctx context.Context, chatID string, userIDs []string) error {
 	if len(userIDs) == 0 {
 		return nil
 	}
@@ -78,7 +78,7 @@ func (tr *ChatRepo) SetChatUsers(ctx context.Context, chatID string, userIDs []s
 		batch.Queue(query, chatID, userID)
 	}
 
-	br := tr.db.SendBatch(ctx, batch)
+	br := r.db.SendBatch(ctx, batch)
 	defer br.Close()
 
 	_, err := br.Exec()
@@ -88,8 +88,17 @@ func (tr *ChatRepo) SetChatUsers(ctx context.Context, chatID string, userIDs []s
 	return nil
 }
 
-func (tr *ChatRepo) GetChatUsers(ctx context.Context, chatID string) ([]*domain.User, error) {
-	rows, err := tr.db.Query(ctx, `
+func (r *ChatRepo) AttachUserToChat(ctx context.Context, chatID, userID string) error {
+	_, err := r.db.Exec(ctx, `
+		INSERT INTO "chat_user" ("chat_id", "user_id") 
+		VALUES ($1, $2)`,
+		chatID, userID,
+	)
+	return err
+}
+
+func (r *ChatRepo) GetChatUsers(ctx context.Context, chatID string) ([]*domain.User, error) {
+	rows, err := r.db.Query(ctx, `
 		SELECT "id", "first_name", "last_name", "company", "role", "bio"
 		FROM "user" u
 		JOIN "chat_user" cu ON u."id" = cu."user_id"
@@ -116,7 +125,7 @@ func (tr *ChatRepo) GetChatUsers(ctx context.Context, chatID string) ([]*domain.
 	return users, nil
 }
 
-func (r *ChatRepo) IsUserInChat(ctx context.Context, userID string, chatID string) (bool, error) {
+func (r *ChatRepo) IsUserInChat(ctx context.Context, userID, chatID string) (bool, error) {
 	var exists bool
 	err := r.db.QueryRow(ctx, `
 		SELECT EXISTS (
@@ -125,4 +134,29 @@ func (r *ChatRepo) IsUserInChat(ctx context.Context, userID string, chatID strin
 		userID, chatID,
 	).Scan(&exists)
 	return exists, err
+}
+
+func (r *ChatRepo) AreUsersShareSameChat(ctx context.Context, userIDs []string) (bool, error) {
+	if len(userIDs) == 0 {
+		return false, nil
+	}
+
+	query := `
+    SELECT COUNT(DISTINCT cu.user_id)
+    FROM chat_user cu
+    WHERE cu.chat_id IN (
+        SELECT cu2.chat_id
+        FROM chat_user cu2
+        WHERE cu2.user_id = ANY($1)
+        GROUP BY cu2.chat_id
+        HAVING COUNT(DISTINCT cu2.user_id) = $2
+    )`
+
+	var count int
+	err := r.db.QueryRow(ctx, query, userIDs, len(userIDs)).Scan(&count)
+	if err != nil {
+		return false, fmt.Errorf("error checking shared chats: %w", err)
+	}
+
+	return count >= 1, nil
 }

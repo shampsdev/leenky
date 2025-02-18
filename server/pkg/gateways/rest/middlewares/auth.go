@@ -1,20 +1,58 @@
 package middlewares
 
 import (
-	"fmt"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/shampsdev/tglinked/server/pkg/domain"
+	"github.com/shampsdev/tglinked/server/pkg/usecase"
+	log "github.com/sirupsen/logrus"
+	initdata "github.com/telegram-mini-apps/init-data-golang"
 )
 
-func Auth() gin.HandlerFunc {
+var BotToken string
+
+func AuthTelegramID() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		authToken := c.GetHeader("X-API-Token")
-		fmt.Println(authToken)
-		c.Set("user", &domain.User{ID: authToken})
+		initData := c.GetHeader("X-API-Token")
+		expIn := 1 * time.Hour
+		err := initdata.Validate(initData, BotToken, expIn)
+		if err != nil {
+			log.WithError(err).Errorf("failed to validate init data: %s", initData)
+			c.AbortWithStatus(401)
+			return
+		}
+
+		parsed, err := initdata.Parse(initData)
+		if err != nil {
+			log.WithError(err).Errorf("failed to parse init data: %s", initData)
+			c.AbortWithStatus(401)
+			return
+		}
+		c.Set("user", &domain.User{TelegramID: parsed.Chat.ID})
 
 		c.Next()
 	}
+}
+
+func AuthUser(userCase *usecase.User) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		tgID := MustGetUser(c).TelegramID
+		user, err := userCase.GetUserByTelegramID(c, tgID)
+		if err != nil {
+			log.WithError(err).Errorf("failed to get user by telegram id: %d", tgID)
+			c.AbortWithStatus(401)
+			return
+		}
+		c.Set("user", user)
+
+		c.Next()
+	}
+}
+
+func SetupAuth(r *gin.RouterGroup, userCase *usecase.User) {
+	r.Use(AuthTelegramID())
+	r.Use(AuthUser(userCase))
 }
 
 func MustGetUser(c *gin.Context) *domain.User {

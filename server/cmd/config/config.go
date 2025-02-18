@@ -23,6 +23,9 @@ type Config struct {
 		Port     uint16 `envconfig:"POSTGRES_PORT"`
 		Database string `envconfig:"POSTGRES_DB"`
 	}
+	TG struct {
+		BotToken string `envconfig:"TG_BOT_TOKEN"`
+	}
 }
 
 func Load(envFile string) *Config {

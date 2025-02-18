@@ -24,7 +24,7 @@ func GetChatByID(chatCase *usecase.Chat) gin.HandlerFunc {
 		user := middlewares.MustGetUser(c)
 		chatID := c.Param("id")
 
-		chat, err := chatCase.GetChatByIDForUser(c, user.ID, chatID)
+		chat, err := chatCase.GetChat(usecase.NewContext(c, user), chatID)
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
