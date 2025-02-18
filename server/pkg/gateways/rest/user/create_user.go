@@ -21,6 +21,7 @@ import (
 // @Success 200 {object} domain.User "User data"
 // @Failure 400 "Bad Request"
 // @Failure 500 "Internal Server Error"
+// @Security ApiKeyAuth
 // @Router /users [post]
 func CreateUser(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {

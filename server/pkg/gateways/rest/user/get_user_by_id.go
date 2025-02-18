@@ -20,6 +20,7 @@ import (
 // @Success 200 {object} domain.User "User data"
 // @Failure 400 "Bad Request"
 // @Failure 500 "Internal Server Error"
+// @Security ApiKeyAuth
 // @Router /users/{id} [get]
 func GetUserByID(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {

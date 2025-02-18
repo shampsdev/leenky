@@ -7,6 +7,8 @@ definitions:
         type: string
       name:
         type: string
+      telegram_id:
+        type: integer
       users:
         items:
           $ref: '#/definitions/domain.User'
@@ -52,6 +54,8 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
       summary: Get chats for user
       tags:
       - chats
@@ -76,7 +80,27 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
       summary: Get chat by ID
+      tags:
+      - chats
+  /chats/{id}/join:
+    post:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      summary: Join to chat
       tags:
       - chats
   /users:
@@ -101,6 +125,8 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
       summary: Create user
       tags:
       - users
@@ -125,6 +151,8 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
       summary: Update user by ID
       tags:
       - users
@@ -149,6 +177,8 @@ paths:
           description: Bad Request
         "500":
           description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
       summary: Get user by ID
       tags:
       - users

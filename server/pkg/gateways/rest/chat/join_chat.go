@@ -9,30 +9,29 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// GetChatByID godoc
-// @Summary Get chat by ID
+// JoinChat godoc
+// @Summary Join to chat
 // @Tags chats
 // @Accept json
 // @Produce json
 // @Schemes http https
-// @Param id path string true "Chat ID"
-// @Success 200 {object} domain.Chat "Chat data"
+// @Success 200
 // @Failure 400 "Bad Request"
 // @Failure 500 "Internal Server Error"
 // @Security ApiKeyAuth
-// @Router /chats/{id} [get]
-func GetChatByID(chatCase *usecase.Chat) gin.HandlerFunc {
+// @Router /chats/{id}/join [post]
+func JoinChat(chatCase *usecase.Chat) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)
 		chatID := c.Param("id")
 
-		chat, err := chatCase.GetChat(usecase.NewContext(c, user), chatID)
+		err := chatCase.JoinChat(usecase.NewContext(c, user), chatID)
 		if err != nil {
-			log.WithError(err).Error("failed to get chat")
+			log.WithError(err).Error("failed to join chat")
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
 
-		c.JSON(http.StatusOK, chat)
+		c.Status(http.StatusOK)
 	}
 }
