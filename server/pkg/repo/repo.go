@@ -4,12 +4,13 @@ import (
 	"context"
 
 	"github.com/shampsdev/tglinked/server/pkg/domain"
-	"github.com/shampsdev/tglinked/server/pkg/repo/pg"
 )
 
 type Chat interface {
-	CreateChat(ctx context.Context, chat *domain.Chat) error
+	CreateChat(ctx context.Context, chat *domain.Chat) (string, error)
+	UpdateChat(ctx context.Context, chat *domain.Chat) (*domain.Chat, error)
 	GetChatByID(ctx context.Context, id string) (*domain.Chat, error)
+	GetChatByTelegramID(ctx context.Context, telegramID int64) (*domain.Chat, error)
 	GetChatsWithUser(ctx context.Context, userID string) ([]*domain.Chat, error)
 	SetChatUsers(ctx context.Context, chatID string, userIDs []string) error
 	AttachUserToChat(ctx context.Context, chatID, userID string) error
@@ -19,14 +20,8 @@ type Chat interface {
 }
 
 type User interface {
-	CreateUser(ctx context.Context, user *domain.User) error
+	CreateUser(ctx context.Context, user *domain.User) (string, error)
 	UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error)
 	GetUserByID(ctx context.Context, id string) (*domain.User, error)
 	GetUserByTelegramID(ctx context.Context, telegramID int64) (*domain.User, error)
 }
-
-// ensure that pg repos implement the interfaces
-var (
-	_ User = &pg.UserRepo{}
-	_ Chat = &pg.ChatRepo{}
-)

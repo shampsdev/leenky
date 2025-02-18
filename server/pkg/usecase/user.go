@@ -45,5 +45,10 @@ func (u *User) UpdateUser(ctx Context, user *domain.User) (*domain.User, error) 
 
 func (u *User) CreateUser(ctx Context, user *domain.User) error {
 	user.TelegramID = ctx.User.TelegramID
-	return u.userRepo.CreateUser(ctx, user)
+	id, err := u.userRepo.CreateUser(ctx, user)
+	if err != nil {
+		return err
+	}
+	user.ID = id
+	return nil
 }

@@ -1,9 +1,9 @@
-
 CREATE TABLE "chat"
 (
-    "id"     serial       NOT NULL,
-    "name"   varchar(255) NOT NULL,
-    "avatar" text         NOT NULL,
+    "id"          serial       NOT NULL,
+    "telegram_id" bigint       NOT NULL,
+    "name"        varchar(255) NOT NULL,
+    "avatar"      text         NOT NULL,
     PRIMARY KEY ("id")
 );
 

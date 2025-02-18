@@ -11,6 +11,9 @@ help: ## Display this help
 server-run: ## Run server
 	go run cmd/server/main.go
 
+bot-run: ## Run bot
+	go run cmd/tgbot/main.go
+
 compose-up: ## Launch full service in docker-compose
 	docker compose up --build -d && docker compose logs -f
 

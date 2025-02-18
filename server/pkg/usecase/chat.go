@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
 	"github.com/go-telegram/bot"
@@ -52,6 +53,26 @@ func (c *Chat) JoinChat(ctx Context, chatID string) error {
 	err = c.chatRepo.AttachUserToChat(ctx, chatID, ctx.User.ID)
 	if err != nil {
 		return fmt.Errorf("error attaching user to chat: %w", err)
+	}
+	return nil
+}
+
+func (c *Chat) RegisterChat(ctx context.Context, chat *domain.Chat) error {
+	_, err := c.chatRepo.GetChatByTelegramID(ctx, chat.TelegramID)
+	if errors.Is(err, repo.ErrChatNotFound) {
+		id, err := c.chatRepo.CreateChat(ctx, chat)
+		if err != nil {
+			return fmt.Errorf("error creating chat: %w", err)
+		}
+		chat.ID = id
+		return nil
+	}
+	if err != nil {
+		return fmt.Errorf("error getting chat by telegram ID: %w", err)
+	}
+	_, err = c.chatRepo.UpdateChat(ctx, chat)
+	if err != nil {
+		return fmt.Errorf("error updating chat: %w", err)
 	}
 	return nil
 }
