@@ -4,6 +4,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"math/rand/v2"
+	"time"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -12,24 +14,38 @@ import (
 )
 
 type ChatRepo struct {
-	db *pgxpool.Pool
+	db   *pgxpool.Pool
+	rand *rand.Rand
 }
 
 func NewChatRepo(db *pgxpool.Pool) *ChatRepo {
-	return &ChatRepo{db: db}
+	return &ChatRepo{
+		rand: rand.New(rand.NewPCG(uint64(time.Now().UnixNano()), rand.Uint64())),
+		db:   db,
+	}
 }
 
 func (r *ChatRepo) CreateChat(ctx context.Context, chat *domain.Chat) (string, error) {
 	var id string
 	err := r.db.QueryRow(ctx, `
-		INSERT INTO "chat" ("name", "avatar", "telegram_id") 
-		VALUES ($1, $2, $3) RETURNING "id"`,
-		chat.Name, chat.Avatar, chat.TelegramID,
+		INSERT INTO "chat" ("id", "name", "avatar", "telegram_id") 
+		VALUES ($1, $2, $3, $4) RETURNING "id"`,
+		r.generateID(), chat.Name, chat.Avatar, chat.TelegramID,
 	).Scan(&id)
 	if err != nil {
 		return "", fmt.Errorf("failed to create chat: %w", err)
 	}
 	return id, nil
+}
+
+var letterRunes = []rune("0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+
+func (r *ChatRepo) generateID() string {
+	b := make([]rune, 10)
+	for i := range b {
+		b[i] = letterRunes[r.rand.IntN(len(letterRunes))]
+	}
+	return string(b)
 }
 
 func (r *ChatRepo) UpdateChat(ctx context.Context, chat *domain.Chat) (*domain.Chat, error) {

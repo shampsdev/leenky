@@ -17,7 +17,8 @@ import (
 // @Accept json
 // @Produce json
 // @Schemes http https
-// @Param user body domain.User true "User data"
+// @Param user body domain.EditUser true "User data"
+// @Param chat_id query string true "Chat ID"
 // @Success 200 {object} domain.User "User data"
 // @Failure 400 "Bad Request"
 // @Failure 500 "Internal Server Error"
@@ -26,21 +27,22 @@ import (
 func CreateUser(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)
+		chatID := c.Query("chat_id")
 
-		toCreate := &domain.User{}
+		toCreate := &domain.EditUser{}
 		if err := c.ShouldBindJSON(toCreate); err != nil {
 			log.WithError(err).Error("failed to bind user")
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
 
-		err := userCase.CreateUser(usecase.NewContext(c, user), toCreate)
+		user, err := userCase.CreateUser(usecase.NewContext(c, user), chatID, toCreate)
 		if err != nil {
 			log.WithError(err).Error("failed to create user")
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
 
-		c.Status(http.StatusCreated)
+		c.JSON(http.StatusCreated, user)
 	}
 }

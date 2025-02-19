@@ -15,6 +15,7 @@ import (
 // @Accept json
 // @Produce json
 // @Schemes http https
+// @Param id path string true "Chat ID"
 // @Success 200
 // @Failure 400 "Bad Request"
 // @Failure 500 "Internal Server Error"

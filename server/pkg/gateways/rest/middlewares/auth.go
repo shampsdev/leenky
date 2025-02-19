@@ -29,7 +29,7 @@ func AuthTelegramID() gin.HandlerFunc {
 			c.AbortWithStatus(401)
 			return
 		}
-		c.Set("user", &domain.User{TelegramID: parsed.Chat.ID})
+		c.Set("user", &domain.User{TelegramID: parsed.User.ID})
 
 		c.Next()
 	}
@@ -61,4 +61,11 @@ func MustGetUser(c *gin.Context) *domain.User {
 		panic("user not found")
 	}
 	return user
+}
+func MustGetChatInstance(c *gin.Context) int64 {
+	chatInstance, ok := c.MustGet("chat_instance").(int64)
+	if !ok {
+		panic("chat instance not found")
+	}
+	return chatInstance
 }

@@ -110,6 +110,15 @@ const docTemplate = `{
                     "chats"
                 ],
                 "summary": "Join to chat",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Chat ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK"
@@ -189,8 +198,15 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.User"
+                            "$ref": "#/definitions/domain.EditUser"
                         }
+                    },
+                    {
+                        "type": "string",
+                        "description": "Chat ID",
+                        "name": "chat_id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -276,9 +292,32 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.EditUser": {
+            "type": "object",
+            "properties": {
+                "bio": {
+                    "type": "string"
+                },
+                "company": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "lastName": {
+                    "type": "string"
+                },
+                "role": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.User": {
             "type": "object",
             "properties": {
+                "avatar": {
+                    "type": "string"
+                },
                 "bio": {
                     "type": "string"
                 },
@@ -299,6 +338,9 @@ const docTemplate = `{
                 },
                 "telegramId": {
                     "type": "integer"
+                },
+                "telegramUsername": {
+                    "type": "string"
                 }
             }
         }

@@ -21,7 +21,11 @@ type Chat interface {
 
 type User interface {
 	CreateUser(ctx context.Context, user *domain.User) (string, error)
-	UpdateUser(ctx context.Context, user *domain.User) (*domain.User, error)
+	UpdateUser(ctx context.Context, id string, user *domain.EditUser) (*domain.User, error)
 	GetUserByID(ctx context.Context, id string) (*domain.User, error)
 	GetUserByTelegramID(ctx context.Context, telegramID int64) (*domain.User, error)
+}
+
+type ImageStorage interface {
+	SavePhoto(ctx context.Context, url string) (string, error)
 }

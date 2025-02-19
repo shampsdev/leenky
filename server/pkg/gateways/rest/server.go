@@ -39,7 +39,7 @@ func NewServer(cfg *config.Config, useCases usecase.Cases) *Server {
 	}
 
 	middlewares.BotToken = cfg.TG.BotToken
-	setupRouter(s.Router, useCases)
+	setupRouter(cfg, s.Router, useCases)
 
 	return s
 }

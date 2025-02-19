@@ -14,7 +14,8 @@ import (
 type Config struct {
 	Debug  bool `default:"false" envconfig:"DEBUG"`
 	Server struct {
-		Port uint16 `envconfig:"HTTP_PORT"    default:"8000"`
+		Port uint16 `envconfig:"HTTP_PORT" default:"8000"`
+		Host string `envconfig:"HTTP_HOST" default:"0.0.0.0"`
 	}
 	DB struct {
 		User     string `envconfig:"POSTGRES_USER"`
@@ -24,7 +25,11 @@ type Config struct {
 		Database string `envconfig:"POSTGRES_DB"`
 	}
 	TG struct {
-		BotToken string `envconfig:"TG_BOT_TOKEN"`
+		BotToken   string `envconfig:"TG_BOT_TOKEN"`
+		WebAppName string `envconfig:"WEBAPP_NAME"`
+	}
+	Storage struct {
+		ImagesPath string `envconfig:"STORAGE_IMAGES_PATH" default:"images"`
 	}
 }
 

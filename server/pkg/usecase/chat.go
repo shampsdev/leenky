@@ -42,8 +42,12 @@ func (c *Chat) GetChatUsers(ctx Context, chatID string) ([]*domain.User, error) 
 }
 
 func (c *Chat) JoinChat(ctx Context, chatID string) error {
-	_, err := c.tgbot.GetChatMember(ctx, &bot.GetChatMemberParams{
-		ChatID: chatID,
+	chat, err := c.chatRepo.GetChatByID(ctx, chatID)
+	if err != nil {
+		return fmt.Errorf("error getting chat: %w", err)
+	}
+	_, err = c.tgbot.GetChatMember(ctx, &bot.GetChatMemberParams{
+		ChatID: chat.TelegramID,
 		UserID: ctx.User.TelegramID,
 	})
 	if err != nil {
@@ -57,24 +61,25 @@ func (c *Chat) JoinChat(ctx Context, chatID string) error {
 	return nil
 }
 
-func (c *Chat) RegisterChat(ctx context.Context, chat *domain.Chat) error {
-	_, err := c.chatRepo.GetChatByTelegramID(ctx, chat.TelegramID)
+func (c *Chat) RegisterChat(ctx context.Context, chat *domain.Chat) (*domain.Chat, error) {
+	ch, err := c.chatRepo.GetChatByTelegramID(ctx, chat.TelegramID)
 	if errors.Is(err, repo.ErrChatNotFound) {
 		id, err := c.chatRepo.CreateChat(ctx, chat)
 		if err != nil {
-			return fmt.Errorf("error creating chat: %w", err)
+			return nil, fmt.Errorf("error creating chat: %w", err)
 		}
 		chat.ID = id
-		return nil
+		return chat, nil
 	}
 	if err != nil {
-		return fmt.Errorf("error getting chat by telegram ID: %w", err)
+		return nil, fmt.Errorf("error getting chat by telegram ID: %w", err)
 	}
+	chat.ID = ch.ID
 	_, err = c.chatRepo.UpdateChat(ctx, chat)
 	if err != nil {
-		return fmt.Errorf("error updating chat: %w", err)
+		return nil, fmt.Errorf("error updating chat: %w", err)
 	}
-	return nil
+	return chat, nil
 }
 
 func (c *Chat) ensureUserInChat(ctx context.Context, userID, chatID string) error {
