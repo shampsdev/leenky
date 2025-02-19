@@ -13,6 +13,8 @@ const theme = useTheme().backgroundColor;
 const routes = [
   { path: "/", component: BasePage },
   { path: "/profile", component: ProfilePage },
+  { path: "/profile/edit", component: ProfilePage },
+  { path: "/profile/:userID", component: ProfilePage },
 ];
 
 const router = createRouter({

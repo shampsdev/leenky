@@ -6,7 +6,7 @@ const router = useRouter();
 const inviteStore = useInviteStore();
 const accept = () => {
   inviteStore.close();
-  router.push("/profile");
+  router.push("/profile/12");
 };
 </script>
 

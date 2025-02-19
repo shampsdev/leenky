@@ -4,7 +4,7 @@
 </script>
 
 <template>
-  <div class="bg-main w-[100vw] h-[100vh] flex justify-center items-center text-main">
+  <div class="bg-main w-[100vw] h-[100vh] overflow-auto">
     <router-view />
   </div>
 </template>
