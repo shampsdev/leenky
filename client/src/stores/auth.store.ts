@@ -7,7 +7,7 @@ interface AuthStoreData {
 
 export const useAuthStore = defineStore("auth", {
   state: (): AuthStoreData => ({
-    isAuthorized: false,
+    isAuthorized: true,
   }),
   actions: {
     checkAuth() {

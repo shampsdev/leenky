@@ -1,22 +1,18 @@
-import "./assets/main.css";
-import { createApp, watchEffect } from "vue";
-import ChatsPage from "./pages/chats.page.vue";
-import UserPage from "./pages/user.page.vue";
-import ProfilePage from "./pages/profile.page.vue";
-import { createWebHistory, createRouter } from "vue-router";
 import App from "./App.vue";
+import { createApp } from "vue";
+import { createWebHistory, createRouter } from "vue-router";
 import { useTheme, VueTelegramPlugin } from "vue-tg";
 import { createPinia } from "pinia";
-import HomePage from "./pages/home.page.vue";
-import LoginPage from "./pages/login.page.vue";
+
+import "./assets/main.css";
+
+import BasePage from "./pages/base.page.vue";
+import ProfilePage from "./pages/profile.page.vue";
 const theme = useTheme().backgroundColor;
 
 const routes = [
-  { path: "/", component: HomePage },
-  { path: "/user", component: UserPage, meta: { requiresAuth: true } },
-  { path: "/profile", component: ProfilePage, meta: { requiresAuth: true } },
-  { path: "/chats", component: ChatsPage },
-  { path: "/login", component: LoginPage },
+  { path: "/", component: BasePage },
+  { path: "/profile", component: ProfilePage },
 ];
 
 const router = createRouter({

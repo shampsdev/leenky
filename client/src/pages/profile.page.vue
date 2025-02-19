@@ -1,7 +1,1 @@
-<script setup lang="ts"></script>
-
-<template>
-  <div>profile page</div>
-</template>
-
-<style scoped></style>
+<template>profile page</template>

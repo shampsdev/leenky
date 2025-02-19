@@ -1,16 +1,61 @@
 <script setup lang="ts">
-import { useThemeSync } from "./utils/useThemeSync";
-
-useThemeSync(); // Обновляет Telegram-тему
+// import { useThemeSync } from "./utils/useThemeSync";
+// useThemeSync();
 </script>
 
 <template>
-  <div class="h-screen flex flex-col items-center justify-center bg-tg text-tg">
-    <h1 class="text-3xl font-bold">Telegram Mini App</h1>
+  <div class="bg-main w-[100vw] h-[100vh] flex justify-center items-center text-main">
     <router-view />
   </div>
 </template>
 
 <style scoped>
 @import "tailwindcss";
+
+@font-face {
+  font-family: "SF";
+  src: url("/src/assets/fonts/SFProText-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "SF";
+  src: url("/src/assets/fonts/SFProText-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+/* Add additional font weights as needed */
+@font-face {
+  font-family: "SF";
+  src: url("/src/assets/fonts/SFProText-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "SF";
+  src: url("/src/assets/fonts/SFProText-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "SF";
+  src: url("/src/assets/fonts/SFProText-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "SF";
+  src: url("/src/assets/fonts/SFProText-Semibold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+* {
+  font-family: "SF";
+  font-weight: 400;
+}
 </style>

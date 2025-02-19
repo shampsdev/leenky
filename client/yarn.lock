@@ -2318,6 +2318,11 @@ vue-eslint-parser@^9.4.3:
     lodash "^4.17.21"
     semver "^7.3.6"
 
+vue-inline-svg@^4.0.0:
+  version "4.0.0"
+  resolved "https://registry.npmjs.org/vue-inline-svg/-/vue-inline-svg-4.0.0.tgz"
+  integrity sha512-6kFnPZXQ5jPgumqhDGyJbpqtR5/hlkF4euXxMPai2tcnd6n7zYrEUhZPjE49blf3dDjdoslCu1oyk4EqX/KwgA==
+
 vue-router@^4.5.0:
   version "4.5.0"
   resolved "https://registry.npmjs.org/vue-router/-/vue-router-4.5.0.tgz"
