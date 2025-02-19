@@ -114,12 +114,11 @@ func (u *User) CreateUser(ctx Context, chatID string, editUser *domain.EditUser)
 	return user, nil
 }
 
-func (u *User) getUserFromChat(chatID int64, userID int64) (models.User, error) {
+func (u *User) getUserFromChat(chatID, userID int64) (models.User, error) {
 	user, err := u.tgbot.GetChatMember(context.Background(), &bot.GetChatMemberParams{
 		ChatID: chatID,
 		UserID: userID,
 	})
-
 	if err != nil {
 		return models.User{}, fmt.Errorf("failed to get user from chat: %w", err)
 	}

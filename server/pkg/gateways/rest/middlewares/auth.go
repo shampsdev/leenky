@@ -62,6 +62,7 @@ func MustGetUser(c *gin.Context) *domain.User {
 	}
 	return user
 }
+
 func MustGetChatInstance(c *gin.Context) int64 {
 	chatInstance, ok := c.MustGet("chat_instance").(int64)
 	if !ok {

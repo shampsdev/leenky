@@ -31,7 +31,7 @@ func NewBot(cfg *config.Config, pool *pgxpool.Pool) (*Bot, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error creating bot: %w", err)
 	}
-	cases := usecase.Setup(cfg,pool, tgb)
+	cases := usecase.Setup(cfg, pool, tgb)
 
 	b := &Bot{
 		Bot:   tgb,
