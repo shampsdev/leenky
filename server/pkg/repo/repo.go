@@ -13,8 +13,9 @@ type Chat interface {
 	GetChatByTelegramID(ctx context.Context, telegramID int64) (*domain.Chat, error)
 	GetChatsWithUser(ctx context.Context, userID string) ([]*domain.Chat, error)
 	SetChatUsers(ctx context.Context, chatID string, userIDs []string) error
-	AttachUserToChat(ctx context.Context, chatID, userID string) error
 	GetChatUsers(ctx context.Context, chatID string) ([]*domain.User, error)
+	AttachUserToChat(ctx context.Context, chatID, userID string) error
+	DetachUserFromChat(ctx context.Context, chatID, userID string) error
 	IsUserInChat(ctx context.Context, userID, chatID string) (bool, error)
 	AreUsersShareSameChat(ctx context.Context, userIDs []string) (bool, error)
 }

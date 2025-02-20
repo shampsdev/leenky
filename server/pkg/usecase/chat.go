@@ -27,7 +27,15 @@ func (c *Chat) GetChat(ctx Context, chatID string) (*domain.Chat, error) {
 		return nil, err
 	}
 
-	return c.chatRepo.GetChatByID(ctx, chatID)
+	chat, err := c.chatRepo.GetChatByID(ctx, chatID)
+	if err != nil {
+		return nil, fmt.Errorf("error getting chat: %w", err)
+	}
+	chat.Users, err = c.chatRepo.GetChatUsers(ctx, chatID)
+	if err != nil {
+		return nil, fmt.Errorf("error getting chat users: %w", err)
+	}
+	return chat, nil
 }
 
 func (c *Chat) GetChats(ctx Context) ([]*domain.Chat, error) {
@@ -59,6 +67,13 @@ func (c *Chat) JoinChat(ctx Context, chatID string) error {
 		return fmt.Errorf("error attaching user to chat: %w", err)
 	}
 	return nil
+}
+
+func (c *Chat) LeaveChat(ctx Context, chatID string) error {
+	if err := c.ensureUserInChat(ctx, ctx.User.ID, chatID); err != nil {
+		return err
+	}
+	return c.chatRepo.DetachUserFromChat(ctx, chatID, ctx.User.ID)
 }
 
 func (c *Chat) RegisterChat(ctx context.Context, chat *domain.Chat) (*domain.Chat, error) {

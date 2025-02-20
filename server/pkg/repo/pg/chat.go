@@ -152,6 +152,14 @@ func (r *ChatRepo) AttachUserToChat(ctx context.Context, chatID, userID string) 
 	return err
 }
 
+func (r *ChatRepo) DetachUserFromChat(ctx context.Context, chatID, userID string) error {
+	_, err := r.db.Exec(ctx, `
+		DELETE FROM "chat_user" WHERE "chat_id" = $1 AND "user_id" = $2`,
+		chatID, userID,
+	)
+	return err
+}
+
 func (r *ChatRepo) GetChatUsers(ctx context.Context, chatID string) ([]*domain.User, error) {
 	rows, err := r.db.Query(ctx, `
 		SELECT "id", "telegram_id", "first_name", "last_name", "company", "role", "bio"
