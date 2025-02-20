@@ -5,20 +5,15 @@ import { useRouter } from "vue-router";
 const backButton = useBackButton();
 const router = useRouter();
 
-// Проверяем, что `backButton` существует и имеет метод `show`
 if (backButton?.show) {
   backButton.show();
 }
 
-// Проверяем `onClick` перед подпиской
 if (backButton?.onClick) {
   backButton.onClick(() => {
     router.back();
   });
 }
-
-// import { useThemeSync } from "./utils/useThemeSync";
-// useThemeSync();
 </script>
 
 <template>

@@ -4,19 +4,19 @@ export interface ProfileUserData {
   company: string | null;
   role: string | null;
   avatar: string | null;
-  telegramUsername: string;
+  telegramUsername: string | null;
   bio: string | null;
 }
 
 export interface UserData extends ProfileUserData {
-  id: string; // backend ID
-  telegramId: string;
+  id: string | null; // backend ID
+  telegramId: string | null;
 }
 
 export interface ChatData {
   id: string; // backend ID
   telegram_id: string;
-  name: string;
-  avatar: string;
+  name: string | null;
+  avatar: string | null;
   users: UserData[];
 }

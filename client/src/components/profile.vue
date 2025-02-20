@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { useRouter } from "vue-router";
-
+import { useUserStore } from "@/stores/user.store";
 const router = useRouter();
+const currentUser = useUserStore();
 const goToProfile = () => {
-  router.push("/profile");
+  router.push(`/profile/${currentUser.id}`);
 };
 </script>
 <template>

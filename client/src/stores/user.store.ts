@@ -1,29 +1,29 @@
 import { defineStore } from "pinia";
-
-interface UserDataInterface {
-  username: string | null;
-  firstName: string | null;
-  lastName: string | null;
-  avatar: string | null;
-  role: string | null;
-  bio: string | null;
-  company: string | null;
-}
-
+import type { UserData } from "@/types/user.interface";
 export const useUserStore = defineStore("user", {
-  state: (): UserDataInterface => ({
-    username: null,
+  state: (): UserData => ({
     firstName: null,
     lastName: null,
-    avatar: null,
-    role: null,
-    bio: null,
     company: null,
+    role: null,
+    avatar: null,
+    telegramUsername: null,
+    bio: null,
+    id: null,
+    telegramId: null,
   }),
 
   actions: {
-    setUserData(user: Partial<UserDataInterface>) {
-      Object.assign(this, user);
+    logIn(user: UserData) {
+      this.firstName = user.firstName || "";
+      this.lastName = user.lastName || "";
+      this.company = user.company || "";
+      this.role = user.role || "";
+      this.avatar = user.avatar || "";
+      this.telegramUsername = user.telegramUsername || "";
+      this.bio = user.bio || "";
+      this.id = user.id || "";
+      this.telegramId = user.telegramId || "";
     },
   },
 });

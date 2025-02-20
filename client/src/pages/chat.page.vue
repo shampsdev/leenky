@@ -70,7 +70,7 @@ onMounted(async () => {
         class="flex items-center py-3 cursor-pointer"
         @click="
           () => {
-            router.push(`/profile/${user.telegramId}`);
+            router.push(`/profile/${user.id}`);
             profileStore.initialProfile = {
               firstName: user.firstName,
               lastName: user.lastName,

@@ -1,62 +1,68 @@
 import axios from "axios";
 
-export interface UserData {
-  bio: string | null;
-  company: string | null;
-  firstName: string | null;
-  lastName: string | null;
-  role: string | null;
-  avatar: string | null;
-}
+import type { UserData, ChatData } from "@/types/user.interface";
 
 export const api = axios.create({
-  baseURL: "https://tglinked.shamps.dev/api/v1/",
+  baseURL: "https://tglinked.shamps.dev/api/v1",
   headers: {
     "Content-Type": "application/json",
   },
   maxRedirects: 0,
 });
 
-export const getChat = async (initData: string, chatId: string) => {
+export const getChat = async (initData: string, chatId: string): Promise<ChatData | null> => {
   try {
-    const response = await api.get(`/chats/${chatId}`, {
+    const response = await api.get<ChatData>(`/chats/${chatId}`, {
       headers: { "X-Api-Token": initData },
     });
-    console.log(response.data, "aboab");
     return response.data;
   } catch (error) {
     console.error("Ошибка при получении чата:", error);
+    return null;
   }
 };
 
-export const getChats = async (initData: string) => {
+export const getChats = async (initData: string): Promise<ChatData[] | null> => {
   try {
-    const response = await api.get(`/chats/`, {
+    const response = await api.get<ChatData[]>(`/chats/`, {
       headers: { "X-Api-Token": initData },
     });
     return response.data;
   } catch (error) {
     console.error("Ошибка при получении чатов:", error);
-    return error;
+    return null;
   }
 };
 
-export const getMe = async (initData: string) => {
+// userID – inner backend id
+export const getUserById = async (initData: string, userId: string): Promise<UserData | null> => {
   try {
-    const response = await api.get(`/users/me`, {
+    const response = await api.get<UserData>(`/users/${userId}`, {
       headers: { "X-Api-Token": initData },
     });
     return response.data;
   } catch (error) {
     console.error("Ошибка при получении профиля текущего пользователя:", error);
-    return error;
+    return null;
+  }
+};
+
+export const getMe = async (initData: string): Promise<UserData | null> => {
+  try {
+    const response = await api.get<UserData>(`/users/me`, {
+      headers: { "X-Api-Token": initData },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Ошибка при получении профиля текущего пользователя:", error);
+    return null;
   }
 };
 
 export const postMe = async (
   initData: string,
-  newData: UserData
-): Promise<UserData | undefined> => {
+  newData: Pick<UserData, "firstName" | "lastName" | "bio" | "role" | "company">
+): Promise<UserData | null> => {
   try {
     const response = await api.put<UserData>(`/users/`, newData, {
       headers: { "X-Api-Token": initData },
@@ -65,6 +71,6 @@ export const postMe = async (
     return response.data;
   } catch (error) {
     console.error("Ошибка при изменении профиля", error);
-    return undefined;
+    return null;
   }
 };

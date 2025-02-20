@@ -3,15 +3,16 @@ import { useMiniApp } from "vue-tg";
 import { useRoute } from "vue-router";
 import { getChats, getChat, getMe } from "@/api/api";
 import { ref, onMounted } from "vue";
+import type { ChatData, UserData } from "@/types/user.interface";
 const miniApp = useMiniApp();
 const route = useRoute();
 const initData = miniApp.initData;
 const initDataUnsafe = miniApp.initDataUnsafe;
 const chatId = initDataUnsafe.start_param;
 
-const chatsInfo = ref(null);
-const chatInfo = ref(null);
-const profileInfo = ref(null);
+const chatsInfo = ref<ChatData[] | null>(null);
+const chatInfo = ref<ChatData | null>(null);
+const profileInfo = ref<UserData | null>(null);
 
 onMounted(async () => {
   try {

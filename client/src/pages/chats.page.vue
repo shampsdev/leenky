@@ -5,6 +5,7 @@ import { computed, onMounted } from "vue";
 import { getChats } from "@/api/api";
 import { useMiniApp } from "vue-tg";
 import Profile from "@/components/profile.vue";
+import { useUserStore } from "@/stores/user.store";
 const chats = ref([
   {
     id: 1,
@@ -41,6 +42,8 @@ const router = useRouter();
 const goToChat = () => {
   router.push("/chat/1");
 };
+
+const currentUser = useUserStore();
 
 const miniApp = useMiniApp();
 

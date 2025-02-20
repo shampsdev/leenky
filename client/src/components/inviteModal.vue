@@ -2,11 +2,21 @@
 import { useInviteStore } from "@/stores/invite.store";
 import Button from "./button.vue";
 import { useRouter } from "vue-router";
+import { useUserStore } from "@/stores/user.store";
+import { getMe } from "@/api/api";
+import { useMiniApp } from "vue-tg";
 const router = useRouter();
 const inviteStore = useInviteStore();
-const accept = () => {
-  inviteStore.close();
-  router.push("/profile/12");
+const currentUser = useUserStore();
+const initData = useMiniApp().initData;
+const accept = async () => {
+  console.log(initData);
+  const userData = await getMe(initData);
+  if (userData !== null) {
+    currentUser.logIn(userData);
+    inviteStore.close();
+    router.push(`/profile/${currentUser.id}`);
+  }
 };
 </script>
 
