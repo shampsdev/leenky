@@ -26,13 +26,6 @@ func GetMe(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)
 
-		toCreate := &domain.EditUser{}
-		if err := c.ShouldBindJSON(toCreate); err != nil {
-			log.WithError(err).Error("failed to bind user")
-			c.AbortWithStatus(http.StatusBadRequest)
-			return
-		}
-
 		user, err := userCase.GetUserByID(usecase.NewContext(c, user), user.ID)
 		if err != nil {
 			log.WithError(err).Error("failed to get user")
