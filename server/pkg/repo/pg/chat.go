@@ -162,7 +162,7 @@ func (r *ChatRepo) DetachUserFromChat(ctx context.Context, chatID, userID string
 
 func (r *ChatRepo) GetChatUsers(ctx context.Context, chatID string) ([]*domain.User, error) {
 	rows, err := r.db.Query(ctx, `
-		SELECT "id", "telegram_id", "first_name", "last_name", "company", "role", "bio"
+		SELECT "id", "telegram_id", "telegram_username", "avatar", "first_name", "last_name", "company", "role", "bio"
 		FROM "user" u
 		JOIN "chat_user" cu ON u."id" = cu."user_id"
 		WHERE cu."chat_id" = $1`,
@@ -176,7 +176,17 @@ func (r *ChatRepo) GetChatUsers(ctx context.Context, chatID string) ([]*domain.U
 	var users []*domain.User
 	for rows.Next() {
 		user := &domain.User{}
-		if err := rows.Scan(&user.ID, &user.TelegramID, &user.FirstName, &user.LastName, &user.Company, &user.Role, &user.Bio); err != nil {
+		if err := rows.Scan(
+			&user.ID,
+			&user.TelegramID,
+			&user.TelegramUsername,
+			&user.Avatar,
+			&user.FirstName,
+			&user.LastName,
+			&user.Company,
+			&user.Role,
+			&user.Bio,
+		); err != nil {
 			return nil, err
 		}
 		users = append(users, user)
