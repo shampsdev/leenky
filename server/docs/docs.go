@@ -239,13 +239,6 @@ const docTemplate = `{
                         "schema": {
                             "$ref": "#/definitions/domain.EditUser"
                         }
-                    },
-                    {
-                        "type": "string",
-                        "description": "Chat ID",
-                        "name": "chat_id",
-                        "in": "query",
-                        "required": true
                     }
                 ],
                 "responses": {

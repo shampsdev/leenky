@@ -161,11 +161,6 @@ paths:
         required: true
         schema:
           $ref: '#/definitions/domain.EditUser'
-      - description: Chat ID
-        in: query
-        name: chat_id
-        required: true
-        type: string
       produces:
       - application/json
       responses:
