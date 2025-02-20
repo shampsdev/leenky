@@ -1,48 +1,18 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
-import { useRoute } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useMiniApp } from "vue-tg";
 import { getChat } from "@/api/api";
+import { useProfileStore } from "@/stores/profile.store";
 import Profile from "@/components/profile.vue";
-const chat = ref({
-  name: "Шампиньоны (мини) хакатон",
-  members: 7,
-  avatar: "/src/assets/chat_avatar_example.png",
-});
+const chat = ref({});
 
 const miniApp = useMiniApp();
+const router = useRouter();
 const avatar = miniApp?.initDataUnsafe?.user?.photo_url;
 const initData = miniApp.initData;
-
-const users = ref([
-  {
-    id: 1,
-    firstName: "Timur",
-    lastName: "Valeev",
-    company: "Где-то тоже работает",
-    role: "junior dev",
-    bio: "Лучший из лучших фронт бэк",
-    avatar: avatar,
-  },
-  {
-    id: 1,
-    firstName: "Timur",
-    lastName: "Valeev",
-    company: "Где-то тоже работает",
-    role: "junior dev",
-    bio: "Лучший из лучших фронт бэк",
-    avatar: avatar,
-  },
-  {
-    id: 1,
-    firstName: "Timur",
-    lastName: "Valeev",
-    company: "Где-то тоже работает",
-    role: "junior dev",
-    bio: "Лучший из лучших фронт бэк",
-    avatar: avatar,
-  },
-]);
+const profileStore = useProfileStore();
+const users = ref([]);
 
 const searchQuery = ref("");
 
@@ -98,8 +68,33 @@ onMounted(async () => {
         v-for="user in filteredUsers"
         :key="user.id"
         class="flex items-center py-3 cursor-pointer"
+        @click="
+          () => {
+            router.push(`/profile/${user.telegramId}`);
+            profileStore.initialProfile = {
+              firstName: user.firstName,
+              lastName: user.lastName,
+              avatar: user.avatar,
+              company: user.company,
+              role: user.role,
+              bio: user.bio,
+            };
+            profileStore.profile = {
+              firstName: user.firstName,
+              lastName: user.lastName,
+              avatar: user.avatar,
+              company: user.company,
+              role: user.role,
+              bio: user.bio,
+            };
+          }
+        "
       >
-        <img :src="user.avatar" alt="Avatar" class="w-12 h-12 rounded-full object-cover mr-4" />
+        <img
+          :src="`https://${user.avatar}`"
+          alt="Avatar"
+          class="w-12 h-12 rounded-full object-cover mr-4"
+        />
 
         <div class="flex-1">
           <p class="font-medium flex items-center">

@@ -1,11 +1,12 @@
 <script setup lang="ts">
 // WE NEEEED A HUUUUUGE REFACTOR IN HERE
 
-import { ref, watch, nextTick, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { onMounted } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { useProfileStore } from "@/stores/profile.store";
 import Button from "@/components/button.vue";
 import { useMiniApp } from "vue-tg";
+import { getMe } from "@/api/api";
 const router = useRouter();
 const profileStore = useProfileStore();
 const avatar = useMiniApp().initDataUnsafe.user?.photo_url;
@@ -16,8 +17,24 @@ const goToChats = () => {
 
 const tgUsername = useMiniApp().initDataUnsafe.user?.username;
 
-onMounted(() => {
-  profileStore.loadProfile(initData);
+onMounted(async () => {
+  const route = useRoute();
+  const userId = route.params.userid;
+  const myInfo = await getMe(initData);
+  console.log(myInfo);
+  if (route.params.userid === undefined) {
+    profileStore.setProfile({
+      firstName: myInfo.firstName,
+      lastName: myInfo.lastName,
+      role: myInfo.role,
+      bio: myInfo.bio,
+      company: myInfo.company,
+      avatar: myInfo.avatar,
+    });
+  } else if (userId === myInfo.telegramId) {
+    router.back();
+    router.push("/profile");
+  }
 });
 </script>
 
@@ -25,7 +42,11 @@ onMounted(() => {
   <div class="w-full flex flex-col h-full items-center p-4">
     <div class="w-full" v-if="!profileStore.editMode">
       <div class="flex flex-col items-center">
-        <img class="w-28 h-28 rounded-full object-cover" :src="avatar" alt="User Avatar" />
+        <img
+          class="w-28 h-28 rounded-full object-cover"
+          :src="`https://${profileStore.profile.avatar}`"
+          alt="User Avatar"
+        />
         <div class="flex flex-row items-center gap-[10px] mt-[17px]">
           <p class="font-semibold text-[20px text-center">
             {{ profileStore.profile.firstName }} {{ profileStore.profile.lastName }}

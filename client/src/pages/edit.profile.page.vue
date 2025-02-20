@@ -52,7 +52,11 @@ const updateProfie = async () => {
   <div class="w-full flex flex-col h-full items-center p-4">
     <div class="w-[90%]">
       <div class="flex flex-col items-center">
-        <img class="w-28 h-28 rounded-full object-cover" :src="avatar" alt="User Avatar" />
+        <img
+          class="w-28 h-28 rounded-full object-cover"
+          :src="`https://${profileStore.profile.avatar}`"
+          alt="User Avatar"
+        />
       </div>
       <button
         v-if="profileStore.isChanged"
@@ -76,6 +80,7 @@ const updateProfie = async () => {
             <legend class="px-2 text-sm transition-all duration-100">Имя</legend>
             <input
               type="text"
+              maxlength="40"
               v-model="profileStore.profile.firstName"
               class="w-full text-main outline-none px-2 py-1 bg-transparent"
             />
@@ -87,6 +92,7 @@ const updateProfie = async () => {
             <legend class="px-2 text-sm transition-all duration-100">Фамилия</legend>
             <input
               type="text"
+              maxlength="40"
               v-model="profileStore.profile.lastName"
               class="w-full outline-none px-2 py-1 bg-transparent text-main"
             />
@@ -100,6 +106,7 @@ const updateProfie = async () => {
             <legend class="px-2 text-sm transition-all">Место работы</legend>
             <input
               type="text"
+              maxlength="40"
               v-model="profileStore.profile.company"
               class="w-full outline-none px-2 py-1 bg-transparent text-main"
             />
@@ -113,6 +120,7 @@ const updateProfie = async () => {
             </legend>
             <input
               type="text"
+              maxlength="40"
               v-model="profileStore.profile.role"
               class="w-full outline-none py-1 bg-transparent text-main px-[16px]"
             />

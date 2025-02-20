@@ -12,6 +12,7 @@ export const useProfileStore = defineStore("profile", {
       role: "",
       company: "",
       bio: "",
+      avatar: "",
     },
 
     initialProfile: <UserData>{
@@ -20,6 +21,7 @@ export const useProfileStore = defineStore("profile", {
       role: "",
       company: "",
       bio: "",
+      avatar: "",
     },
   }),
 

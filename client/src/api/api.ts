@@ -6,6 +6,7 @@ export interface UserData {
   firstName: string | null;
   lastName: string | null;
   role: string | null;
+  avatar: string | null;
 }
 
 export const api = axios.create({
