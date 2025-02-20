@@ -16,10 +16,11 @@ type Chat struct {
 	storage  repo.ImageStorage
 }
 
-func NewChat(chatRepo repo.Chat, tgbot *bot.Bot) *Chat {
+func NewChat(chatRepo repo.Chat, s repo.ImageStorage, tgbot *bot.Bot) *Chat {
 	return &Chat{
 		chatRepo: chatRepo,
 		bot:      tgbot,
+		storage:  s,
 	}
 }
 

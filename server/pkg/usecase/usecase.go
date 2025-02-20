@@ -18,7 +18,7 @@ func Setup(cfg *config.Config, db *pgxpool.Pool, b *bot.Bot) Cases {
 	ur := pg.NewUserRepo(db)
 	storage := localstorage.NewStorage(cfg.Server.Host, cfg.Storage.ImagesPath)
 	return Cases{
-		Chat: NewChat(cr, b),
+		Chat: NewChat(cr, storage, b),
 		User: NewUser(ur, cr, storage, b),
 	}
 }
