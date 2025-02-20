@@ -192,6 +192,7 @@ func (r *ChatRepo) IsUserInChat(ctx context.Context, userID, chatID string) (boo
 }
 
 func (r *ChatRepo) AreUsersShareSameChat(ctx context.Context, userIDs []string) (bool, error) {
+	userIDs = dedup(userIDs)
 	if len(userIDs) == 0 {
 		return false, nil
 	}
@@ -214,4 +215,17 @@ func (r *ChatRepo) AreUsersShareSameChat(ctx context.Context, userIDs []string) 
 	}
 
 	return count >= 1, nil
+}
+
+func dedup[T comparable](slice []T) []T {
+	seen := make(map[T]struct{})
+	var result []T
+	for _, v := range slice {
+		if _, ok := seen[v]; ok {
+			continue
+		}
+		seen[v] = struct{}{}
+		result = append(result, v)
+	}
+	return result
 }
