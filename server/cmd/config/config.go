@@ -31,6 +31,15 @@ type Config struct {
 	Storage struct {
 		ImagesPath string `envconfig:"STORAGE_IMAGES_PATH" default:"images"`
 	}
+	S3 S3Config
+}
+
+type S3Config struct {
+	AccessKeyID string `envconfig:"S3_ACCESS_KEY_ID"`
+	SecretKey   string `envconfig:"S3_SECRET_KEY"`
+	Region      string `envconfig:"S3_REGION"`
+	Bucket      string `envconfig:"S3_BUCKET"`
+	EndpointUrl string `envconfig:"S3_ENDPOINT_URL"`
 }
 
 func Load(envFile string) *Config {
