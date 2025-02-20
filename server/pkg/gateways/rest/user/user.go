@@ -15,4 +15,5 @@ func Setup(r *gin.RouterGroup, cases usecase.Cases) {
 	gAuth.Use(middlewares.AuthUser(cases.User))
 	gAuth.GET("/:id", GetUserByID(cases.User))
 	gAuth.PUT("/", UpdateUser(cases.User))
+	gAuth.GET("/me", GetMe(cases.User))
 }

@@ -210,6 +210,26 @@ paths:
       summary: Get user by ID
       tags:
       - users
+  /users/me:
+    get:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User data
+          schema:
+            $ref: '#/definitions/domain.User'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      summary: Get me
+      tags:
+      - users
 securityDefinitions:
   ApiKeyAuth:
     in: header
