@@ -8,7 +8,6 @@ import (
 	"github.com/go-telegram/bot/models"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/shampsdev/tglinked/server/cmd/config"
-	"github.com/shampsdev/tglinked/server/pkg/domain"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
 	log "github.com/sirupsen/logrus"
 )
@@ -86,24 +85,14 @@ func (b *Bot) handleMyChatMember(ctx context.Context, _ *bot.Bot, update *models
 }
 
 func (b *Bot) registerChat(ctx context.Context, chatID int64) error {
-	tgchat, err := b.GetChat(ctx, &bot.GetChatParams{
-		ChatID: chatID,
-	})
-	if err != nil {
-		return fmt.Errorf("error getting chat: %w", err)
-	}
-
-	chat, err := b.cases.Chat.RegisterChat(ctx, &domain.Chat{
-		TelegramID: tgchat.ID,
-		Name:       tgchat.Title,
-	})
+	chat, err := b.cases.Chat.CreateOrUpdateChat(ctx, chatID)
 	if err != nil {
 		return fmt.Errorf("error registering chat: %w", err)
 	}
 
 	msg, err := b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID: tgchat.ID,
-		Text:   fmt.Sprintf("Hello, members of chat %s!\nChat is now connected to net\nPress join to confirm membership", tgchat.Title),
+		ChatID: chat.TelegramID,
+		Text:   fmt.Sprintf("Hello, members of chat %s!\nChat is now connected to net\nPress join to confirm membership", chat.Name),
 		ReplyMarkup: models.InlineKeyboardMarkup{
 			InlineKeyboard: [][]models.InlineKeyboardButton{{{
 				Text: "Join",
@@ -116,7 +105,7 @@ func (b *Bot) registerChat(ctx context.Context, chatID int64) error {
 	}
 
 	_, err = b.PinChatMessage(ctx, &bot.PinChatMessageParams{
-		ChatID:    tgchat.ID,
+		ChatID:    chat.TelegramID,
 		MessageID: msg.ID,
 	})
 	if err != nil {

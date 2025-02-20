@@ -12,13 +12,14 @@ import (
 
 type Chat struct {
 	chatRepo repo.Chat
-	tgbot    *bot.Bot
+	bot      *bot.Bot
+	storage  repo.ImageStorage
 }
 
 func NewChat(chatRepo repo.Chat, tgbot *bot.Bot) *Chat {
 	return &Chat{
 		chatRepo: chatRepo,
-		tgbot:    tgbot,
+		bot:      tgbot,
 	}
 }
 
@@ -54,7 +55,7 @@ func (c *Chat) JoinChat(ctx Context, chatID string) error {
 	if err != nil {
 		return fmt.Errorf("error getting chat: %w", err)
 	}
-	_, err = c.tgbot.GetChatMember(ctx, &bot.GetChatMemberParams{
+	_, err = c.bot.GetChatMember(ctx, &bot.GetChatMemberParams{
 		ChatID: chat.TelegramID,
 		UserID: ctx.User.TelegramID,
 	})
@@ -76,24 +77,61 @@ func (c *Chat) LeaveChat(ctx Context, chatID string) error {
 	return c.chatRepo.DetachUserFromChat(ctx, chatID, ctx.User.ID)
 }
 
-func (c *Chat) RegisterChat(ctx context.Context, chat *domain.Chat) (*domain.Chat, error) {
-	ch, err := c.chatRepo.GetChatByTelegramID(ctx, chat.TelegramID)
+func (c *Chat) CreateOrUpdateChat(ctx context.Context, chatID int64) (*domain.Chat, error) {
+	_, err := c.chatRepo.GetChatByTelegramID(ctx, chatID)
 	if errors.Is(err, repo.ErrChatNotFound) {
-		id, err := c.chatRepo.CreateChat(ctx, chat)
-		if err != nil {
-			return nil, fmt.Errorf("error creating chat: %w", err)
-		}
-		chat.ID = id
-		return chat, nil
+		return c.CreateChat(ctx, chatID)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("error getting chat by telegram ID: %w", err)
 	}
-	chat.ID = ch.ID
-	_, err = c.chatRepo.UpdateChat(ctx, chat)
+	return c.UpdateChat(ctx, chatID)
+}
+
+func (c *Chat) UpdateChat(ctx context.Context, chatID int64) (*domain.Chat, error) {
+	chat, err := c.getChatFromTelegram(ctx, chatID)
 	if err != nil {
-		return nil, fmt.Errorf("error updating chat: %w", err)
+		return nil, fmt.Errorf("error getting chat from telegram: %w", err)
 	}
+	chat, err = c.chatRepo.UpdateChat(ctx, chat)
+	if err != nil {
+		return nil, fmt.Errorf("error creating chat: %w", err)
+	}
+	return chat, nil
+}
+
+func (c *Chat) CreateChat(ctx context.Context, chatID int64) (*domain.Chat, error) {
+	chat, err := c.getChatFromTelegram(ctx, chatID)
+	if err != nil {
+		return nil, fmt.Errorf("error getting chat from telegram: %w", err)
+	}
+	id, err := c.chatRepo.CreateChat(ctx, chat)
+	if err != nil {
+		return nil, fmt.Errorf("error creating chat: %w", err)
+	}
+	chat.ID = id
+	return chat, nil
+}
+
+func (c *Chat) getChatFromTelegram(ctx context.Context, chatID int64) (*domain.Chat, error) {
+	tgchat, err := c.bot.GetChat(ctx, &bot.GetChatParams{
+		ChatID: chatID,
+	})
+	if err != nil {
+		return nil, fmt.Errorf("error getting chat: %w", err)
+	}
+
+	avatar, err := downloadTGFileByID(ctx, c.bot, c.storage, tgchat.Photo.SmallFileID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to download user avatar: %w", err)
+	}
+
+	chat := &domain.Chat{
+		TelegramID: tgchat.ID,
+		Avatar:     avatar,
+		Name:       tgchat.Title,
+	}
+
 	return chat, nil
 }
 
@@ -106,4 +144,20 @@ func (c *Chat) ensureUserInChat(ctx context.Context, userID, chatID string) erro
 		return fmt.Errorf("user is not in chat")
 	}
 	return nil
+}
+
+func downloadTGFileByID(ctx context.Context, b *bot.Bot, s repo.ImageStorage, fileID string) (string, error) {
+	file, err := b.GetFile(ctx, &bot.GetFileParams{
+		FileID: fileID,
+	})
+	if err != nil {
+		return "", fmt.Errorf("error getting file: %w", err)
+	}
+
+	url, err := s.SavePhoto(ctx, b.FileDownloadLink(file))
+	if err != nil {
+		return "", fmt.Errorf("failed to save photo: %w", err)
+	}
+
+	return url, nil
 }
