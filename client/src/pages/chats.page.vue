@@ -1,6 +1,7 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
+import { computed } from "vue";
 const chats = ref([
   {
     id: 1,
@@ -21,6 +22,18 @@ const chats = ref([
     avatar: "/src/assets/chat_avatar_example.png",
   },
 ]);
+
+const searchQuery = ref("");
+
+const filteredChats = computed(() => {
+  if (!searchQuery.value) {
+    return chats.value;
+  }
+  return chats.value.filter((chat) =>
+    chat.name.toLowerCase().includes(searchQuery.value.toLowerCase())
+  );
+});
+
 const router = useRouter();
 const goToChat = () => {
   router.push("/chat/1");
@@ -35,6 +48,7 @@ const goToChat = () => {
 
     <div class="relative flex items-center bg-gray-100 rounded-lg px-3 py-2 mb-4">
       <input
+        v-model="searchQuery"
         type="text"
         placeholder="Search"
         class="flex-1 bg-transparent outline-none text-gray-700 placeholder-gray-400"
@@ -44,9 +58,9 @@ const goToChat = () => {
       </button>
     </div>
 
-    <ul class="divide-y divide-gray-200">
+    <ul v-if="filteredChats.length" class="divide-y divide-gray-200">
       <li
-        v-for="chat in chats"
+        v-for="chat in filteredChats"
         :key="chat.id"
         class="flex items-center py-3 cursor-pointer"
         @click="goToChat"
@@ -61,5 +75,6 @@ const goToChat = () => {
         <div class="text-gray-400 text-xl">›</div>
       </li>
     </ul>
+    <p v-else>Нет найденных чатов</p>
   </div>
 </template>

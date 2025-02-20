@@ -1,14 +1,17 @@
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useMiniApp } from "vue-tg";
+
 const chat = ref({
   name: "Шампиньоны (мини) хакатон",
   members: 7,
   avatar: "/src/assets/chat_avatar_example.png",
 });
 
-const avatar = useMiniApp().initDataUnsafe.user.photo_url;
+const miniApp = useMiniApp();
+const avatar = miniApp?.initDataUnsafe?.user?.photo_url;
 
+// Список пользователей
 const users = ref([
   {
     id: 1,
@@ -35,7 +38,7 @@ const users = ref([
   {
     id: 4,
     name: "Вика",
-    job: "в мечтах работаю в Dodo Brands",
+    job: "В мечтах работаю в Dodo Brands",
     description: "Senior продуктовый дизайнер",
     avatar: avatar,
   },
@@ -47,10 +50,26 @@ const users = ref([
     avatar: avatar,
   },
 ]);
+
+const searchQuery = ref("");
+
+const filteredUsers = computed(() => {
+  if (!searchQuery.value) return users.value;
+
+  return users.value.filter((user) => {
+    const query = searchQuery.value.toLowerCase();
+    return (
+      user.name.toLowerCase().includes(query) ||
+      (user.job && user.job.toLowerCase().includes(query)) ||
+      (user.description && user.description.toLowerCase().includes(query))
+    );
+  });
+});
 </script>
 
 <template>
   <div class="max-w-md mx-auto px-4">
+    <!-- Заголовок -->
     <header class="flex items-center space-x-4 py-4">
       <img :src="chat.avatar" alt="Chat Avatar" class="w-12 h-12 rounded-full object-cover" />
       <div class="flex-1">
@@ -61,6 +80,7 @@ const users = ref([
 
     <div class="relative flex items-center bg-gray-100 rounded-lg px-3 py-2 mb-4">
       <input
+        v-model="searchQuery"
         type="text"
         placeholder="Поиск по пользователям"
         class="flex-1 bg-transparent outline-none text-gray-700 placeholder-gray-400"
@@ -70,8 +90,12 @@ const users = ref([
       </button>
     </div>
 
-    <ul class="divide-y divide-gray-200">
-      <li v-for="user in users" :key="user.id" class="flex items-center py-3 cursor-pointer">
+    <ul v-if="filteredUsers.length" class="divide-y divide-gray-200">
+      <li
+        v-for="user in filteredUsers"
+        :key="user.id"
+        class="flex items-center py-3 cursor-pointer"
+      >
         <img :src="user.avatar" alt="Avatar" class="w-12 h-12 rounded-full object-cover mr-4" />
 
         <div class="flex-1">
@@ -86,5 +110,7 @@ const users = ref([
         <div class="text-gray-400 text-xl">›</div>
       </li>
     </ul>
+
+    <p v-else class="text-gray-500 text-center py-4">Нет найденных пользователей</p>
   </div>
 </template>

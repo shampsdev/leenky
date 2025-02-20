@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import Button from "@/components/button.vue";
 import team from "@/assets/team.png";
-import { ref } from "vue";
 import InviteModal from "@/components/inviteModal.vue";
 import { useInviteStore } from "@/stores/invite.store";
 import { useRouter } from "vue-router";
@@ -22,7 +22,7 @@ const goToVaniog = () => {
             <p class="text-hint mt-[8px]">
               Упрощение взаимодействия и обмен контактной информацией между участниками чата
             </p>
-            <button @click="goToVaniog">ВАНЯЯЯЯ</button>
+            <Button @click="goToVaniog">ВАНЯЯЯЯ</Button>
             <InviteModal v-if="!modalStore.isModalClosed" />
           </div>
         </div>

@@ -36,8 +36,6 @@ const goBack = () => {
 
 <template>
   <div class="flex flex-col h-full items-center p-4">
-    <button @click="goBack" class="self-start text-blue-500 mb-4">Back</button>
-
     <div v-if="!profileStore.editMode">
       <div class="flex flex-col items-center">
         <img class="w-28 h-28 rounded-full object-cover" :src="avatar" alt="User Avatar" />
@@ -161,7 +159,7 @@ const goBack = () => {
         </section>
       </div>
     </div>
-    <button @click="goToChats">GOTO CHATS</button>
+    <Button @click="goToChats">GOTO CHATS</Button>
   </div>
 </template>
 
