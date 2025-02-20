@@ -1,7 +1,9 @@
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted } from "vue";
+import { useRoute } from "vue-router";
 import { useMiniApp } from "vue-tg";
-
+import { getChat } from "@/api/api";
+import Profile from "@/components/profile.vue";
 const chat = ref({
   name: "Шампиньоны (мини) хакатон",
   members: 7,
@@ -10,48 +12,42 @@ const chat = ref({
 
 const miniApp = useMiniApp();
 const avatar = miniApp?.initDataUnsafe?.user?.photo_url;
+const initData = miniApp.initData;
 
-// Список пользователей
 const users = ref([
   {
     id: 1,
-    name: "Timur Valeev",
-    job: "Где-то тоже работает",
-    description: "Лучший из лучших фронт бэк",
+    firstName: "Timur",
+    lastName: "Valeev",
+    company: "Где-то тоже работает",
+    role: "junior dev",
+    bio: "Лучший из лучших фронт бэк",
     avatar: avatar,
   },
   {
-    id: 2,
-    name: "mike",
-    job: "Где-то тоже работает",
-    description: "Все профессии мира",
+    id: 1,
+    firstName: "Timur",
+    lastName: "Valeev",
+    company: "Где-то тоже работает",
+    role: "junior dev",
+    bio: "Лучший из лучших фронт бэк",
     avatar: avatar,
   },
   {
-    id: 3,
-    name: "Настя",
-    emoji: "🍄",
-    job: "Dodo Brands",
-    description: "Бэст проджект менеджер эвэр",
-    avatar: avatar,
-  },
-  {
-    id: 4,
-    name: "Вика",
-    job: "В мечтах работаю в Dodo Brands",
-    description: "Senior продуктовый дизайнер",
-    avatar: avatar,
-  },
-  {
-    id: 5,
-    name: "Mikhail Gavrilov",
-    job: "",
-    description: "",
+    id: 1,
+    firstName: "Timur",
+    lastName: "Valeev",
+    company: "Где-то тоже работает",
+    role: "junior dev",
+    bio: "Лучший из лучших фронт бэк",
     avatar: avatar,
   },
 ]);
 
 const searchQuery = ref("");
+
+const route = useRoute();
+const chatId = route.params.chatId;
 
 const filteredUsers = computed(() => {
   if (!searchQuery.value) return users.value;
@@ -59,17 +55,24 @@ const filteredUsers = computed(() => {
   return users.value.filter((user) => {
     const query = searchQuery.value.toLowerCase();
     return (
-      user.name.toLowerCase().includes(query) ||
-      (user.job && user.job.toLowerCase().includes(query)) ||
-      (user.description && user.description.toLowerCase().includes(query))
+      user.firstName.toLowerCase().includes(query) ||
+      user.lastName.toLowerCase().includes(query) ||
+      (user.company && user.company.toLowerCase().includes(query)) ||
+      (user.bio && user.bio.toLowerCase().includes(query))
     );
   });
+});
+
+onMounted(async () => {
+  const chatData = await getChat(initData, chatId);
+  chat.value = chatData;
+  users.value = chatData.users;
 });
 </script>
 
 <template>
+  <Profile />
   <div class="max-w-md mx-auto px-4">
-    <!-- Заголовок -->
     <header class="flex items-center space-x-4 py-4">
       <img :src="chat.avatar" alt="Chat Avatar" class="w-12 h-12 rounded-full object-cover" />
       <div class="flex-1">
@@ -100,11 +103,10 @@ const filteredUsers = computed(() => {
 
         <div class="flex-1">
           <p class="font-medium flex items-center">
-            {{ user.name }}
-            <span v-if="user.emoji" class="ml-1">{{ user.emoji }}</span>
+            {{ `${user.firstName} ${user.lastName}` }}
           </p>
-          <p class="text-sm text-gray-500">{{ user.job }}</p>
-          <p class="text-xs text-gray-400">{{ user.description }}</p>
+          <p class="text-sm text-gray-500">{{ user.company }}</p>
+          <p class="text-sm text-gray-500">{{ user.role }}</p>
         </div>
 
         <div class="text-gray-400 text-xl">›</div>

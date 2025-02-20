@@ -1,45 +1,65 @@
 import { defineStore } from "pinia";
-import { computed, reactive } from "vue";
+import type { UserData } from "@/api/api";
+import { getMe, postMe } from "@/api/api";
 
 export const useProfileStore = defineStore("profile", {
   state: () => ({
-    editMode: false,
+    editMode: false as boolean,
 
-    initialProfile: {
-      firstName: "mike",
-      lastName: "de geofroy",
-      job: "FullStack Developer",
-      workplace: "@shamps.dev",
-      description: "some description here",
+    profile: <UserData>{
+      firstName: "",
+      lastName: "",
+      role: "",
+      company: "",
+      bio: "",
     },
 
-    profile: {
-      firstName: "mike",
-      lastName: "de geofroy",
-      job: "FullStack Developer",
-      workplace: "@shamps.dev",
-      description: "some description here",
+    initialProfile: <UserData>{
+      firstName: "",
+      lastName: "",
+      role: "",
+      company: "",
+      bio: "",
     },
   }),
 
   getters: {
-    isChanged: (state) => {
+    isChanged: (state): boolean => {
       return JSON.stringify(state.profile) !== JSON.stringify(state.initialProfile);
     },
   },
 
   actions: {
-    toggleEditMode() {
-      this.editMode = !this.editMode;
-    },
-
-    saveProfile() {
-      this.initialProfile = { ...this.profile };
-      this.editMode = false;
+    setProfile(newProfile: UserData) {
+      this.initialProfile = { ...newProfile };
+      this.profile = { ...newProfile };
     },
 
     resetProfile() {
       this.profile = { ...this.initialProfile };
+      this.editMode = false;
+    },
+
+    toggleEditMode() {
+      this.editMode = !this.editMode;
+    },
+
+    async loadProfile(token: string) {
+      try {
+        const data = await getMe(token);
+        this.setProfile(data);
+      } catch (error) {
+        console.error("Ошибка при загрузке профиля", error);
+      }
+    },
+
+    async updateProfile(initData: string) {
+      try {
+        const data = await postMe(initData, this.profile);
+        if (data !== undefined) this.setProfile(data);
+      } catch (error) {
+        console.error("Ошибка при сохранении профиля", error);
+      }
     },
   },
 });

@@ -11,12 +11,13 @@ import ProfilePage from "./pages/profile.page.vue";
 import VaniogPage from "./pages/vaniog.page.vue";
 import ChatsPage from "./pages/chats.page.vue";
 import ChatPage from "./pages/chat.page.vue";
+import EditProfilePage from "./pages/edit.profile.page.vue";
 const theme = useTheme().backgroundColor;
 
 const routes = [
   { path: "/", component: BasePage },
   { path: "/profile", component: ProfilePage },
-  { path: "/profile/edit", component: ProfilePage },
+  { path: "/profile/edit", component: EditProfilePage },
   { path: "/vaniog", component: VaniogPage },
   { path: "/profile/:userid", component: ProfilePage },
   { path: "/chats", component: ChatsPage },

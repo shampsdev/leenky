@@ -1,7 +1,10 @@
 <script setup>
 import { ref } from "vue";
 import { useRouter } from "vue-router";
-import { computed } from "vue";
+import { computed, onMounted } from "vue";
+import { getChats } from "@/api/api";
+import { useMiniApp } from "vue-tg";
+import Profile from "@/components/profile.vue";
 const chats = ref([
   {
     id: 1,
@@ -38,9 +41,22 @@ const router = useRouter();
 const goToChat = () => {
   router.push("/chat/1");
 };
+
+const miniApp = useMiniApp();
+
+const initData = miniApp.initData;
+
+onMounted(async () => {
+  try {
+    chats.value.push(...(await getChats(initData)));
+  } catch (error) {
+    console.error("Ошибка загрузки данных:", error);
+  }
+});
 </script>
 
 <template>
+  <Profile />
   <div class="max-w-[95%] mx-auto px-4">
     <header class="flex items-center justify-between py-4">
       <h1 class="text-xl font-semibold">Чаты</h1>
@@ -63,7 +79,11 @@ const goToChat = () => {
         v-for="chat in filteredChats"
         :key="chat.id"
         class="flex items-center py-3 cursor-pointer"
-        @click="goToChat"
+        @click="
+          () => {
+            router.push(`/chat/${chat.id}`);
+          }
+        "
       >
         <img :src="chat.avatar" alt="Avatar" class="w-12 h-12 rounded-full object-cover mr-4" />
 
