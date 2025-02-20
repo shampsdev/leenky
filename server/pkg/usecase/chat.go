@@ -79,21 +79,22 @@ func (c *Chat) LeaveChat(ctx Context, chatID string) error {
 }
 
 func (c *Chat) CreateOrUpdateChat(ctx context.Context, chatID int64) (*domain.Chat, error) {
-	_, err := c.chatRepo.GetChatByTelegramID(ctx, chatID)
+	ch, err := c.chatRepo.GetChatByTelegramID(ctx, chatID)
 	if errors.Is(err, repo.ErrChatNotFound) {
 		return c.CreateChat(ctx, chatID)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("error getting chat by telegram ID: %w", err)
 	}
-	return c.UpdateChat(ctx, chatID)
+	return c.UpdateChat(ctx, ch.ID, chatID)
 }
 
-func (c *Chat) UpdateChat(ctx context.Context, chatID int64) (*domain.Chat, error) {
-	chat, err := c.getChatFromTelegram(ctx, chatID)
+func (c *Chat) UpdateChat(ctx context.Context, chatID string, tgChatID int64) (*domain.Chat, error) {
+	chat, err := c.getChatFromTelegram(ctx, tgChatID)
 	if err != nil {
 		return nil, fmt.Errorf("error getting chat from telegram: %w", err)
 	}
+	chat.ID = chatID
 	chat, err = c.chatRepo.UpdateChat(ctx, chat)
 	if err != nil {
 		return nil, fmt.Errorf("error creating chat: %w", err)

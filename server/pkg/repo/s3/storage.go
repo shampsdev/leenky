@@ -7,7 +7,6 @@ import (
 	"io"
 	"mime"
 	"net/http"
-	"net/url"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -56,7 +55,7 @@ func (s *Storage) SavePhoto(_ context.Context, imageURL string) (string, error) 
 		fileExtension = []string{".jpeg"}
 	}
 
-	key := fmt.Sprintf("%s%s", uniqueImageID, fileExtension[0])
+	key := fmt.Sprintf("tglinked/%s%s", uniqueImageID, fileExtension[0])
 
 	_, err = s.s3Client.PutObject(&s3.PutObjectInput{
 		Bucket:      &s.cfg.Bucket,
@@ -68,7 +67,7 @@ func (s *Storage) SavePhoto(_ context.Context, imageURL string) (string, error) 
 		return "", fmt.Errorf("failed to upload image to S3: %w", err)
 	}
 
-	fileURL := fmt.Sprintf("%s/%s/tglinked/%s", s.cfg.EndpointUrl, s.cfg.Bucket, url.PathEscape(key))
+	fileURL := fmt.Sprintf("%s/%s/%s", s.cfg.EndpointUrl, s.cfg.Bucket, key)
 	log.Infof("Image uploaded successfully: %s", fileURL)
 
 	return fileURL, nil
