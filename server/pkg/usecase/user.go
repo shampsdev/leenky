@@ -46,13 +46,8 @@ func (u *User) GetUserByTelegramID(ctx context.Context, tgID int64) (*domain.Use
 	return u.userRepo.GetUserByTelegramID(ctx, tgID)
 }
 
-func (u *User) UpdateUser(ctx Context, user *domain.User) (*domain.User, error) {
-	if user.ID != ctx.User.ID {
-		return nil, fmt.Errorf("can't edit other user")
-	}
-
-	// return u.userRepo.UpdateUser(ctx, user)
-	return nil, fmt.Errorf("not implemented")
+func (u *User) UpdateUser(ctx Context, id string, user *domain.EditUser) (*domain.User, error) {
+	return u.userRepo.UpdateUser(ctx, id, user)
 }
 
 func (u *User) CreateUser(ctx Context, chatID string, editUser *domain.EditUser) (*domain.User, error) {

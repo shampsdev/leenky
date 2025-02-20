@@ -156,7 +156,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.User"
+                            "$ref": "#/definitions/domain.EditUser"
                         }
                     }
                 ],

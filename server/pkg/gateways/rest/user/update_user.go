@@ -17,7 +17,7 @@ import (
 // @Accept json
 // @Produce json
 // @Schemes http https
-// @Param user body domain.User true "User data"
+// @Param user body domain.EditUser true "User data"
 // @Success 200 {object} domain.User "User data"
 // @Failure 400 "Bad Request"
 // @Failure 500 "Internal Server Error"
@@ -27,14 +27,14 @@ func UpdateUser(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)
 
-		toUpdate := &domain.User{}
+		toUpdate := &domain.EditUser{}
 		if err := c.ShouldBindJSON(toUpdate); err != nil {
 			log.WithError(err).Error("failed to bind user")
 			c.AbortWithStatus(http.StatusBadRequest)
 			return
 		}
 
-		newUser, err := userCase.UpdateUser(usecase.NewContext(c, user), toUpdate)
+		newUser, err := userCase.UpdateUser(usecase.NewContext(c, user), user.ID, toUpdate)
 		if err != nil {
 			log.WithError(err).Error("failed to get user by id")
 			c.AbortWithStatus(http.StatusBadRequest)

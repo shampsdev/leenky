@@ -167,7 +167,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/domain.User'
+          $ref: '#/definitions/domain.EditUser'
       produces:
       - application/json
       responses:
