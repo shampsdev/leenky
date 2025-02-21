@@ -2,7 +2,7 @@
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useMiniApp, usePopup } from "vue-tg";
-import { createMe, postMe } from "@/api/api";
+import { createMe, joinMe, postMe } from "@/api/api";
 import { useRegistrationStore } from "@/stores/registration.store";
 import Button from "@/components/button.vue";
 const router = useRouter();
@@ -11,13 +11,22 @@ const profileStore = useRegistrationStore();
 const initData = useMiniApp().initData;
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
 const initDataUnsafe = useMiniApp().initDataUnsafe;
+const miniApp = useMiniApp();
 const popUp = usePopup();
 const goToChats = async () => {
   const response = await createMe(initData, profileStore.profile);
   if (response === null) {
     if (popUp.showAlert) popUp.showAlert("Произошла ошибка при создании пользователя");
   } else {
-    router.replace("/chats");
+    if (miniApp.initDataUnsafe.start_param !== undefined) {
+      const joinResponse = await joinMe(initData, miniApp.initDataUnsafe.start_param || "");
+      if (joinResponse === null) {
+        if (popUp.showAlert)
+          popUp.showAlert("Произошла ошибка при регистрации в чатеорлу пользователя");
+      } else {
+        router.replace("/chats");
+      }
+    }
   }
 };
 
