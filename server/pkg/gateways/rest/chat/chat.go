@@ -17,4 +17,5 @@ func Setup(r *gin.RouterGroup, cases usecase.Cases) {
 	gAuth.GET("/", GetChatPreviews(cases.Chat))
 	gAuth.POST("/:id/join", JoinChat(cases.Chat))
 	gAuth.POST("/:id/leave", LeaveChat(cases.Chat))
+	gAuth.GET("/:id/search", SearchChat(cases.Search))
 }

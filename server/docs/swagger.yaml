@@ -189,6 +189,34 @@ paths:
       summary: Get chat preview
       tags:
       - chats
+  /chats/{id}/search:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Search query
+        in: path
+        name: q
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Users
+          schema:
+            items:
+              $ref: '#/definitions/domain.User'
+            type: array
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      summary: Search users in chat
+      tags:
+      - chats
   /users:
     delete:
       consumes:
