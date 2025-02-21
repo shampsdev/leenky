@@ -3,12 +3,14 @@ import { useInviteStore } from "@/stores/invite.store";
 import Button from "./button.vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "@/stores/user.store";
-import { getMe } from "@/api/api";
+import { getChat, getMe } from "@/api/api";
 import { useMiniApp } from "vue-tg";
+import { onMounted } from "vue";
 const router = useRouter();
 const inviteStore = useInviteStore();
 const currentUser = useUserStore();
 const initData = useMiniApp().initData;
+const miniapp = useMiniApp();
 const accept = async () => {
   console.log(initData);
   const userData = await getMe(initData);
@@ -18,6 +20,18 @@ const accept = async () => {
     router.push(`/profile/${currentUser.id}`);
   }
 };
+
+const decline = () => {
+  miniapp.close();
+};
+
+onMounted(async () => {
+  const chat = await getChat(initData, miniapp.initDataUnsafe.start_param);
+  if (chat) {
+    console.log(chat);
+    inviteStore.chat = chat;
+  }
+});
 </script>
 
 <template>
@@ -28,20 +42,18 @@ const accept = async () => {
         Добавьте чат, чтобы другие участники смогли посмотреть ваш профиль
       </p>
 
-      <div class="flex items-center gap-[10px] rounded-lg mt-[36px]">
-        <img
-          src="/src/assets/chat_avatar_example.png"
-          alt="Аватар чата"
-          class="w-12 h-12 rounded-full"
-        />
+      <div v-if="inviteStore.chat" class="flex items-center gap-[10px] rounded-lg mt-[36px]">
+        <img :src="inviteStore.chat.avatar" alt="Аватар чата" class="w-12 h-12 rounded-full" />
         <div class="ml-3 text-left">
-          <p class="font-medium text-black">Шампиньоны (мини) хакатон</p>
-          <p class="text-gray-500 text-sm">7 участников</p>
+          <p class="font-medium text-black">{{ inviteStore.chat.name }}</p>
+          <p class="text-gray-500 text-sm">
+            Количество участников: {{ inviteStore.chat.users.length }}
+          </p>
         </div>
       </div>
 
       <div class="flex justify-center gap-[16px] mt-[36px]">
-        <Button variant="secondary" @click="inviteStore.close"> Отклонить </Button>
+        <Button variant="secondary" @click="decline"> Отклонить </Button>
         <Button @click="accept"> Добавить </Button>
       </div>
     </div>

@@ -46,6 +46,7 @@ async function RefreshProfile() {
     }
   } else {
     const fetchedUserData = await getUserById(initData, userId);
+    console.log(isCurrentUserProfile);
     if (fetchedUserData !== null) {
       profileStore.profile = fetchedUserData;
       profileStore.editFieldProfile = { ...fetchedUserData };
@@ -66,7 +67,7 @@ const saveChanges = async () => {
 onMounted(async () => {
   console.log(profileStore);
   console.log(userId);
-  isCurrentUserProfile.value = currentUser.id === userId;
+  isCurrentUserProfile.value = currentUser.id === userId || userId === "null";
   await RefreshProfile();
 });
 </script>
