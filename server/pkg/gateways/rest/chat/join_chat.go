@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/ginerr"
 	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/middlewares"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
 )
@@ -26,8 +27,7 @@ func JoinChat(chatCase *usecase.Chat) gin.HandlerFunc {
 		chatID := c.Param("id")
 
 		err := chatCase.JoinChat(usecase.NewContext(c, user), chatID)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to join chat") {
 			return
 		}
 

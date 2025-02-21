@@ -67,7 +67,7 @@ const docTemplate = `{
                 "tags": [
                     "chats"
                 ],
-                "summary": "Get chat by ID",
+                "summary": "Get chat",
                 "parameters": [
                     {
                         "type": "string",
@@ -171,6 +171,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/chats/{id}/preview": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chats"
+                ],
+                "summary": "Get chat preview",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Chat ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Chat data",
+                        "schema": {
+                            "$ref": "#/definitions/domain.ChatPreview"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/users": {
             "put": {
                 "security": [
@@ -187,7 +229,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Update user by ID",
+                "summary": "Update user",
                 "parameters": [
                     {
                         "description": "User data",
@@ -306,7 +348,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Get user by ID",
+                "summary": "Get user",
                 "parameters": [
                     {
                         "type": "string",
@@ -354,6 +396,26 @@ const docTemplate = `{
                     "items": {
                         "$ref": "#/definitions/domain.User"
                     }
+                }
+            }
+        },
+        "domain.ChatPreview": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "telegram_id": {
+                    "type": "integer"
+                },
+                "users_amount": {
+                    "type": "integer"
                 }
             }
         },

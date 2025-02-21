@@ -6,12 +6,13 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/shampsdev/tglinked/server/pkg/domain"
+	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/ginerr"
 	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/middlewares"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
 )
 
 // UpdateUser godoc
-// @Summary Update user by ID
+// @Summary Update user
 // @Tags users
 // @Accept json
 // @Produce json
@@ -27,14 +28,13 @@ func UpdateUser(userCase *usecase.User) gin.HandlerFunc {
 		user := middlewares.MustGetUser(c)
 
 		toUpdate := &domain.EditUser{}
-		if err := c.ShouldBindJSON(toUpdate); err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		err := c.ShouldBindJSON(toUpdate)
+		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to bind user") {
 			return
 		}
 
 		newUser, err := userCase.UpdateUser(usecase.NewContext(c, user), user.ID, toUpdate)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to update user") {
 			return
 		}
 

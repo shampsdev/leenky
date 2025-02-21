@@ -9,25 +9,28 @@ import (
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
 )
 
-// GetChats godoc
-// @Summary Get chats for user
+// GetChat godoc
+// @Summary Get chat
 // @Tags chats
 // @Accept json
 // @Produce json
 // @Schemes http https
-// @Success 200 {object} []domain.Chat "Chats data"
+// @Param id path string true "Chat ID"
+// @Success 200 {object} domain.Chat "Chat data"
 // @Failure 400 "Bad Request"
 // @Failure 500 "Internal Server Error"
 // @Security ApiKeyAuth
-// @Router /chats [get]
-func GetChats(chatCase *usecase.Chat) gin.HandlerFunc {
+// @Router /chats/{id} [get]
+func GetChat(chatCase *usecase.Chat) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)
+		chatID := c.Param("id")
 
-		chats, err := chatCase.GetChats(usecase.NewContext(c, user))
-		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to get chats") {
+		chat, err := chatCase.GetChat(usecase.NewContext(c, user), chatID)
+		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to get chat") {
 			return
 		}
-		c.JSON(http.StatusOK, chats)
+
+		c.JSON(http.StatusOK, chat)
 	}
 }

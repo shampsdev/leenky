@@ -10,6 +10,7 @@ type Chat interface {
 	CreateChat(ctx context.Context, chat *domain.Chat) (string, error)
 	UpdateChat(ctx context.Context, chat *domain.Chat) (*domain.Chat, error)
 	GetChatByID(ctx context.Context, id string) (*domain.Chat, error)
+	GetChatPreviewByID(ctx context.Context, id string) (*domain.ChatPreview, error)
 	GetChatByTelegramID(ctx context.Context, telegramID int64) (*domain.Chat, error)
 	GetChatsWithUser(ctx context.Context, userID string) ([]*domain.Chat, error)
 	SetChatUsers(ctx context.Context, chatID string, userIDs []string) error

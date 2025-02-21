@@ -54,25 +54,11 @@ func (u *User) UpdateUser(ctx Context, id string, user *domain.EditUser) (*domai
 }
 
 func (u *User) CreateUser(ctx Context, editUser *domain.EditUser) (*domain.User, error) {
-	tguser, err := u.bot.GetChat(ctx, &bot.GetChatParams{
-		ChatID: ctx.User.TelegramID,
-	})
-	if err != nil {
-		return nil, fmt.Errorf("failed to get user from chat: %w", err)
-	}
-
-	avatar := ""
-	if tguser.Photo != nil {
-		avatar, err = downloadTGFileByID(ctx, u.bot, u.storage, tguser.Photo.SmallFileID)
-		if err != nil {
-			return nil, fmt.Errorf("failed to download user avatar: %w", err)
-		}
-	}
-
 	user := &domain.User{
+		// tgID, tgUsername, avatar are supposed to be injected by auth middleware
 		TelegramID:       ctx.User.TelegramID,
-		TelegramUsername: tguser.Username,
-		Avatar:           avatar,
+		TelegramUsername: ctx.User.TelegramUsername,
+		Avatar:           ctx.User.Avatar,
 		FirstName:        editUser.FirstName,
 		LastName:         editUser.LastName,
 		Company:          editUser.Company,

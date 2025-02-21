@@ -5,12 +5,13 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/ginerr"
 	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/middlewares"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
 )
 
-// GetUserByID godoc
-// @Summary Get user by ID
+// GetUser godoc
+// @Summary Get user
 // @Tags users
 // @Accept json
 // @Produce json
@@ -21,14 +22,13 @@ import (
 // @Failure 500 "Internal Server Error"
 // @Security ApiKeyAuth
 // @Router /users/{id} [get]
-func GetUserByID(userCase *usecase.User) gin.HandlerFunc {
+func GetUser(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)
 		userID := c.Param("id")
 
 		user, err := userCase.GetUserByID(usecase.NewContext(c, user), userID)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to get user") {
 			return
 		}
 

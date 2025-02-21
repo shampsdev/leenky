@@ -10,7 +10,8 @@ func Setup(r *gin.RouterGroup, cases usecase.Cases) {
 	g := r.Group("/chats")
 	middlewares.SetupAuth(g, cases.User)
 
-	g.GET("/:id", GetChatByID(cases.Chat))
+	g.GET("/:id", GetChat(cases.Chat))
+	g.GET("/:id/preview", GetChatPreview(cases.Chat))
 	g.GET("/", GetChats(cases.Chat))
 	g.POST("/:id/join", JoinChat(cases.Chat))
 	g.POST("/:id/leave", LeaveChat(cases.Chat))

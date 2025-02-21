@@ -2,10 +2,12 @@ package middlewares
 
 import (
 	"fmt"
+	"net/http"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/shampsdev/tglinked/server/pkg/domain"
+	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/ginerr"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
 	initdata "github.com/telegram-mini-apps/init-data-golang"
 )
@@ -17,17 +19,19 @@ func AuthTelegramID() gin.HandlerFunc {
 		initData := c.GetHeader("X-API-Token")
 		expIn := 1 * time.Hour
 		err := initdata.Validate(initData, BotToken, expIn)
-		if err != nil {
-			c.AbortWithStatusJSON(401, gin.H{"error": fmt.Errorf("failed to validate init data: %w", err)})
+		if ginerr.AbortIfErr(c, err, http.StatusUnauthorized, "failed to validate initdata") {
 			return
 		}
 
 		parsed, err := initdata.Parse(initData)
-		if err != nil {
-			c.AbortWithStatusJSON(401, gin.H{"error": err.Error()})
+		if ginerr.AbortIfErr(c, err, http.StatusUnauthorized, "failed to parse initdata") {
 			return
 		}
-		c.Set("user", &domain.User{TelegramID: parsed.User.ID})
+		c.Set("user", &domain.User{
+			TelegramID:       parsed.User.ID,
+			TelegramUsername: parsed.User.Username,
+			Avatar:           parsed.User.PhotoURL,
+		})
 
 		c.Next()
 	}
@@ -37,8 +41,7 @@ func AuthUser(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tgID := MustGetUser(c).TelegramID
 		user, err := userCase.GetUserByTelegramID(c, tgID)
-		if err != nil {
-			c.AbortWithStatusJSON(401, gin.H{"error": err.Error()})
+		if ginerr.AbortIfErr(c, err, http.StatusUnauthorized, fmt.Sprintf("user with tg_id %d not found", tgID)) {
 			return
 		}
 		c.Set("user", user)

@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/shampsdev/tglinked/server/pkg/domain"
+	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/ginerr"
 	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/middlewares"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
 )
@@ -26,14 +27,12 @@ func CreateUser(userCase *usecase.User) gin.HandlerFunc {
 		user := middlewares.MustGetUser(c)
 
 		toCreate := &domain.EditUser{}
-		if err := c.ShouldBindJSON(toCreate); err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		if err := c.ShouldBindJSON(toCreate); ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to bind user") {
 			return
 		}
 
 		user, err := userCase.CreateUser(usecase.NewContext(c, user), toCreate)
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to create user") {
 			return
 		}
 

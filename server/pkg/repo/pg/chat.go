@@ -77,6 +77,26 @@ func (r *ChatRepo) GetChatByID(ctx context.Context, id string) (*domain.Chat, er
 	return chat, nil
 }
 
+func (r *ChatRepo) GetChatPreviewByID(ctx context.Context, id string) (*domain.ChatPreview, error) {
+	row := r.db.QueryRow(ctx, `
+		SELECT c."id", c."name", c."avatar", c."telegram_id", COUNT(cu."user_id")
+		FROM "chat" c
+		LEFT JOIN "chat_user" cu ON c."id" = cu."chat_id"
+		WHERE c."id" = $1
+		GROUP BY c."id"`,
+		id,
+	)
+	chat := &domain.ChatPreview{}
+	err := row.Scan(&chat.ID, &chat.Name, &chat.Avatar, &chat.TelegramID, &chat.UsersAmount)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, repo.ErrChatNotFound
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to get chat preview by ID: %w", err)
+	}
+	return chat, nil
+}
+
 func (r *ChatRepo) GetChatByTelegramID(ctx context.Context, telegramID int64) (*domain.Chat, error) {
 	row := r.db.QueryRow(ctx, `SELECT "id", "name", "avatar", "telegram_id" FROM "chat" WHERE "telegram_id" = $1`, telegramID)
 	chat := &domain.Chat{}

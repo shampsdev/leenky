@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/ginerr"
 	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/middlewares"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
 )
@@ -24,8 +25,7 @@ func GetMe(userCase *usecase.User) gin.HandlerFunc {
 		user := middlewares.MustGetUser(c)
 
 		user, err := userCase.GetMe(usecase.NewContext(c, user))
-		if err != nil {
-			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to get user") {
 			return
 		}
 

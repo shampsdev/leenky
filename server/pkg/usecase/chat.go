@@ -25,7 +25,7 @@ func NewChat(chatRepo repo.Chat, s repo.ImageStorage, tgbot *bot.Bot) *Chat {
 }
 
 func (c *Chat) GetChat(ctx Context, chatID string) (*domain.Chat, error) {
-	if err := c.ensureUserInChat(ctx, ctx.User.ID, chatID); err != nil {
+	if err := c.ensureUserInChat(ctx, chatID); err != nil {
 		return nil, err
 	}
 
@@ -40,12 +40,23 @@ func (c *Chat) GetChat(ctx Context, chatID string) (*domain.Chat, error) {
 	return chat, nil
 }
 
+func (c *Chat) GetChatPreview(ctx Context, chatID string) (*domain.ChatPreview, error) {
+	cp, err := c.chatRepo.GetChatPreviewByID(ctx, chatID)
+	if err != nil {
+		return nil, fmt.Errorf("error getting chat preview: %w", err)
+	}
+	if err := c.ensureUserInTGChat(ctx, cp.TelegramID); err != nil {
+		return nil, fmt.Errorf("error ensuring user in chat: %w", err)
+	}
+	return cp, nil
+}
+
 func (c *Chat) GetChats(ctx Context) ([]*domain.Chat, error) {
 	return c.chatRepo.GetChatsWithUser(ctx, ctx.User.ID)
 }
 
 func (c *Chat) GetChatUsers(ctx Context, chatID string) ([]*domain.User, error) {
-	if err := c.ensureUserInChat(ctx, ctx.User.ID, chatID); err != nil {
+	if err := c.ensureUserInChat(ctx, chatID); err != nil {
 		return nil, err
 	}
 	return c.chatRepo.GetChatUsers(ctx, chatID)
@@ -72,7 +83,7 @@ func (c *Chat) JoinChat(ctx Context, chatID string) error {
 }
 
 func (c *Chat) LeaveChat(ctx Context, chatID string) error {
-	if err := c.ensureUserInChat(ctx, ctx.User.ID, chatID); err != nil {
+	if err := c.ensureUserInChat(ctx, chatID); err != nil {
 		return err
 	}
 	return c.chatRepo.DetachUserFromChat(ctx, chatID, ctx.User.ID)
@@ -137,8 +148,19 @@ func (c *Chat) getChatFromTelegram(ctx context.Context, chatID int64) (*domain.C
 	return chat, nil
 }
 
-func (c *Chat) ensureUserInChat(ctx context.Context, userID, chatID string) error {
-	inChat, err := c.chatRepo.IsUserInChat(ctx, userID, chatID)
+func (c *Chat) ensureUserInTGChat(ctx Context, chatID int64) error {
+	_, err := c.bot.GetChatMember(ctx, &bot.GetChatMemberParams{
+		ChatID: chatID,
+		UserID: ctx.User.TelegramID,
+	})
+	if err != nil {
+		return fmt.Errorf("error getting chat member: %w", err)
+	}
+	return nil
+}
+
+func (c *Chat) ensureUserInChat(ctx Context, chatID string) error {
+	inChat, err := c.chatRepo.IsUserInChat(ctx, ctx.User.ID, chatID)
 	if err != nil {
 		return fmt.Errorf("error checking if user is in chat: %w", err)
 	}
