@@ -30,6 +30,10 @@ func NewUser(
 	}
 }
 
+func (u *User) GetMe(ctx Context) (*domain.User, error) {
+	return u.userRepo.GetUserByID(ctx, ctx.User.ID)
+}
+
 func (u *User) GetUserByID(ctx Context, id string) (*domain.User, error) {
 	share, err := u.chatRepo.AreUsersShareSameChat(ctx, []string{ctx.User.ID, id})
 	if err != nil {

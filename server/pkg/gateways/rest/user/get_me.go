@@ -23,7 +23,7 @@ func GetMe(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)
 
-		user, err := userCase.GetUserByID(usecase.NewContext(c, user), user.ID)
+		user, err := userCase.GetMe(usecase.NewContext(c, user))
 		if err != nil {
 			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
