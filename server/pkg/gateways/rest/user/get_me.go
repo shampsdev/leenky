@@ -3,8 +3,6 @@ package user
 import (
 	"net/http"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/gin-gonic/gin"
 	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/middlewares"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
@@ -27,8 +25,7 @@ func GetMe(userCase *usecase.User) gin.HandlerFunc {
 
 		user, err := userCase.GetUserByID(usecase.NewContext(c, user), user.ID)
 		if err != nil {
-			log.WithError(err).Error("failed to get user")
-			c.AbortWithStatus(http.StatusBadRequest)
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 

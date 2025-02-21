@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 
 	"github.com/shampsdev/tglinked/server/pkg/domain"
 	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/middlewares"
@@ -29,15 +28,13 @@ func UpdateUser(userCase *usecase.User) gin.HandlerFunc {
 
 		toUpdate := &domain.EditUser{}
 		if err := c.ShouldBindJSON(toUpdate); err != nil {
-			log.WithError(err).Error("failed to bind user")
-			c.AbortWithStatus(http.StatusBadRequest)
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		newUser, err := userCase.UpdateUser(usecase.NewContext(c, user), user.ID, toUpdate)
 		if err != nil {
-			log.WithError(err).Error("failed to get user by id")
-			c.AbortWithStatus(http.StatusBadRequest)
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 

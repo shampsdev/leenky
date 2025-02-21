@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
 
 	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/middlewares"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
@@ -29,8 +28,7 @@ func GetUserByID(userCase *usecase.User) gin.HandlerFunc {
 
 		user, err := userCase.GetUserByID(usecase.NewContext(c, user), userID)
 		if err != nil {
-			log.WithError(err).Error("failed to get user by id")
-			c.AbortWithStatus(http.StatusBadRequest)
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 

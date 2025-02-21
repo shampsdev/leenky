@@ -6,7 +6,6 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/middlewares"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
-	log "github.com/sirupsen/logrus"
 )
 
 // GetChats godoc
@@ -26,8 +25,7 @@ func GetChats(chatCase *usecase.Chat) gin.HandlerFunc {
 
 		chats, err := chatCase.GetChats(usecase.NewContext(c, user))
 		if err != nil {
-			log.WithError(err).Error("failed to get user by id")
-			c.AbortWithStatus(http.StatusBadRequest)
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 

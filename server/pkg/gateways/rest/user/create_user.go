@@ -3,8 +3,6 @@ package user
 import (
 	"net/http"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/gin-gonic/gin"
 	"github.com/shampsdev/tglinked/server/pkg/domain"
 	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/middlewares"
@@ -29,15 +27,13 @@ func CreateUser(userCase *usecase.User) gin.HandlerFunc {
 
 		toCreate := &domain.EditUser{}
 		if err := c.ShouldBindJSON(toCreate); err != nil {
-			log.WithError(err).Error("failed to bind user")
-			c.AbortWithStatus(http.StatusBadRequest)
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
 		user, err := userCase.CreateUser(usecase.NewContext(c, user), toCreate)
 		if err != nil {
-			log.WithError(err).Error("failed to create user")
-			c.AbortWithStatus(http.StatusBadRequest)
+			c.AbortWithStatusJSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			return
 		}
 
