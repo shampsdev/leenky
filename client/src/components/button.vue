@@ -17,6 +17,7 @@ const buttonClasses = computed(() => {
   const variants = {
     primary: "btn-primary",
     secondary: "btn ",
+    about: "bg-green",
   };
 
   return `${base} ${variants[props.variant]} `;

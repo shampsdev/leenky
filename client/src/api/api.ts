@@ -74,3 +74,20 @@ export const postMe = async (
     return null;
   }
 };
+
+export const createMe = async (
+  initData: string,
+  userData: Pick<UserData, "firstName" | "lastName" | "bio" | "role" | "company">
+): Promise<Pick<UserData, "firstName" | "lastName" | "bio" | "role" | "company"> | null> => {
+  try {
+    const response = await api.post<UserData>("/users/", userData, {
+      headers: {
+        "X-Api-Token": initData,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Ошибка при содании профиля", error);
+  }
+  return null;
+};

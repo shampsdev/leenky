@@ -62,3 +62,15 @@
 .border-tint {
   border-color: #c8d4d9;
 }
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+html {
+  scrollbar-width: none;
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+}

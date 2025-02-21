@@ -11,10 +11,17 @@ import ProfilePage from "./pages/profile.page.vue";
 import VaniogPage from "./pages/vaniog.page.vue";
 import ChatsPage from "./pages/chats.page.vue";
 import ChatPage from "./pages/chat.page.vue";
+import AboutFirstPage from "./pages/about.first.page.vue";
+import InitialPage from "./pages/initial.page.vue";
+import AboutSecondPage from "./pages/about.second.page.vue";
+import RegistrationPage from "./pages/registration.page.vue";
 const theme = useTheme().backgroundColor;
 
 const routes = [
-  { path: "/", component: BasePage },
+  { path: "/", component: InitialPage },
+  { path: "/about/1", component: AboutFirstPage },
+  { path: "/about/2", component: AboutSecondPage },
+  { path: "/registration", component: RegistrationPage },
   { path: "/vaniog", component: VaniogPage },
   { path: "/profile/:id", component: ProfilePage },
   { path: "/chats", component: ChatsPage },
