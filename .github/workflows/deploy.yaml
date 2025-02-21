@@ -37,12 +37,6 @@ jobs:
       attestations: write
       id-token: write
     steps:
-      - name: Fail if not on main branch or release tag
-        if: inputs.environment == 'PROD' && github.ref != 'refs/heads/main'
-        run: |
-          echo "This workflow should only run on the 'main' branch."
-          exit 1
-
       - name: Check out the repo
         uses: actions/checkout@v4
 
@@ -71,7 +65,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           context: ./${{ inputs.context_path }}
-          file: ./${{ inputs.dockerfile_path }}/Dockerfile
+          file: ./${{ inputs.dockerfile_path }}
           push: true
           tags: |
             ${{ secrets.DOCKER_USERNAME }}/${{ inputs.image_name }}:${{ env.VERSION_TAG }}
