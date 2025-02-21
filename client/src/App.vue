@@ -1,47 +1,73 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import { useBackButton } from "vue-tg";
+import { useRouter } from "vue-router";
+const backButton = useBackButton();
+const router = useRouter();
+
+if (backButton?.show) {
+  backButton.show();
+}
+
+if (backButton?.onClick) {
+  backButton.onClick(() => {
+    router.back();
+  });
+}
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <div class="bg-main w-[100vw] h-[100vh] overflow-auto">
+    <router-view />
+  </div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
+@import "tailwindcss";
+
+@font-face {
+  font-family: "SF";
+  src: url("/src/assets/fonts/SFProText-Regular.ttf") format("truetype");
+  font-weight: normal;
+  font-style: normal;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+@font-face {
+  font-family: "SF";
+  src: url("/src/assets/fonts/SFProText-Bold.ttf") format("truetype");
+  font-weight: bold;
+  font-style: normal;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+/* Add additional font weights as needed */
+@font-face {
+  font-family: "SF";
+  src: url("/src/assets/fonts/SFProText-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+}
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+@font-face {
+  font-family: "SF";
+  src: url("/src/assets/fonts/SFProText-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+}
+@font-face {
+  font-family: "SF";
+  src: url("/src/assets/fonts/SFProText-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+}
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+@font-face {
+  font-family: "SF";
+  src: url("/src/assets/fonts/SFProText-Semibold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+}
+
+* {
+  font-family: "SF";
+  font-weight: 400;
 }
 </style>
