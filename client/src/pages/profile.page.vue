@@ -19,6 +19,8 @@ const userId = route.params.id as string;
 const isCurrentUserProfile = ref(false);
 const initData = useMiniApp().initData;
 
+let isLoading = ref(true);
+
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
 
 function autoResize() {
@@ -52,6 +54,8 @@ async function RefreshProfile() {
       profileStore.editFieldProfile = { ...fetchedUserData };
     }
   }
+
+  isLoading.value = false;
 }
 
 const saveChanges = async () => {
@@ -65,15 +69,13 @@ const saveChanges = async () => {
 };
 
 onMounted(async () => {
-  console.log(profileStore);
-  console.log(userId);
   isCurrentUserProfile.value = currentUser.id === userId || userId === "null";
   await RefreshProfile();
 });
 </script>
 
 <template>
-  <div class="w-full flex flex-col h-full items-center p-4">
+  <div v-if="!isLoading" class="w-full flex flex-col h-full items-center p-4">
     <div class="w-full">
       <div class="flex flex-col items-center">
         <img

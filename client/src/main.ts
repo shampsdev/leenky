@@ -15,6 +15,7 @@ import AboutFirstPage from "./pages/about.first.page.vue";
 import InitialPage from "./pages/initial.page.vue";
 import AboutSecondPage from "./pages/about.second.page.vue";
 import RegistrationPage from "./pages/registration.page.vue";
+import InvitePage from "./pages/invite.page.vue";
 const theme = useTheme().backgroundColor;
 
 const routes = [
@@ -25,7 +26,9 @@ const routes = [
   { path: "/vaniog", component: VaniogPage },
   { path: "/profile/:id", component: ProfilePage },
   { path: "/chats", component: ChatsPage },
+  { path: "/chats/:chatId", component: ChatsPage },
   { path: "/chat/:chatId", component: ChatPage },
+  { path: "/invite", component: InvitePage },
 ];
 
 const router = createRouter({

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useBackButton } from "vue-tg";
 import { useRouter } from "vue-router";
-import { useRoute } from "vue-router";
 const backButton = useBackButton();
 const router = useRouter();
 

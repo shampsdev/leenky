@@ -4,6 +4,7 @@ import { useRoute, useRouter } from "vue-router";
 import { useMiniApp } from "vue-tg";
 import { getChat } from "@/api/api";
 import { useProfileStore } from "@/stores/profile.store";
+import { useBackButton } from "vue-tg";
 import Profile from "@/components/profile.vue";
 const chat = ref({});
 

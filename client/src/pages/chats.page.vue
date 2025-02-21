@@ -1,11 +1,12 @@
 <script setup>
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import { computed, onMounted } from "vue";
 import { getChats } from "@/api/api";
 import { useMiniApp } from "vue-tg";
 import Profile from "@/components/profile.vue";
 import { useUserStore } from "@/stores/user.store";
+import Button from "@/components/button.vue";
 const chats = ref([
   {
     id: 1,
@@ -39,9 +40,6 @@ const filteredChats = computed(() => {
 });
 
 const router = useRouter();
-const goToChat = () => {
-  router.push("/chat/1");
-};
 
 const currentUser = useUserStore();
 
@@ -59,6 +57,14 @@ onMounted(async () => {
 </script>
 
 <template>
+  <Button
+    @click="
+      () => {
+        router.push('/vaniog');
+      }
+    "
+    >ВАНЯЯЯ</Button
+  >
   <Profile />
   <KeepAlive>
     <div class="max-w-[95%] mx-auto px-4">

@@ -1,20 +1,28 @@
 <script setup lang="ts">
-import { getMe } from "@/api/api";
+import { getChat, getMe, joinMe } from "@/api/api";
 import { useMiniApp } from "vue-tg";
 import { useRouter } from "vue-router";
 import { onMounted } from "vue";
+import { useUserStore } from "@/stores/user.store";
 const miniApp = useMiniApp();
 const initData = miniApp.initData;
 const router = useRouter();
-const isRegistered = false;
-
+const startData = miniApp.initDataUnsafe.start_param || "";
 onMounted(async () => {
   const userData = await getMe(initData);
-  if (userData === null) {
-    console.log("USERDATA IS NULLL");
-    router.replace("/about/1");
+  console.log(userData);
+  if (userData !== null) {
+    const getChatResponse = await getChat(initData, startData);
+    if (getChatResponse) {
+      router.replace(`/chats`);
+      setTimeout(() => {
+        router.push(`/chat/${startData}`);
+      }, 100);
+    } else {
+      router.replace("/invite");
+    }
   } else {
-    router.replace("/chats");
+    router.replace("/about/1");
   }
 });
 </script>

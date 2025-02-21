@@ -91,3 +91,21 @@ export const createMe = async (
   }
   return null;
 };
+
+export const joinMe = async (initData: string, chatId: string): Promise<boolean> => {
+  try {
+    const response = await api.post(
+      `/chats/${chatId}/join`,
+      {},
+      {
+        headers: {
+          "X-Api-Token": initData,
+        },
+      }
+    );
+    return response.status === 200;
+  } catch (error) {
+    console.error("ошибка при присоединении к чату", error);
+    return false;
+  }
+};
