@@ -7,26 +7,7 @@ import { useMiniApp } from "vue-tg";
 import Profile from "@/components/profile.vue";
 import { useUserStore } from "@/stores/user.store";
 import Button from "@/components/button.vue";
-const chats = ref([
-  {
-    id: 1,
-    name: "DishDash – Шампиньоны",
-    members: 10,
-    avatar: "/src/assets/chat_avatar_example.png",
-  },
-  {
-    id: 2,
-    name: "Шампиньоны (мини) хакатон",
-    members: 7,
-    avatar: "/src/assets/chat_avatar_example.png",
-  },
-  {
-    id: 3,
-    name: "Стартап-Чердак",
-    members: 47,
-    avatar: "/src/assets/chat_avatar_example.png",
-  },
-]);
+const chats = ref([]);
 
 const searchQuery = ref("");
 
