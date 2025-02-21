@@ -1,4 +1,4 @@
-package chat
+package user
 
 import (
 	"net/http"
@@ -9,25 +9,26 @@ import (
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
 )
 
-// GetChats godoc
-// @Summary Get chats for user
-// @Tags chats
+// DeleteUser godoc
+// @Summary Delete user
+// @Tags users
 // @Accept json
 // @Produce json
 // @Schemes http https
-// @Success 200 {object} []domain.Chat "Chats data"
+// @Success 200 {object} domain.User "User data"
 // @Failure 400 "Bad Request"
 // @Failure 500 "Internal Server Error"
 // @Security ApiKeyAuth
-// @Router /chats [get]
-func GetChats(chatCase *usecase.Chat) gin.HandlerFunc {
+// @Router /users [delete]
+func DeleteUser(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)
 
-		chats, err := chatCase.GetChats(usecase.NewContext(c, user))
-		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to get chats") {
+		err := userCase.DeleteUser(usecase.NewContext(c, user))
+		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to delete user") {
 			return
 		}
-		c.JSON(http.StatusOK, chats)
+
+		c.JSON(http.StatusOK, user)
 	}
 }

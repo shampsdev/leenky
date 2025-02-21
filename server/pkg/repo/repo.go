@@ -12,7 +12,7 @@ type Chat interface {
 	GetChatByID(ctx context.Context, id string) (*domain.Chat, error)
 	GetChatPreviewByID(ctx context.Context, id string) (*domain.ChatPreview, error)
 	GetChatByTelegramID(ctx context.Context, telegramID int64) (*domain.Chat, error)
-	GetChatsWithUser(ctx context.Context, userID string) ([]*domain.Chat, error)
+	GetChatPreviewsWithUser(ctx context.Context, userID string) ([]*domain.ChatPreview, error)
 	SetChatUsers(ctx context.Context, chatID string, userIDs []string) error
 	GetChatUsers(ctx context.Context, chatID string) ([]*domain.User, error)
 	AttachUserToChat(ctx context.Context, chatID, userID string) error
@@ -24,6 +24,7 @@ type Chat interface {
 type User interface {
 	CreateUser(ctx context.Context, user *domain.User) (string, error)
 	UpdateUser(ctx context.Context, id string, user *domain.EditUser) (*domain.User, error)
+	DeleteUser(ctx context.Context, id string) error
 	GetUserByID(ctx context.Context, id string) (*domain.User, error)
 	GetUserByTelegramID(ctx context.Context, telegramID int64) (*domain.User, error)
 }

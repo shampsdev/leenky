@@ -54,6 +54,14 @@ func (r *UserRepo) UpdateUser(ctx context.Context, id string, user *domain.EditU
 	return newUser, nil
 }
 
+func (r *UserRepo) DeleteUser(ctx context.Context, id string) error {
+	_, err := r.db.Exec(ctx, `DELETE FROM "user" WHERE "id" = $1`, id)
+	if err != nil {
+		return fmt.Errorf("failed to delete user: %w", err)
+	}
+	return nil
+}
+
 func (r *UserRepo) GetUserByID(ctx context.Context, id string) (*domain.User, error) {
 	row := r.db.QueryRow(ctx, `
 		SELECT "id", "telegram_id", "telegram_username", "avatar", "first_name", "last_name", "company", "role", "bio"

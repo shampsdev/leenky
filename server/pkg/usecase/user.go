@@ -53,6 +53,10 @@ func (u *User) UpdateUser(ctx Context, id string, user *domain.EditUser) (*domai
 	return u.userRepo.UpdateUser(ctx, id, user)
 }
 
+func (u *User) DeleteUser(ctx Context) error {
+	return u.userRepo.DeleteUser(ctx, ctx.User.ID)
+}
+
 func (u *User) CreateUser(ctx Context, editUser *domain.EditUser) (*domain.User, error) {
 	user := &domain.User{
 		// tgID, tgUsername, avatar are supposed to be injected by auth middleware

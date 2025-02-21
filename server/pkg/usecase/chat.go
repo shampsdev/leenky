@@ -51,8 +51,8 @@ func (c *Chat) GetChatPreview(ctx Context, chatID string) (*domain.ChatPreview, 
 	return cp, nil
 }
 
-func (c *Chat) GetChats(ctx Context) ([]*domain.Chat, error) {
-	return c.chatRepo.GetChatsWithUser(ctx, ctx.User.ID)
+func (c *Chat) GetChatsPreview(ctx Context) ([]*domain.ChatPreview, error) {
+	return c.chatRepo.GetChatPreviewsWithUser(ctx, ctx.User.ID)
 }
 
 func (c *Chat) GetChatUsers(ctx Context, chatID string) ([]*domain.User, error) {

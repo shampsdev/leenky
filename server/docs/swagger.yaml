@@ -78,7 +78,7 @@ paths:
           description: Chats data
           schema:
             items:
-              $ref: '#/definitions/domain.Chat'
+              $ref: '#/definitions/domain.ChatPreview'
             type: array
         "400":
           description: Bad Request
@@ -86,7 +86,7 @@ paths:
           description: Internal Server Error
       security:
       - ApiKeyAuth: []
-      summary: Get chats for user
+      summary: Get chat previews
       tags:
       - chats
   /chats/{id}:
@@ -190,6 +190,25 @@ paths:
       tags:
       - chats
   /users:
+    delete:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User data
+          schema:
+            $ref: '#/definitions/domain.User'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      summary: Delete user
+      tags:
+      - users
     post:
       consumes:
       - application/json

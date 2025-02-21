@@ -31,14 +31,14 @@ const docTemplate = `{
                 "tags": [
                     "chats"
                 ],
-                "summary": "Get chats for user",
+                "summary": "Get chat previews",
                 "responses": {
                     "200": {
                         "description": "Chats data",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/domain.Chat"
+                                "$ref": "#/definitions/domain.ChatPreview"
                             }
                         }
                     },
@@ -283,6 +283,37 @@ const docTemplate = `{
                         }
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "User data",
+                        "schema": {
+                            "$ref": "#/definitions/domain.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Delete user",
                 "responses": {
                     "200": {
                         "description": "User data",

@@ -110,12 +110,15 @@ func (r *ChatRepo) GetChatByTelegramID(ctx context.Context, telegramID int64) (*
 	return chat, nil
 }
 
-func (r *ChatRepo) GetChatsWithUser(ctx context.Context, userID string) ([]*domain.Chat, error) {
+func (r *ChatRepo) GetChatPreviewsWithUser(ctx context.Context, userID string) ([]*domain.ChatPreview, error) {
 	rows, err := r.db.Query(ctx, `
-		SELECT c."id", c."name", c."avatar", c."telegram_id"
+		SELECT c."id", c."name", c."avatar", c."telegram_id", COUNT(cu2."user_id") as "users_count"
 		FROM "chat" c
 		JOIN "chat_user" cu ON c."id" = cu."chat_id"
-		WHERE cu."user_id" = $1`,
+		LEFT JOIN "chat_user" cu2 ON cu2."chat_id" = c."id"
+		WHERE cu."user_id" = $1
+		GROUP BY c."id"
+	`,
 		userID,
 	)
 	if err != nil {
@@ -123,10 +126,10 @@ func (r *ChatRepo) GetChatsWithUser(ctx context.Context, userID string) ([]*doma
 	}
 	defer rows.Close()
 
-	var chats []*domain.Chat
+	var chats []*domain.ChatPreview
 	for rows.Next() {
-		chat := &domain.Chat{}
-		if err := rows.Scan(&chat.ID, &chat.Name, &chat.Avatar, &chat.TelegramID); err != nil {
+		chat := &domain.ChatPreview{}
+		if err := rows.Scan(&chat.ID, &chat.Name, &chat.Avatar, &chat.TelegramID, &chat.UsersAmount); err != nil {
 			return nil, fmt.Errorf("failed to scan chat row: %w", err)
 		}
 		chats = append(chats, chat)
