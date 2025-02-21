@@ -9,7 +9,6 @@ import (
 func Setup(r *gin.RouterGroup, cases usecase.Cases) {
 	g := r.Group("/chats")
 	g.Use(middlewares.AuthTelegramID())
-	middlewares.SetupAuth(g, cases.User)
 	g.GET("/:id/preview", GetChatPreview(cases.Chat))
 
 	gAuth := g.Group("")
