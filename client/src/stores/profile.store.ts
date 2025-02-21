@@ -7,27 +7,37 @@ export const useProfileStore = defineStore("profile", {
     editMode: false as boolean,
 
     profile: <ProfileUserData>{
-      firstName: null,
-      lastName: null,
-      role: null,
-      company: null,
-      bio: null,
-      avatar: null,
+      firstName: "",
+      lastName: "",
+      role: "",
+      company: "",
+      bio: "",
+      avatar: "",
+      telegramUsername: "",
     },
 
     editFieldProfile: <ProfileUserData>{
-      firstName: null,
-      lastName: null,
-      role: null,
-      company: null,
-      bio: null,
-      avatar: null,
+      firstName: "",
+      lastName: "",
+      role: "",
+      company: "",
+      bio: "",
+      avatar: "",
+      telegramUsername: "",
     },
   }),
 
   getters: {
-    isChanged: (state): boolean => {
-      return JSON.stringify(state.profile) !== JSON.stringify(state.editFieldProfile);
+    isChanged(): boolean {
+      const isChanged =
+        this.profile.firstName !== this.editFieldProfile.firstName ||
+        this.profile.lastName !== this.editFieldProfile.lastName ||
+        this.profile.role !== this.editFieldProfile.role ||
+        this.profile.company !== this.editFieldProfile.company ||
+        this.profile.bio !== this.editFieldProfile.bio;
+
+      console.log(isChanged);
+      return isChanged;
     },
   },
 
@@ -38,6 +48,9 @@ export const useProfileStore = defineStore("profile", {
     },
 
     toggleEditMode() {
+      if (!this.editMode) {
+        this.editFieldProfile = { ...this.profile };
+      }
       this.editMode = !this.editMode;
     },
   },

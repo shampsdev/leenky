@@ -9,6 +9,26 @@ const router = useRouter();
 const goToVaniog = () => {
   router.push("/vaniog");
 };
+
+import { useUserStore } from "@/stores/user.store";
+import { getMe } from "@/api/api";
+import { useMiniApp } from "vue-tg";
+import { onMounted } from "vue";
+const inviteStore = useInviteStore();
+const currentUser = useUserStore();
+const initData = useMiniApp().initData;
+const accept = async () => {
+  console.log(initData);
+  const userData = await getMe(initData);
+  if (userData !== null) {
+    currentUser.logIn(userData);
+    inviteStore.close();
+    router.push(`/profile/${currentUser.id}`);
+  }
+};
+onMounted(async () => {
+  await accept();
+});
 </script>
 
 <template>

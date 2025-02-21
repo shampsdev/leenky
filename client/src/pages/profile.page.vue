@@ -1,12 +1,12 @@
 <script setup lang="ts">
-// WE NEEEED A HUUUUUGE REFACTOR IN HERE
 import { onMounted, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useProfileStore } from "@/stores/profile.store";
 import Button from "@/components/button.vue";
 import { useUserStore } from "@/stores/user.store";
-import { getMe, getUserById } from "@/api/api";
+import { getMe, getUserById, postMe } from "@/api/api";
 import { useMiniApp } from "vue-tg";
+
 const router = useRouter();
 const route = useRoute();
 const profileStore = useProfileStore();
@@ -16,14 +16,13 @@ const goToChats = () => {
 
 const currentUser = useUserStore();
 const userId = route.params.id as string;
-const isCurrentUserProfile = currentUser.id === userId;
+const isCurrentUserProfile = ref(false);
 const initData = useMiniApp().initData;
 
 const textareaRef = ref<HTMLTextAreaElement | null>(null);
 
 function autoResize() {
   if (!textareaRef.value) return;
-
   textareaRef.value.style.height = "auto";
   textareaRef.value.style.height = `${Math.min(textareaRef.value.scrollHeight, 200)}px`;
 }
@@ -39,35 +38,42 @@ const limitNewlines = (event: KeyboardEvent) => {
 };
 
 async function RefreshProfile() {
-  if (isCurrentUserProfile) {
+  if (isCurrentUserProfile.value) {
     const fetchedUserData = await getMe(initData);
     if (fetchedUserData !== null) {
-      const currentProfile = profileStore.profile;
-      if (
-        fetchedUserData.firstName !== currentProfile.firstName ||
-        fetchedUserData.lastName !== currentProfile.lastName ||
-        fetchedUserData.avatar !== currentProfile.avatar ||
-        fetchedUserData.company !== currentProfile.company ||
-        fetchedUserData.role !== currentProfile.role ||
-        fetchedUserData.bio !== currentProfile.bio
-      ) {
-        profileStore.profile = fetchedUserData;
-      }
+      profileStore.profile = fetchedUserData;
+      profileStore.editFieldProfile = { ...fetchedUserData };
+    }
+  } else {
+    const fetchedUserData = await getUserById(initData, userId);
+    if (fetchedUserData !== null) {
+      profileStore.profile = fetchedUserData;
+      profileStore.editFieldProfile = { ...fetchedUserData };
     }
   }
 }
 
-profileStore.editMode = false;
+const saveChanges = async () => {
+  try {
+    await postMe(initData, profileStore.editFieldProfile);
+    await RefreshProfile();
+    profileStore.toggleEditMode();
+  } catch (error) {
+    console.error("Ошибка при сохранении изменений:", error);
+  }
+};
+
 onMounted(async () => {
-  console.log(currentUser);
-  console.log(isCurrentUserProfile);
+  console.log(profileStore);
+  console.log(userId);
+  isCurrentUserProfile.value = currentUser.id === userId;
   await RefreshProfile();
 });
 </script>
 
 <template>
   <div class="w-full flex flex-col h-full items-center p-4">
-    <div class="w-full" v-if="!profileStore.editMode">
+    <div class="w-full">
       <div class="flex flex-col items-center">
         <img
           class="w-28 h-28 rounded-full object-cover"
@@ -84,22 +90,13 @@ onMounted(async () => {
             src="/src/assets/edit_24.svg"
             alt=""
             srcset=""
-            @click="
-              () => {
-                profileStore.toggleEditMode;
-              }
-            "
+            @click="profileStore.toggleEditMode"
           />
         </div>
         <div v-else>
           <button
             v-if="profileStore.isChanged"
-            @click="
-              () => {
-                RefreshProfile();
-                profileStore.toggleEditMode();
-              }
-            "
+            @click="saveChanges"
             class="bg-blue-500 text-white px-4 py-2 rounded mt-4"
           >
             Сохранить
@@ -214,7 +211,7 @@ onMounted(async () => {
       </div>
     </div>
 
-    <Button @click="goToChats">GOTO CHATS</Button>
+    <Button v-if="!profileStore.editMode" @click="goToChats">GOTO CHATS</Button>
   </div>
 </template>
 
