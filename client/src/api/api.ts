@@ -3,7 +3,7 @@ import axios from "axios";
 import type { UserData, ChatData } from "@/types/user.interface";
 
 export const api = axios.create({
-  baseURL: "https://tglinked.shamps.dev/api/v1",
+  baseURL: import.meta.env.VITE_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },

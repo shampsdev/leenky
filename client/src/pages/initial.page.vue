@@ -3,23 +3,29 @@ import { getChat, getMe, joinMe } from "@/api/api";
 import { useMiniApp } from "vue-tg";
 import { useRouter } from "vue-router";
 import { onMounted } from "vue";
+import axios from "axios";
 import { useUserStore } from "@/stores/user.store";
 const miniApp = useMiniApp();
 const initData = miniApp.initData;
 const router = useRouter();
 const startData = miniApp.initDataUnsafe.start_param || "";
 onMounted(async () => {
+  console.log(miniApp.initData);
   const userData = await getMe(initData);
-  console.log(userData);
+  console.log(startData, startData.length);
   if (userData !== null) {
-    const getChatResponse = await getChat(initData, startData);
-    if (getChatResponse) {
-      router.replace(`/chats`);
-      setTimeout(() => {
-        router.push(`/chat/${startData}`);
-      }, 100);
+    if (miniApp.initDataUnsafe.start_param !== undefined) {
+      const getChatResponse = await getChat(initData, startData);
+      if (getChatResponse) {
+        router.replace(`/chats`);
+        setTimeout(() => {
+          router.push(`/chat/${startData}`);
+        }, 100);
+      } else {
+        router.replace("/invite");
+      }
     } else {
-      router.replace("/invite");
+      router.replace("/chats");
     }
   } else {
     router.replace("/about/1");

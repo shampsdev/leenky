@@ -80,7 +80,7 @@ onMounted(async () => {
       <div class="flex flex-col items-center">
         <img
           class="w-28 h-28 rounded-full object-cover"
-          :src="`https://${profileStore.profile.avatar}`"
+          :src="`${profileStore.profile.avatar}`"
           alt="User Avatar"
         />
 

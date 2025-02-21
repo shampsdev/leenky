@@ -92,7 +92,7 @@ onMounted(async () => {
         "
       >
         <img
-          :src="`https://${user.avatar}`"
+          :src="`${user.avatar}`"
           alt="Avatar"
           class="w-12 h-12 rounded-full object-cover mr-4"
         />

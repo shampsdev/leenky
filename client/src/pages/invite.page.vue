@@ -17,7 +17,10 @@ const accept = async () => {
   if (userData !== null) {
     currentUser.logIn(userData);
     inviteStore.close();
-    router.push(`/chats/${currentUser.id}`);
+    router.replace(`/chats`);
+    setTimeout(() => {
+      router.push(`/chat/${startData}`);
+    }, 100);
   }
 };
 
