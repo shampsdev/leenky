@@ -2,7 +2,7 @@
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { computed, onMounted } from 'vue';
-import { getChat, getChats, searchChats } from '@/api/api';
+import { getChat, getChats, searchChats, leaveChat } from '@/api/api';
 import { useMiniApp, useBackButton } from 'vue-tg';
 import Profile from '@/components/profile.vue';
 import Button from '@/components/button.vue';
@@ -30,6 +30,15 @@ const filterChats = async () => {
   }
 };
 
+const leaveChatHandler = async chatId => {
+  const response = await leaveChat(initData, chatId);
+  if (response) {
+    chats.value = chats.value.filter(item => item.id !== chatId);
+    chatSearchStore.setChatData = chats.value;
+  }
+  console.log(response, 'LEAVED');
+};
+
 onMounted(async () => {
   chatSearchStore.resetQuery();
   chatSearchStore.resetChatData();
@@ -37,7 +46,6 @@ onMounted(async () => {
   searchQuery.value = chatsSearchStore.searchQuery;
 
   if (chatsSearchStore.chatsData.length !== 0) {
-    console.log('EEEE');
     if (chatsSearchStore.searchQuery === searchQuery.value) {
       searchQuery.value = chatsSearchStore.searchQuery;
       chats.value = chatsSearchStore.chatsData;
@@ -48,18 +56,14 @@ onMounted(async () => {
         chats.value = searchedChats;
         chatsSearchStore.chatsData = searchedChats;
       }
-      console.log('BBBBB');
     }
   } else {
     const fetchedChats = await getChats(initData);
     if (fetchedChats !== null) {
       chatsSearchStore.chatsData = await getChats(initData);
       chats.value = chatsSearchStore.chatsData;
-      console.log('AAAA');
     }
-    console.log('CCCC');
   }
-  console.log('DDDD');
 });
 const filteredChats = computed(() => chats.value);
 </script>
@@ -98,21 +102,34 @@ const filteredChats = computed(() => chats.value);
           v-for="chat in filteredChats"
           :key="chat.id"
           class="flex items-center py-3 cursor-pointer"
-          @click="
-            () => {
-              chatsSearchStore.chatsData = chats;
-              router.push(`/chat/${chat.id}`);
-            }
-          "
         >
-          <img :src="chat.avatar" alt="Avatar" class="w-12 h-12 rounded-full object-cover mr-4" />
+          <img
+            @click="
+              () => {
+                chatsSearchStore.chatsData = chats;
+                router.push(`/chat/${chat.id}`);
+              }
+            "
+            :src="chat.avatar"
+            alt="Avatar"
+            class="w-12 h-12 rounded-full object-cover mr-4"
+          />
 
           <div class="flex-1">
             <p class="font-medium">{{ chat.name }}</p>
             <p class="text-sm text-gray-500">{{ chat.members }} участников</p>
           </div>
 
-          <div class="text-gray-400 text-xl">›</div>
+          <div
+            @click="
+              () => {
+                leaveChatHandler(chat.id);
+              }
+            "
+            class="text-gray-400 text-xl"
+          >
+            LEAVE
+          </div>
         </li>
       </ul>
       <p v-else>Нет найденных чатов</p>
