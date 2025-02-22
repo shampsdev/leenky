@@ -51,7 +51,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/chats/{id}": {
+        "/chats/id/{id}": {
             "get": {
                 "security": [
                     {
@@ -93,7 +93,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/chats/{id}/join": {
+        "/chats/id/{id}/join": {
             "post": {
                 "security": [
                     {
@@ -132,7 +132,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/chats/{id}/leave": {
+        "/chats/id/{id}/leave": {
             "post": {
                 "security": [
                     {
@@ -171,7 +171,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/chats/{id}/preview": {
+        "/chats/id/{id}/preview": {
             "get": {
                 "security": [
                     {
@@ -213,7 +213,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/chats/{id}/search": {
+        "/chats/id/{id}/search": {
             "get": {
                 "security": [
                     {
@@ -253,6 +253,92 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/domain.User"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/chats/search": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "chats"
+                ],
+                "summary": "Search chats",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Search query",
+                        "name": "q",
+                        "in": "query"
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Chats",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.ChatPreview"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/users/id/{id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User data",
+                        "schema": {
+                            "$ref": "#/definitions/domain.User"
                         }
                     },
                     "400": {
@@ -396,48 +482,6 @@ const docTemplate = `{
                     "users"
                 ],
                 "summary": "Delete me",
-                "responses": {
-                    "200": {
-                        "description": "User data",
-                        "schema": {
-                            "$ref": "#/definitions/domain.User"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/users/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Get user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "User data",

@@ -89,7 +89,7 @@ paths:
       summary: Get chat previews
       tags:
       - chats
-  /chats/{id}:
+  /chats/id/{id}:
     get:
       consumes:
       - application/json
@@ -115,7 +115,7 @@ paths:
       summary: Get chat
       tags:
       - chats
-  /chats/{id}/join:
+  /chats/id/{id}/join:
     post:
       consumes:
       - application/json
@@ -139,7 +139,7 @@ paths:
       summary: Join to chat
       tags:
       - chats
-  /chats/{id}/leave:
+  /chats/id/{id}/leave:
     post:
       consumes:
       - application/json
@@ -163,7 +163,7 @@ paths:
       summary: Leave chat
       tags:
       - chats
-  /chats/{id}/preview:
+  /chats/id/{id}/preview:
     get:
       consumes:
       - application/json
@@ -189,7 +189,7 @@ paths:
       summary: Get chat preview
       tags:
       - chats
-  /chats/{id}/search:
+  /chats/id/{id}/search:
     get:
       consumes:
       - application/json
@@ -221,7 +221,34 @@ paths:
       summary: Search users in chat
       tags:
       - chats
-  /users/{id}:
+  /chats/search:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Search query
+        in: query
+        name: q
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Chats
+          schema:
+            items:
+              $ref: '#/definitions/domain.ChatPreview'
+            type: array
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      summary: Search chats
+      tags:
+      - chats
+  /users/id/{id}:
     get:
       consumes:
       - application/json

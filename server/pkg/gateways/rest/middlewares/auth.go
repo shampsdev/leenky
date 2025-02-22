@@ -17,7 +17,7 @@ var BotToken string
 func AuthTelegramID() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		initData := c.GetHeader("X-API-Token")
-		expIn := 1 * time.Hour
+		expIn := 2 * time.Hour
 		err := initdata.Validate(initData, BotToken, expIn)
 		if ginerr.AbortIfErr(c, err, http.StatusUnauthorized, "failed to validate initdata") {
 			return

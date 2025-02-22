@@ -21,7 +21,7 @@ import (
 // @Failure 400 "Bad Request"
 // @Failure 500 "Internal Server Error"
 // @Security ApiKeyAuth
-// @Router /chats/{id}/search [get]
+// @Router /chats/id/{id}/search [get]
 func SearchInChat(chatCase *usecase.Chat, search *usecase.Search) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)

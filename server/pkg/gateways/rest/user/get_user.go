@@ -21,7 +21,7 @@ import (
 // @Failure 400 "Bad Request"
 // @Failure 500 "Internal Server Error"
 // @Security ApiKeyAuth
-// @Router /users/{id} [get]
+// @Router /users/id/{id} [get]
 func GetUser(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)
