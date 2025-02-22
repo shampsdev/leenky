@@ -2,43 +2,39 @@
 import { ref, computed, onMounted } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useMiniApp } from "vue-tg";
-import { getChat } from "@/api/api";
+import { getChat, searchInChat } from "@/api/api";
 import { useProfileStore } from "@/stores/profile.store";
 import { useBackButton } from "vue-tg";
 import Profile from "@/components/profile.vue";
-const chat = ref({});
 
+const chat = ref({});
 const miniApp = useMiniApp();
 const router = useRouter();
 const avatar = miniApp?.initDataUnsafe?.user?.photo_url;
 const initData = miniApp.initData;
 const profileStore = useProfileStore();
 const users = ref([]);
-
 const searchQuery = ref("");
 
 const route = useRoute();
 const chatId = route.params.chatId;
 
-const filteredUsers = computed(() => {
-  if (!searchQuery.value) return users.value;
-
-  return users.value.filter((user) => {
-    const query = searchQuery.value.toLowerCase();
-    return (
-      user.firstName.toLowerCase().includes(query) ||
-      user.lastName.toLowerCase().includes(query) ||
-      (user.company && user.company.toLowerCase().includes(query)) ||
-      (user.bio && user.bio.toLowerCase().includes(query))
-    );
-  });
-});
+const filterUsers = async () => {
+  if (searchQuery.value.trim() === "") {
+    users.value = chat.value.users;
+    return;
+  }
+  const fetchedUsers = await searchInChat(initData, chatId, searchQuery.value);
+  users.value = fetchedUsers ?? [];
+};
 
 onMounted(async () => {
   const chatData = await getChat(initData, chatId);
   chat.value = chatData;
   users.value = chatData.users;
 });
+
+const filteredUsers = computed(() => users.value);
 </script>
 
 <template>
@@ -54,6 +50,7 @@ onMounted(async () => {
 
     <div class="relative flex items-center bg-gray-100 rounded-lg px-3 py-2 mb-4">
       <input
+        @input="filterUsers"
         v-model="searchQuery"
         type="text"
         placeholder="Поиск по пользователям"

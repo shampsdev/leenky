@@ -109,3 +109,24 @@ export const joinMe = async (initData: string, chatId: string): Promise<boolean>
     return false;
   }
 };
+
+export const searchInChat = async (
+  initData: string,
+  chatId: string,
+  query: string
+): Promise<UserData[] | null> => {
+  try {
+    const response = await api.get<UserData[]>(`/chats/${chatId}/search`, {
+      params: {
+        q: query,
+      },
+      headers: {
+        "X-Api-Token": initData,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Ошибка при поиске пользователей:", error);
+    return null;
+  }
+};
