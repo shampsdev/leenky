@@ -1,57 +1,33 @@
-import { defineStore } from "pinia";
-import type { ProfileUserData } from "@/types/user.interface";
-import { getMe, postMe } from "@/api/api";
+import { defineStore } from 'pinia';
+import type { ChatData, UserData } from '@/types/user.interface';
+import type { ProfileUserData } from '@/types/user.interface';
+import { getMe, postMe } from '@/api/api';
 
-export const useProfileStore = defineStore("profile", {
+export const useChatSearchStore = defineStore('chatSearch', {
   state: () => ({
-    editMode: false as boolean,
-
-    profile: <ProfileUserData>{
-      firstName: "",
-      lastName: "",
-      role: "",
-      company: "",
-      bio: "",
-      avatar: "",
-      telegramUsername: "",
-    },
-
-    editFieldProfile: <ProfileUserData>{
-      firstName: "",
-      lastName: "",
-      role: "",
-      company: "",
-      bio: "",
-      avatar: "",
-      telegramUsername: "",
-    },
+    searchQuery: '',
+    scrollY: 0,
+    chatData: {} as ChatData,
   }),
 
-  getters: {
-    isChanged(): boolean {
-      const isChanged =
-        this.profile.firstName !== this.editFieldProfile.firstName ||
-        this.profile.lastName !== this.editFieldProfile.lastName ||
-        this.profile.role !== this.editFieldProfile.role ||
-        this.profile.company !== this.editFieldProfile.company ||
-        this.profile.bio !== this.editFieldProfile.bio;
-
-      console.log(isChanged);
-      return isChanged;
-    },
-  },
-
   actions: {
-    setProfile(newProfile: ProfileUserData) {
-      this.editFieldProfile = { ...newProfile };
-      this.profile = { ...newProfile };
+    setQuery(query: string) {
+      this.searchQuery = query;
     },
-
-    toggleEditMode() {
-      if (!this.editMode) {
-        this.editFieldProfile = { ...this.profile };
-      }
-      this.editMode = !this.editMode;
+    setUsers(newUsers: UserData[]) {
+      this.chatData.users = newUsers;
+    },
+    setScrollY(scroll: number) {
+      this.scrollY = scroll;
+    },
+    setChatData(newChatData: ChatData) {
+      this.chatData = newChatData;
+    },
+    resetScrollY() {
+      this.scrollY = 0;
+    },
+    resetQuery() {
+      this.searchQuery = '';
     },
   },
 });
