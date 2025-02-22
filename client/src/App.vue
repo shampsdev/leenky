@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { useBackButton, useMiniApp } from "vue-tg";
 import { useRouter, useRoute } from "vue-router";
+import { useProfileStore } from "./stores/profile.store";
 const backButton = useBackButton();
 const router = useRouter();
 const route = useRoute();
 const miniApp = useMiniApp();
+const profileStore = useProfileStore();
 if (backButton?.show) {
   backButton.show();
 }
@@ -14,7 +16,11 @@ if (backButton?.onClick) {
     if (route.fullPath === "/chats") {
       miniApp.close();
     }
-    router.back();
+    if (profileStore.editMode) {
+      profileStore.toggleEditMode();
+    } else {
+      router.back();
+    }
   });
 }
 </script>
