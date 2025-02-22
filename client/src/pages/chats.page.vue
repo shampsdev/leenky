@@ -2,39 +2,66 @@
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { computed, onMounted } from 'vue';
-import { getChats } from '@/api/api';
+import { getChat, getChats, searchChats } from '@/api/api';
 import { useMiniApp, useBackButton } from 'vue-tg';
 import Profile from '@/components/profile.vue';
 import Button from '@/components/button.vue';
 import { useChatSearchStore } from '@/stores/chatSearch.store';
-
+import { useChatsSearchStore } from '@/stores/chatsSearch.store';
+import { searchInChat } from '@/api/api';
 const chats = ref([]);
 const searchQuery = ref('');
+const chatsSearchStore = useChatsSearchStore();
 const chatSearchStore = useChatSearchStore();
-const filteredChats = computed(() => {
-  if (!searchQuery.value) {
-    return chats.value;
-  }
-  return chats.value.filter(chat =>
-    chat.name.toLowerCase().includes(searchQuery.value.toLowerCase())
-  );
-});
-
 const router = useRouter();
 
 const miniApp = useMiniApp();
 
 const initData = miniApp.initData;
 
+const filterChats = async () => {
+  if (searchQuery.value === chatsSearchStore.searchQuery) {
+    chats.value = chatsSearchStore.chatsData;
+  } else {
+    const fetchedChats = await searchChats(initData, searchQuery.value);
+    chatsSearchStore.chatsData = fetchedChats ?? [];
+    chatsSearchStore.setQuery(searchQuery.value);
+    chats.value = chatsSearchStore.chatsData;
+  }
+};
+
 onMounted(async () => {
   chatSearchStore.resetQuery();
   chatSearchStore.resetChatData();
-  try {
-    chats.value.push(...(await getChats(initData)));
-  } catch (error) {
-    console.error('Ошибка загрузки данных:', error);
+
+  searchQuery.value = chatsSearchStore.searchQuery;
+
+  if (chatsSearchStore.chatsData.length !== 0) {
+    console.log('EEEE');
+    if (chatsSearchStore.searchQuery === searchQuery.value) {
+      searchQuery.value = chatsSearchStore.searchQuery;
+      chats.value = chatsSearchStore.chatsData;
+    } else {
+      searchQuery.value = chatsSearchStore.searchQuery;
+      const searchedChats = await searchChats(initData, searchQuery.value);
+      if (searchedChats !== null) {
+        chats.value = searchedChats;
+        chatsSearchStore.chatsData = searchedChats;
+      }
+      console.log('BBBBB');
+    }
+  } else {
+    const fetchedChats = await getChats(initData);
+    if (fetchedChats !== null) {
+      chatsSearchStore.chatsData = await getChats(initData);
+      chats.value = chatsSearchStore.chatsData;
+      console.log('AAAA');
+    }
+    console.log('CCCC');
   }
+  console.log('DDDD');
 });
+const filteredChats = computed(() => chats.value);
 </script>
 
 <template>
@@ -55,6 +82,7 @@ onMounted(async () => {
 
       <div class="relative flex items-center bg-gray-100 rounded-lg px-3 py-2 mb-4">
         <input
+          @input="filterChats"
           v-model="searchQuery"
           type="text"
           placeholder="Search"
@@ -72,6 +100,7 @@ onMounted(async () => {
           class="flex items-center py-3 cursor-pointer"
           @click="
             () => {
+              chatsSearchStore.chatsData = chats;
               router.push(`/chat/${chat.id}`);
             }
           "
@@ -90,3 +119,4 @@ onMounted(async () => {
     </div></KeepAlive
   >
 </template>
+// СДЕЛАТЬ АПДЕЙТ СТОРА ПРИ НАЖАТИИ НА ЧАТ

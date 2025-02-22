@@ -39,7 +39,7 @@ const filterUsers = async () => {
 onMounted(async () => {
   searchQuery.value = chatSearchStore.searchQuery;
   if (chatSearchStore.chatData) {
-    if (chatSearchStore.searchQuery === searchQuery) {
+    if (chatSearchStore.searchQuery === searchQuery.value) {
       searchQuery.value = chatSearchStore.searchQuery;
       users.value = chatSearchStore.users;
     } else {
