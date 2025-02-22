@@ -23,10 +23,10 @@ import (
 // @Router /chats/id/{id}/preview [get]
 func GetChatPreview(chatCase *usecase.Chat) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user := middlewares.MustGetUser(c)
+		userTGData := middlewares.MustGetUserTGData(c)
 		chatID := c.Param("id")
 
-		chat, err := chatCase.GetChatPreview(usecase.NewContext(c, user), chatID)
+		chat, err := chatCase.GetChatPreview(c, userTGData.TelegramID, chatID)
 		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to get chat preview") {
 			return
 		}

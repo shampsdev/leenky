@@ -40,12 +40,12 @@ func (c *Chat) GetChat(ctx Context, chatID string) (*domain.Chat, error) {
 	return chat, nil
 }
 
-func (c *Chat) GetChatPreview(ctx Context, chatID string) (*domain.ChatPreview, error) {
+func (c *Chat) GetChatPreview(ctx context.Context, userTGID int64, chatID string) (*domain.ChatPreview, error) {
 	cp, err := c.chatRepo.GetChatPreviewByID(ctx, chatID)
 	if err != nil {
 		return nil, fmt.Errorf("error getting chat preview: %w", err)
 	}
-	if err := c.ensureUserInTGChat(ctx, cp.TelegramID); err != nil {
+	if err := c.ensureUserInTGChat(ctx, userTGID, cp.TelegramID); err != nil {
 		return nil, fmt.Errorf("error ensuring user in chat: %w", err)
 	}
 	return cp, nil
@@ -150,10 +150,10 @@ func (c *Chat) getChatFromTelegram(ctx context.Context, chatID int64) (*domain.C
 	return chat, nil
 }
 
-func (c *Chat) ensureUserInTGChat(ctx Context, chatID int64) error {
+func (c *Chat) ensureUserInTGChat(ctx context.Context, userID int64, chatID int64) error {
 	_, err := c.bot.GetChatMember(ctx, &bot.GetChatMemberParams{
 		ChatID: chatID,
-		UserID: ctx.User.TelegramID,
+		UserID: userID,
 	})
 	if err != nil {
 		return fmt.Errorf("error getting chat member: %w", err)
