@@ -40,9 +40,11 @@ const filterUsers = async () => {
 onMounted(async () => {
   searchQuery.value = chatSearchStore.searchQuery;
   if (chatSearchStore.chatData) {
+    chat.value = await getChat(initData, chatId);
     if (chatSearchStore.searchQuery === searchQuery) {
       searchQuery.value = chatSearchStore.searchQuery;
       users.value = chatSearchStore.users;
+      chat.value.users = chatSearchStore.chatData;
     } else {
       const fetchedUsers = await searchInChat(initData, chatId, searchQuery.value);
       console.log('AAAA');
@@ -51,12 +53,14 @@ onMounted(async () => {
         chatSearchStore.chatData.users = fetchedUsers;
       }
     }
+    chat.value.users = chatSearchStore.chatData;
   } else {
-    chatSearchStore.chatData = await getChat(initData, chatId);
-    chatData = chatSearchStore.chatData;
+    chat.value = await getChat(initData, chatId);
+    chatSearchStore.chatData = chat.value.users;
     users.value = chatSearchStore.chatData.users;
     chatSearchStore.searchQuery = '';
   }
+  console.log(chat.value);
 });
 
 const filteredUsers = computed(() => users.value ?? []);
