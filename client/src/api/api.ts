@@ -130,3 +130,20 @@ export const searchInChat = async (
     return null;
   }
 };
+
+export const searchChats = async (initData: string, query: string): Promise<ChatData[] | null> => {
+  try {
+    const response = await api.get<ChatData[]>(`/chats/search`, {
+      params: {
+        q: query,
+      },
+      headers: {
+        'X-Api-Token': initData,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Ошибка при поиске пользователей:', error);
+    return null;
+  }
+};
