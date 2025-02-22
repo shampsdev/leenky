@@ -144,15 +144,22 @@ func (b *Bot) registerChat(ctx context.Context, chatID int64) error {
 		return fmt.Errorf("error registering chat: %w", err)
 	}
 
-	msg, err := b.SendMessage(ctx, &bot.SendMessageParams{
+	msg, err := b.SendPhoto(ctx, &bot.SendPhotoParams{
 		ChatID: chat.TelegramID,
-		Text: fmt.Sprintf(
-			`Привет коллеги из "%s"!
-Ваш чат привязан к сети
-Нажмите [Open] и подтвердите участие`, chat.Name),
+		Photo: &models.InputFileString{
+			Data: "https://s3.ru1.storage.beget.cloud/f5732312921d-shampsdev/tglinked/assets/joinchat.jpg",
+		},
+		Caption: `*Привет, это Leenky — ваша сеть полезных контактов\!* 👋
+
+Я помогу вам лучше узнать людей в этом чате\! Расскажите о себе и расширьте круг полезных знакомств\.
+
+Чтобы узнать больше об участниках чата, *пройдите регистрацию*\.
+
+*Не забудьте закрепить это сообщение* 📌`,
+		ParseMode: models.ParseModeMarkdown,
 		ReplyMarkup: models.InlineKeyboardMarkup{
 			InlineKeyboard: [][]models.InlineKeyboardButton{{{
-				Text: "Open",
+				Text: "Открыть",
 				URL:  b.urlForChat(chat.ID),
 			}}},
 		},
