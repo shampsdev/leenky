@@ -7,10 +7,12 @@ import { useUserStore } from "@/stores/user.store";
 const miniApp = useMiniApp();
 const initData = miniApp.initData;
 const router = useRouter();
+const currentUser = useUserStore();
 const startData = miniApp.initDataUnsafe.start_param || "";
 onMounted(async () => {
   const userData = await getMe(initData);
   if (userData !== null) {
+    currentUser.logIn(userData);
     if (miniApp.initDataUnsafe.start_param !== undefined) {
       const getChatResponse = await getChat(initData, startData);
       if (getChatResponse) {
