@@ -13,7 +13,7 @@ jobs:
       id-token: write
     secrets: inherit
     with:
-      dockerfile_path: 'client'
+      dockerfile_path: 'client/Dockerfile'
       context_path: 'client'
       image_name: 'tglinked-client'
       environment: 'PROD'

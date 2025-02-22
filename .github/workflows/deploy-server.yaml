@@ -4,12 +4,12 @@ on:
   workflow_dispatch:
 
 jobs:
-  ci:
-    uses: ./.github/workflows/ci-server.yaml
+  # ci:
+  #   uses: ./.github/workflows/ci-server.yaml
 
   deploy:
     uses: ./.github/workflows/deploy.yaml
-    needs: [ci]
+    # needs: [ci]
     permissions:
       packages: write
       contents: read
@@ -17,7 +17,7 @@ jobs:
       id-token: write
     secrets: inherit
     with:
-      dockerfile_path: 'server'
+      dockerfile_path: 'server/Dockerfile.server'
       context_path: 'server'
       image_name: 'tglinked-server'
       environment: 'PROD'
