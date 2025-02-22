@@ -13,16 +13,22 @@ import (
 type Search struct {
 	chatCase *Chat
 
-	// cache is map[string]*chatIndex
+	// cache is map string -> *usersIndex | *chatsIndex
 	indexesCache  sync.Map
 	cacheLifetime time.Duration
 	cleanupPeriod time.Duration
 }
 
-type chatIndex struct {
+type usersIndex struct {
 	createdAt time.Time
 	index     bleve.Index
 	users     map[string]*domain.User
+}
+
+type chatsIndex struct {
+	createdAt time.Time
+	index     bleve.Index
+	chats     map[string]*domain.ChatPreview
 }
 
 func NewSearch(chatCase *Chat) *Search {
@@ -40,7 +46,7 @@ func (s *Search) SearchInChat(ctx Context, chatID, text string) ([]*domain.User,
 		return nil, fmt.Errorf("failed to ensure user in chat: %w", err)
 	}
 
-	index, err := s.getChatIndex(ctx, chatID)
+	index, err := s.getUsersIndex(ctx, chatID)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get chat index: %w", err)
 	}
@@ -53,7 +59,21 @@ func (s *Search) SearchInChat(ctx Context, chatID, text string) ([]*domain.User,
 	return users, nil
 }
 
-func (i *chatIndex) Search(req *bleve.SearchRequest) ([]*domain.User, error) {
+func (s *Search) SearchChats(ctx Context, text string) ([]*domain.ChatPreview, error) {
+	index, err := s.getChatsIndex(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get chat index: %w", err)
+	}
+
+	req := s.buildSearchRequest(text)
+	chats, err := index.Search(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to search index: %w", err)
+	}
+	return chats, nil
+}
+
+func (i *usersIndex) Search(req *bleve.SearchRequest) ([]*domain.User, error) {
 	res, err := i.index.Search(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to search index: %w", err)
@@ -66,8 +86,21 @@ func (i *chatIndex) Search(req *bleve.SearchRequest) ([]*domain.User, error) {
 	return users, nil
 }
 
+func (i *chatsIndex) Search(req *bleve.SearchRequest) ([]*domain.ChatPreview, error) {
+	res, err := i.index.Search(req)
+	if err != nil {
+		return nil, fmt.Errorf("failed to search index: %w", err)
+	}
+
+	var chats []*domain.ChatPreview
+	for _, hit := range res.Hits {
+		chats = append(chats, i.chats[hit.ID])
+	}
+	return chats, nil
+}
+
 func (s *Search) buildSearchRequest(text string) *bleve.SearchRequest {
-	prefixQuery := bleve.NewPrefixQuery(text)
+	prefixQuery := bleve.NewMatchQuery(text)
 
 	fuzzyQuery := bleve.NewFuzzyQuery(text)
 	fuzzyQuery.Fuzziness = 2
@@ -85,12 +118,12 @@ func (s *Search) buildSearchRequest(text string) *bleve.SearchRequest {
 	return bleve.NewSearchRequest(query)
 }
 
-func (s *Search) loadFromCache(chatID string) (*chatIndex, bool) {
+func (s *Search) usersIndexFromCache(chatID string) (*usersIndex, bool) {
 	i, ok := s.indexesCache.Load(chatID)
 	if !ok {
 		return nil, false
 	}
-	index, _ := i.(*chatIndex)
+	index, _ := i.(*usersIndex)
 	if time.Since(index.createdAt) > s.cacheLifetime {
 		s.indexesCache.Delete(chatID)
 		return nil, false
@@ -99,8 +132,22 @@ func (s *Search) loadFromCache(chatID string) (*chatIndex, bool) {
 	return index, true
 }
 
-func (s *Search) getChatIndex(ctx Context, chatID string) (*chatIndex, error) {
-	index, ok := s.loadFromCache(chatID)
+func (s *Search) chatsIndexFromCache(chatID string) (*chatsIndex, bool) {
+	i, ok := s.indexesCache.Load(chatID)
+	if !ok {
+		return nil, false
+	}
+	index, _ := i.(*chatsIndex)
+	if time.Since(index.createdAt) > s.cacheLifetime {
+		s.indexesCache.Delete(chatID)
+		return nil, false
+	}
+
+	return index, true
+}
+
+func (s *Search) getUsersIndex(ctx Context, chatID string) (*usersIndex, error) {
+	index, ok := s.usersIndexFromCache(chatID)
 	if ok {
 		return index, nil
 	}
@@ -109,7 +156,7 @@ func (s *Search) getChatIndex(ctx Context, chatID string) (*chatIndex, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to get chat users: %w", err)
 	}
-	newIndex, err := s.buildChatIndex(users)
+	newIndex, err := s.buildUsersIndex(users)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build index: %w", err)
 	}
@@ -118,8 +165,28 @@ func (s *Search) getChatIndex(ctx Context, chatID string) (*chatIndex, error) {
 	return newIndex, nil
 }
 
-func (s *Search) buildChatIndex(users []*domain.User) (*chatIndex, error) {
-	index, err := bleve.NewMemOnly(bleve.NewIndexMapping())
+func (s *Search) getChatsIndex(ctx Context) (*chatsIndex, error) {
+	index, ok := s.chatsIndexFromCache("chats")
+	if ok {
+		return index, nil
+	}
+
+	chats, err := s.chatCase.chatRepo.GetChatPreviewsWithUser(ctx, ctx.User.ID)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get chats: %w", err)
+	}
+	newIndex, err := s.buildChatsIndex(chats)
+	if err != nil {
+		return nil, fmt.Errorf("failed to build index: %w", err)
+	}
+	s.indexesCache.Store("chats", newIndex)
+
+	return newIndex, nil
+}
+
+func (s *Search) buildUsersIndex(users []*domain.User) (*usersIndex, error) {
+	mapping := bleve.NewIndexMapping()
+	index, err := bleve.NewMemOnly(mapping)
 	if err != nil {
 		panic(err)
 	}
@@ -135,10 +202,35 @@ func (s *Search) buildChatIndex(users []*domain.User) (*chatIndex, error) {
 		usersMap[user.ID] = user
 	}
 
-	return &chatIndex{
+	return &usersIndex{
 		createdAt: time.Now(),
 		index:     index,
 		users:     usersMap,
+	}, nil
+}
+
+func (s *Search) buildChatsIndex(chats []*domain.ChatPreview) (*chatsIndex, error) {
+	mapping := bleve.NewIndexMapping()
+	index, err := bleve.NewMemOnly(mapping)
+	if err != nil {
+		panic(err)
+	}
+	for _, chat := range chats {
+		err := index.Index(chat.ID, chat)
+		if err != nil {
+			return nil, fmt.Errorf("failed to index chat: %w", err)
+		}
+	}
+
+	chatsMap := make(map[string]*domain.ChatPreview)
+	for _, chat := range chats {
+		chatsMap[chat.ID] = chat
+	}
+
+	return &chatsIndex{
+		createdAt: time.Now(),
+		index:     index,
+		chats:     chatsMap,
 	}, nil
 }
 
@@ -146,9 +238,15 @@ func (s *Search) cacheCleaner() {
 	for {
 		time.Sleep(s.cacheLifetime)
 		s.indexesCache.Range(func(key, value interface{}) bool {
-			index, _ := value.(*chatIndex)
-			if time.Since(index.createdAt) > time.Hour {
-				s.indexesCache.Delete(key)
+			switch v := value.(type) {
+			case *usersIndex:
+				if time.Since(v.createdAt) > s.cacheLifetime {
+					s.indexesCache.Delete(key)
+				}
+			case *chatsIndex:
+				if time.Since(v.createdAt) > s.cacheLifetime {
+					s.indexesCache.Delete(key)
+				}
 			}
 			return true
 		})
