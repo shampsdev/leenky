@@ -9,7 +9,7 @@ import (
 func Setup(r *gin.RouterGroup, cases usecase.Cases) {
 	g := r.Group("/chats")
 	g.Use(middlewares.ExtractUserTGData())
-	g.GET("/:id/preview", GetChatPreview(cases.Chat))
+	g.GET("/id/:id/preview", GetChatPreview(cases.Chat))
 
 	gAuth := g.Group("")
 	gAuth.Use(middlewares.AuthUser(cases.User))
