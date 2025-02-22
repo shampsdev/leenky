@@ -12,7 +12,7 @@ export const api = axios.create({
 
 export const getChat = async (initData: string, chatId: string): Promise<ChatData | null> => {
   try {
-    const response = await api.get<ChatData>(`/chats/id/${chatId}/`, {
+    const response = await api.get<ChatData>(`/chats/id/${chatId}`, {
       headers: { 'X-Api-Token': initData },
     });
     return response.data;
@@ -24,7 +24,7 @@ export const getChat = async (initData: string, chatId: string): Promise<ChatDat
 
 export const getChats = async (initData: string): Promise<ChatData[] | null> => {
   try {
-    const response = await api.get<ChatData[]>(`/chats/`, {
+    const response = await api.get<ChatData[]>(`/chats`, {
       headers: { 'X-Api-Token': initData },
     });
     return response.data;
@@ -37,7 +37,7 @@ export const getChats = async (initData: string): Promise<ChatData[] | null> => 
 // userID – inner backend id
 export const getUserById = async (initData: string, userId: string): Promise<UserData | null> => {
   try {
-    const response = await api.get<UserData>(`/users/${userId}`, {
+    const response = await api.get<UserData>(`/users/id/${userId}`, {
       headers: { 'X-Api-Token': initData },
     });
     return response.data;
@@ -49,7 +49,7 @@ export const getUserById = async (initData: string, userId: string): Promise<Use
 
 export const getMe = async (initData: string): Promise<UserData | null> => {
   try {
-    const response = await api.get<UserData>(`/users/me/`, {
+    const response = await api.get<UserData>(`/users/me`, {
       headers: { 'X-Api-Token': initData },
     });
     return response.data;
@@ -64,7 +64,7 @@ export const postMe = async (
   newData: Pick<UserData, 'firstName' | 'lastName' | 'bio' | 'role' | 'company'>
 ): Promise<UserData | null> => {
   try {
-    const response = await api.put<UserData>(`/users/me/`, newData, {
+    const response = await api.put<UserData>(`/users/me`, newData, {
       headers: { 'X-Api-Token': initData },
     });
     console.log(initData);
@@ -80,7 +80,7 @@ export const createMe = async (
   userData: Pick<UserData, 'firstName' | 'lastName' | 'bio' | 'role' | 'company'>
 ): Promise<Pick<UserData, 'firstName' | 'lastName' | 'bio' | 'role' | 'company'> | null> => {
   try {
-    const response = await api.post<UserData>('/users/me/', userData, {
+    const response = await api.post<UserData>('/users/me', userData, {
       headers: {
         'X-Api-Token': initData,
       },
