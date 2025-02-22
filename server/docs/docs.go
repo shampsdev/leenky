@@ -264,7 +264,38 @@ const docTemplate = `{
                 }
             }
         },
-        "/users": {
+        "/users/me": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get me",
+                "responses": {
+                    "200": {
+                        "description": "User data",
+                        "schema": {
+                            "$ref": "#/definitions/domain.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
             "put": {
                 "security": [
                     {
@@ -280,7 +311,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Update user",
+                "summary": "Update me",
                 "parameters": [
                     {
                         "description": "User data",
@@ -322,7 +353,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Create user",
+                "summary": "Create me",
                 "parameters": [
                     {
                         "description": "User data",
@@ -364,40 +395,7 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Delete user",
-                "responses": {
-                    "200": {
-                        "description": "User data",
-                        "schema": {
-                            "$ref": "#/definitions/domain.User"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/users/me": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Get me",
+                "summary": "Delete me",
                 "responses": {
                     "200": {
                         "description": "User data",

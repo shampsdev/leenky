@@ -9,8 +9,8 @@ import (
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
 )
 
-// DeleteUser godoc
-// @Summary Delete user
+// DeleteMe godoc
+// @Summary Delete me
 // @Tags users
 // @Accept json
 // @Produce json
@@ -19,8 +19,8 @@ import (
 // @Failure 400 "Bad Request"
 // @Failure 500 "Internal Server Error"
 // @Security ApiKeyAuth
-// @Router /users [delete]
-func DeleteUser(userCase *usecase.User) gin.HandlerFunc {
+// @Router /users/me [delete]
+func DeleteMe(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)
 

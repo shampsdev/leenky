@@ -221,78 +221,6 @@ paths:
       summary: Search users in chat
       tags:
       - chats
-  /users:
-    delete:
-      consumes:
-      - application/json
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: User data
-          schema:
-            $ref: '#/definitions/domain.User'
-        "400":
-          description: Bad Request
-        "500":
-          description: Internal Server Error
-      security:
-      - ApiKeyAuth: []
-      summary: Delete user
-      tags:
-      - users
-    post:
-      consumes:
-      - application/json
-      parameters:
-      - description: User data
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/domain.EditUser'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: User data
-          schema:
-            $ref: '#/definitions/domain.User'
-        "400":
-          description: Bad Request
-        "500":
-          description: Internal Server Error
-      security:
-      - ApiKeyAuth: []
-      summary: Create user
-      tags:
-      - users
-    put:
-      consumes:
-      - application/json
-      parameters:
-      - description: User data
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/domain.EditUser'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: User data
-          schema:
-            $ref: '#/definitions/domain.User'
-        "400":
-          description: Bad Request
-        "500":
-          description: Internal Server Error
-      security:
-      - ApiKeyAuth: []
-      summary: Update user
-      tags:
-      - users
   /users/{id}:
     get:
       consumes:
@@ -320,6 +248,25 @@ paths:
       tags:
       - users
   /users/me:
+    delete:
+      consumes:
+      - application/json
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User data
+          schema:
+            $ref: '#/definitions/domain.User'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      summary: Delete me
+      tags:
+      - users
     get:
       consumes:
       - application/json
@@ -337,6 +284,58 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get me
+      tags:
+      - users
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/domain.EditUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User data
+          schema:
+            $ref: '#/definitions/domain.User'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      summary: Create me
+      tags:
+      - users
+    put:
+      consumes:
+      - application/json
+      parameters:
+      - description: User data
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/domain.EditUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User data
+          schema:
+            $ref: '#/definitions/domain.User'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      summary: Update me
       tags:
       - users
 securityDefinitions:

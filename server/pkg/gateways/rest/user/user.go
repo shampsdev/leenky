@@ -9,12 +9,12 @@ import (
 func Setup(r *gin.RouterGroup, cases usecase.Cases) {
 	g := r.Group("/users")
 	g.Use(middlewares.AuthTelegramID())
-	g.POST("/", CreateUser(cases.User))
+	g.POST("/", CreateMe(cases.User))
 
 	gAuth := g.Group("")
 	gAuth.Use(middlewares.AuthUser(cases.User))
 	gAuth.GET("/:id", GetUser(cases.User))
-	gAuth.PUT("/", UpdateUser(cases.User))
+	gAuth.PUT("/me", UpdateMe(cases.User))
 	gAuth.GET("/me", GetMe(cases.User))
-	gAuth.DELETE("/", DeleteUser(cases.User))
+	gAuth.DELETE("/me", DeleteMe(cases.User))
 }

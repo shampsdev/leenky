@@ -11,8 +11,8 @@ import (
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
 )
 
-// UpdateUser godoc
-// @Summary Update user
+// UpdateMe godoc
+// @Summary Update me
 // @Tags users
 // @Accept json
 // @Produce json
@@ -22,8 +22,8 @@ import (
 // @Failure 400 "Bad Request"
 // @Failure 500 "Internal Server Error"
 // @Security ApiKeyAuth
-// @Router /users [put]
-func UpdateUser(userCase *usecase.User) gin.HandlerFunc {
+// @Router /users/me [put]
+func UpdateMe(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)
 

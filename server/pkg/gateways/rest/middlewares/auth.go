@@ -39,7 +39,8 @@ func AuthTelegramID() gin.HandlerFunc {
 
 func AuthUser(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tgID := MustGetUser(c).TelegramID
+		tgUser := MustGetUser(c)
+		tgID := tgUser.TelegramID
 		user, err := userCase.GetUserByTelegramID(c, tgID)
 		if ginerr.AbortIfErr(c, err, http.StatusUnauthorized, fmt.Sprintf("user with tg_id %d not found", tgID)) {
 			return
