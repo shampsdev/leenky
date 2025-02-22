@@ -17,6 +17,7 @@ type Bot struct {
 	cases usecase.Cases
 	log   *log.Logger
 
+	botUrl    string
 	webAppUrl string
 }
 
@@ -43,6 +44,7 @@ func NewBot(cfg *config.Config, pool *pgxpool.Pool) (*Bot, error) {
 		return nil, fmt.Errorf("error getting bot info: %w", err)
 	}
 	b.webAppUrl = fmt.Sprintf("https://t.me/%s/%s", me.Username, cfg.TG.WebAppName)
+	b.botUrl = fmt.Sprintf("https://t.me/%s", me.Username)
 
 	return b, nil
 }
@@ -65,6 +67,7 @@ func (b *Bot) Run(ctx context.Context) {
 	}, b.handleMyChatMember)
 
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/register", bot.MatchTypePrefix, b.handleCommandRegister)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, b.handleCommandStart)
 
 	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
 		return update.Message != nil &&
@@ -78,6 +81,37 @@ func (b *Bot) handleCommandRegister(ctx context.Context, _ *bot.Bot, update *mod
 	err := b.registerChat(ctx, update.Message.Chat.ID)
 	if err != nil {
 		b.log.Errorf("error registering chat: %v", err)
+	}
+}
+
+func (b *Bot) handleCommandStart(ctx context.Context, _ *bot.Bot, update *models.Update) {
+	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text: `*Как начать пользоваться Leenky?*
+
+1\. Откройте приложение
+2\. Заполните свой профиль 
+3\. Добавьте бота в чат
+
+Используйте дополнительные *команды* для управления ботом в чате\. Для этого напишите "/" в нужный чат и выберите команду из открывшегося списка\.`,
+		ParseMode: models.ParseModeMarkdown,
+		ReplyMarkup: &models.InlineKeyboardMarkup{
+			InlineKeyboard: [][]models.InlineKeyboardButton{
+				{
+					{
+						Text: "⭐️ Открыть",
+						URL:  b.webAppUrl,
+					},
+					{
+						Text: "⭐️ Добавить в чат",
+						URL:  fmt.Sprintf("%s?startgroup=", b.botUrl),
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		b.log.Errorf("error sending message: %v", err)
 	}
 }
 
