@@ -200,9 +200,8 @@ paths:
         required: true
         type: string
       - description: Search query
-        in: path
+        in: query
         name: q
-        required: true
         type: string
       produces:
       - application/json
