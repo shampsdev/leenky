@@ -3,27 +3,24 @@ import type { ChatData, UserData } from '@/types/user.interface';
 import type { ProfileUserData } from '@/types/user.interface';
 import { getMe, postMe } from '@/api/api';
 
-export const useChatSearchStore = defineStore('chatSearch', {
+export const useChatsSearchStore = defineStore('chatsSearch', {
   state: () => ({
     searchQuery: '',
-    chatData: {} as ChatData,
+    chatsData: [] as ChatData[],
   }),
 
   actions: {
     setQuery(query: string) {
       this.searchQuery = query;
     },
-    setUsers(newUsers: UserData[]) {
-      this.chatData.users = newUsers;
-    },
-    setChatData(newChatData: ChatData) {
-      this.chatData = newChatData;
+    setChats(newChats: ChatData[]) {
+      this.chatsData = newChats;
     },
     resetQuery() {
       this.searchQuery = '';
     },
-    resetChatData() {
-      this.chatData = {} as ChatData;
+    resetChatsData() {
+      this.chatsData = [] as ChatData[];
     },
   },
 });

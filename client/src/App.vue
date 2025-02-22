@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { useBackButton, useMiniApp } from "vue-tg";
+import { onMounted, ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { useProfileStore } from "./stores/profile.store";
+import { useScrollStore } from "./stores/scroll.store";
+import { provide } from "vue";
 const backButton = useBackButton();
 const router = useRouter();
 const route = useRoute();
@@ -22,10 +25,28 @@ if (backButton?.onClick) {
     router.back();
   });
 }
+
+const scrollStore = useScrollStore();
+const scrollContainer = ref<HTMLDivElement | null>(null);
+
+provide("scrollContainer", scrollContainer);
+
+const handleScroll = () => {
+  if (scrollContainer.value) {
+    scrollStore.setScrollY(scrollContainer.value.scrollTop);
+  }
+};
+
+onMounted(() => {
+  if (scrollContainer.value) {
+    scrollContainer.value.addEventListener("scroll", handleScroll);
+    scrollContainer.value.scrollTo({ top: scrollStore.scrollY, behavior: "smooth" });
+  }
+});
 </script>
 
 <template>
-  <div class="bg-main w-[100vw] h-[100vh] overflow-auto">
+  <div ref="scroll" class="bg-main w-[100vw] h-[100vh] overflow-auto scroll-container">
     <router-view />
   </div>
 </template>

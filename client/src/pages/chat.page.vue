@@ -1,11 +1,11 @@
 <script setup>
-import { ref, computed, onMounted } from "vue";
-import { useRoute, useRouter } from "vue-router";
-import { useMiniApp } from "vue-tg";
-import { getChat, searchInChat } from "@/api/api";
-import { useProfileStore } from "@/stores/profile.store";
-import { useBackButton } from "vue-tg";
-import Profile from "@/components/profile.vue";
+import { ref, computed, onMounted, inject } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { useMiniApp } from 'vue-tg';
+import { getChat, searchInChat } from '@/api/api';
+import { useProfileStore } from '@/stores/profile.store';
+import Profile from '@/components/profile.vue';
+import { useChatSearchStore } from '@/stores/chatSearch.store';
 
 const chat = ref({});
 const miniApp = useMiniApp();
@@ -14,24 +14,48 @@ const avatar = miniApp?.initDataUnsafe?.user?.photo_url;
 const initData = miniApp.initData;
 const profileStore = useProfileStore();
 const users = ref([]);
-const searchQuery = ref("");
+const searchQuery = ref('');
 
 const route = useRoute();
 const chatId = route.params.chatId;
 
+const chatSearchStore = useChatSearchStore();
+
 const filterUsers = async () => {
-  if (searchQuery.value.trim() === "") {
+  if (searchQuery.value.trim() === '') {
     users.value = chat.value.users;
     return;
   }
-  const fetchedUsers = await searchInChat(initData, chatId, searchQuery.value);
-  users.value = fetchedUsers ?? [];
+  if (searchQuery.value === chatSearchStore.searchQuery) {
+    users.value = chatSearchStore.users;
+  } else {
+    const fetchedUsers = await searchInChat(initData, chatId, searchQuery.value);
+    chatSearchStore.users = fetchedUsers ?? [];
+    chatSearchStore.setQuery(searchQuery.value);
+    users.value = fetchedUsers ?? [];
+  }
 };
 
 onMounted(async () => {
-  const chatData = await getChat(initData, chatId);
-  chat.value = chatData;
-  users.value = chatData.users;
+  searchQuery.value = chatSearchStore.searchQuery;
+  if (chatSearchStore.chatData) {
+    if (chatSearchStore.searchQuery === searchQuery.value) {
+      searchQuery.value = chatSearchStore.searchQuery;
+      users.value = chatSearchStore.users;
+    } else {
+      const fetchedUsers = await searchInChat(initData, chatId, searchQuery.value);
+      console.log('AAAA');
+      if (fetchedUsers !== null) {
+        users.value = fetchedUsers;
+        chatSearchStore.chatData.users = fetchedUsers;
+      }
+    }
+  } else {
+    chatSearchStore.chatData = await getChat(initData, chatId);
+    chatData = chatSearchStore.chatData;
+    users.value = chatSearchStore.chatData.users;
+    chatSearchStore.searchQuery = '';
+  }
 });
 
 const filteredUsers = computed(() => users.value);
