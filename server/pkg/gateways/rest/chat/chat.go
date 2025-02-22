@@ -15,7 +15,7 @@ func Setup(r *gin.RouterGroup, cases usecase.Cases) {
 	gAuth.Use(middlewares.AuthUser(cases.User))
 	gAuth.
 		GET("/", GetChatPreviews(cases.Chat)).
-		POST("/search", SearchChats(cases.Chat, cases.Search))
+		GET("/search", SearchChats(cases.Chat, cases.Search))
 
 	gAuth.Group("/id/:id").
 		GET("/", GetChat(cases.Chat)).
