@@ -26,7 +26,7 @@ func SearchChat(chatCase *usecase.Chat, search *usecase.Search) gin.HandlerFunc 
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)
 		chatID := c.Param("id")
-		q := c.Param("q")
+		q := c.Query("q")
 
 		if q == "" {
 			users, err := chatCase.GetChatUsers(usecase.NewContext(c, user), chatID)
