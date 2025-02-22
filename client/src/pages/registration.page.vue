@@ -13,6 +13,7 @@ const textareaRef = ref<HTMLTextAreaElement | null>(null);
 const initDataUnsafe = useMiniApp().initDataUnsafe;
 const miniApp = useMiniApp();
 const popUp = usePopup();
+const chatId = miniApp.initDataUnsafe.start_param;
 const goToChats = async () => {
   const response = await createMe(initData, profileStore.profile);
   if (response === null) {
@@ -22,9 +23,10 @@ const goToChats = async () => {
       const joinResponse = await joinMe(initData, miniApp.initDataUnsafe.start_param || "");
       if (joinResponse === null) {
         if (popUp.showAlert)
-          popUp.showAlert("Произошла ошибка при регистрации в чатеорлу пользователя");
+          popUp.showAlert("Произошла ошибка при регистрации в чате пользователя");
       } else {
         router.replace("/chats");
+        if (chatId !== undefined) router.push(`/chat/${chatId}`);
       }
     }
   }

@@ -18,7 +18,6 @@ const currentUser = useUserStore();
 const userId = route.params.id as string;
 const isCurrentUserProfile = ref(false);
 const initData = useMiniApp().initData;
-
 let isLoading = ref(true);
 
 const textareaRef = ref<HTMLTextAreaElement | null>(null);

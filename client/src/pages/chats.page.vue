@@ -3,14 +3,12 @@ import { ref } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { computed, onMounted } from "vue";
 import { getChats } from "@/api/api";
-import { useMiniApp } from "vue-tg";
+import { useMiniApp, useBackButton } from "vue-tg";
 import Profile from "@/components/profile.vue";
-import { useUserStore } from "@/stores/user.store";
 import Button from "@/components/button.vue";
+
 const chats = ref([]);
-
 const searchQuery = ref("");
-
 const filteredChats = computed(() => {
   if (!searchQuery.value) {
     return chats.value;
@@ -21,8 +19,6 @@ const filteredChats = computed(() => {
 });
 
 const router = useRouter();
-
-const currentUser = useUserStore();
 
 const miniApp = useMiniApp();
 
