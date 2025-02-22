@@ -6,7 +6,6 @@ import { getMe, postMe } from '@/api/api';
 export const useChatSearchStore = defineStore('chatSearch', {
   state: () => ({
     searchQuery: '',
-    scrollY: 0,
     chatData: {} as ChatData,
   }),
 
@@ -17,17 +16,14 @@ export const useChatSearchStore = defineStore('chatSearch', {
     setUsers(newUsers: UserData[]) {
       this.chatData.users = newUsers;
     },
-    setScrollY(scroll: number) {
-      this.scrollY = scroll;
-    },
     setChatData(newChatData: ChatData) {
       this.chatData = newChatData;
     },
-    resetScrollY() {
-      this.scrollY = 0;
-    },
     resetQuery() {
       this.searchQuery = '';
+    },
+    resetChatData() {
+      this.chatData = {} as ChatData;
     },
   },
 });

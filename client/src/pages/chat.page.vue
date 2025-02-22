@@ -4,10 +4,8 @@ import { useRoute, useRouter } from 'vue-router';
 import { useMiniApp } from 'vue-tg';
 import { getChat, searchInChat } from '@/api/api';
 import { useProfileStore } from '@/stores/profile.store';
-import { useBackButton } from 'vue-tg';
 import Profile from '@/components/profile.vue';
 import { useChatSearchStore } from '@/stores/chatSearch.store';
-import { useScrollStore } from '@/stores/scroll.store';
 
 const chat = ref({});
 const miniApp = useMiniApp();
@@ -22,9 +20,7 @@ const route = useRoute();
 const chatId = route.params.chatId;
 
 const chatSearchStore = useChatSearchStore();
-const scrollStore = useScrollStore();
 
-const scrollContainer = inject('scrollContainer');
 const filterUsers = async () => {
   if (searchQuery.value.trim() === '') {
     users.value = chat.value.users;
@@ -59,10 +55,6 @@ onMounted(async () => {
     chatData = chatSearchStore.chatData;
     users.value = chatSearchStore.chatData.users;
     chatSearchStore.searchQuery = '';
-  }
-
-  if (scrollContainer.value) {
-    scrollContainer.value.scrollTo({ top: chatSearchStore.scrollY, behavior: 'smooth' });
   }
 });
 

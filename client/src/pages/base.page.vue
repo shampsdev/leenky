@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import Button from "@/components/button.vue";
-import team from "@/assets/team.png";
-import InviteModal from "@/components/inviteModal.vue";
-import { useInviteStore } from "@/stores/invite.store";
-import { useRouter } from "vue-router";
+import Button from '@/components/button.vue';
+import team from '@/assets/team.png';
+import InviteModal from '@/components/inviteModal.vue';
+import { useInviteStore } from '@/stores/invite.store';
+import { useRouter } from 'vue-router';
 const modalStore = useInviteStore();
 const router = useRouter();
 const goToVaniog = () => {
-  router.push("/vaniog");
+  router.push('/vaniog');
 };
 
-import { useUserStore } from "@/stores/user.store";
-import { getMe } from "@/api/api";
-import { useMiniApp } from "vue-tg";
-import { onMounted } from "vue";
+import { useUserStore } from '@/stores/user.store';
+import { getMe } from '@/api/api';
+import { useMiniApp } from 'vue-tg';
+import { onMounted } from 'vue';
 const inviteStore = useInviteStore();
 const currentUser = useUserStore();
 const initData = useMiniApp().initData;

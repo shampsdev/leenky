@@ -1,19 +1,21 @@
 <script setup>
-import { ref } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { computed, onMounted } from "vue";
-import { getChats } from "@/api/api";
-import { useMiniApp, useBackButton } from "vue-tg";
-import Profile from "@/components/profile.vue";
-import Button from "@/components/button.vue";
+import { ref } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { computed, onMounted } from 'vue';
+import { getChats } from '@/api/api';
+import { useMiniApp, useBackButton } from 'vue-tg';
+import Profile from '@/components/profile.vue';
+import Button from '@/components/button.vue';
+import { useChatSearchStore } from '@/stores/chatSearch.store';
 
 const chats = ref([]);
-const searchQuery = ref("");
+const searchQuery = ref('');
+const chatSearchStore = useChatSearchStore();
 const filteredChats = computed(() => {
   if (!searchQuery.value) {
     return chats.value;
   }
-  return chats.value.filter((chat) =>
+  return chats.value.filter(chat =>
     chat.name.toLowerCase().includes(searchQuery.value.toLowerCase())
   );
 });
@@ -25,10 +27,12 @@ const miniApp = useMiniApp();
 const initData = miniApp.initData;
 
 onMounted(async () => {
+  chatSearchStore.resetQuery();
+  chatSearchStore.resetChatData();
   try {
     chats.value.push(...(await getChats(initData)));
   } catch (error) {
-    console.error("Ошибка загрузки данных:", error);
+    console.error('Ошибка загрузки данных:', error);
   }
 });
 </script>
