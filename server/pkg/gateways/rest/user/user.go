@@ -8,7 +8,7 @@ import (
 
 func Setup(r *gin.RouterGroup, cases usecase.Cases) {
 	g := r.Group("/users")
-	g.Use(middlewares.AuthTelegramID())
+	g.Use(middlewares.ExtractUserTGData())
 	g.POST("/me", CreateMe(cases.User))
 
 	gAuth := g.Group("")

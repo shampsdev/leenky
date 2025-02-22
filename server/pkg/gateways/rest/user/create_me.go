@@ -24,14 +24,18 @@ import (
 // @Router /users/me [post]
 func CreateMe(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user := middlewares.MustGetUser(c)
+		userTGData := middlewares.MustGetUserTGData(c)
 
 		toCreate := &domain.EditUser{}
 		if err := c.ShouldBindJSON(toCreate); ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to bind user") {
 			return
 		}
 
-		user, err := userCase.CreateUser(usecase.NewContext(c, user), toCreate)
+		user, err := userCase.CreateUser(usecase.NewContext(c, &domain.User{
+			TelegramID:       userTGData.TelegramID,
+			TelegramUsername: userTGData.TelegramUsername,
+			Avatar:           userTGData.Avatar,
+		}), toCreate)
 		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to create user") {
 			return
 		}

@@ -24,6 +24,7 @@ type Chat interface {
 type User interface {
 	CreateUser(ctx context.Context, user *domain.User) (string, error)
 	UpdateUser(ctx context.Context, id string, user *domain.EditUser) (*domain.User, error)
+	UpdateUserTGData(ctx context.Context, id string, user *domain.UserTGData) (*domain.User, error)
 	DeleteUser(ctx context.Context, id string) error
 	GetUserByID(ctx context.Context, id string) (*domain.User, error)
 	GetUserByTelegramID(ctx context.Context, telegramID int64) (*domain.User, error)

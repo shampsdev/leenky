@@ -54,6 +54,31 @@ func (r *UserRepo) UpdateUser(ctx context.Context, id string, user *domain.EditU
 	return newUser, nil
 }
 
+func (r *UserRepo) UpdateUserTGData(ctx context.Context, id string, user *domain.UserTGData) (*domain.User, error) {
+	newUser := &domain.User{}
+	err := r.db.QueryRow(ctx, `
+		UPDATE "user" 
+		SET "telegram_id" = $1, "telegram_username" = $2, "avatar" = $3
+		WHERE "id" = $4 
+		RETURNING "id", "telegram_id", "telegram_username", "avatar", "first_name", "last_name", "company", "role", "bio"`,
+		user.TelegramID, user.TelegramUsername, user.Avatar, id,
+	).Scan(
+		&newUser.ID,
+		&newUser.TelegramID,
+		&newUser.TelegramUsername,
+		&newUser.Avatar,
+		&newUser.FirstName,
+		&newUser.LastName,
+		&newUser.Company,
+		&newUser.Role,
+		&newUser.Bio,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update user: %w", err)
+	}
+	return newUser, nil
+}
+
 func (r *UserRepo) DeleteUser(ctx context.Context, id string) error {
 	_, err := r.db.Exec(ctx, `DELETE FROM "user" WHERE "id" = $1`, id)
 	if err != nil {
