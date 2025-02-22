@@ -70,6 +70,7 @@ const saveChanges = async () => {
 onMounted(async () => {
   isCurrentUserProfile.value = currentUser.id === userId || userId === "null";
   await RefreshProfile();
+  console.log(isCurrentUserProfile, currentUser.id, currentUser.telegramId, userId);
 });
 </script>
 
