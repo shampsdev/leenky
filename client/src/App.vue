@@ -18,10 +18,8 @@ if (backButton?.onClick) {
     }
     if (profileStore.editMode) {
       profileStore.editMode = !profileStore.editMode;
-      router.push("/profile");
-    } else {
-      router.back();
     }
+    router.back();
   });
 }
 </script>
