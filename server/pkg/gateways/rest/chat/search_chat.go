@@ -15,6 +15,7 @@ import (
 // @Accept json
 // @Produce json
 // @Schemes http https
+// @Param id path string true "Chat ID"
 // @Param q path string true "Search query"
 // @Success 200 {object} []domain.User "Users"
 // @Failure 400 "Bad Request"
