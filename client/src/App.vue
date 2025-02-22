@@ -1,15 +1,19 @@
 <script setup lang="ts">
-import { useBackButton } from "vue-tg";
-import { useRouter } from "vue-router";
+import { useBackButton, useMiniApp } from "vue-tg";
+import { useRouter, useRoute } from "vue-router";
 const backButton = useBackButton();
 const router = useRouter();
-
+const route = useRoute();
+const miniApp = useMiniApp();
 if (backButton?.show) {
   backButton.show();
 }
 
 if (backButton?.onClick) {
   backButton.onClick(() => {
+    if (route.fullPath === "/chats") {
+      miniApp.close();
+    }
     router.back();
   });
 }
