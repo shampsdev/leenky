@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from 'vue';
+import { ref, watchEffect } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { computed, onMounted } from 'vue';
 import { getChat, getChats, searchChats, leaveChat } from '@/api/api';
@@ -34,7 +34,7 @@ const leaveChatHandler = async chatId => {
   const response = await leaveChat(initData, chatId);
   if (response) {
     chats.value = chats.value.filter(item => item.id !== chatId);
-    chatSearchStore.setChatData = chats.value;
+    chatsSearchStore.chatsData = chats.value.filter(item => item.id !== chatId);
   }
   console.log(response, 'LEAVED');
 };
@@ -66,6 +66,10 @@ onMounted(async () => {
   }
 });
 const filteredChats = computed(() => chats.value);
+
+watchEffect(() => {
+  chats.value = chatsSearchStore.chatsData;
+});
 </script>
 
 <template>
@@ -124,6 +128,7 @@ const filteredChats = computed(() => chats.value);
             @click="
               () => {
                 leaveChatHandler(chat.id);
+                filterChats();
               }
             "
             class="text-gray-400 text-xl"

@@ -1,11 +1,11 @@
 <script setup>
-import { useInviteStore } from "@/stores/invite.store";
-import Button from "@/components/button.vue";
-import { useRouter } from "vue-router";
-import { useUserStore } from "@/stores/user.store";
-import { getChat, joinMe } from "@/api/api";
-import { useMiniApp } from "vue-tg";
-import { onMounted } from "vue";
+import { useInviteStore } from '@/stores/invite.store';
+import Button from '@/components/button.vue';
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user.store';
+import { getChat, joinMe } from '@/api/api';
+import { useMiniApp } from 'vue-tg';
+import { onMounted } from 'vue';
 const router = useRouter();
 const inviteStore = useInviteStore();
 const currentUser = useUserStore();
@@ -15,11 +15,10 @@ const chatId = useMiniApp().initDataUnsafe.start_param;
 const accept = async () => {
   const userData = await joinMe(initData, chatId);
   if (userData !== null) {
-    currentUser.logIn(userData);
     inviteStore.close();
     router.replace(`/chats`);
     setTimeout(() => {
-      router.push(`/chat/${startData}`);
+      router.push(`/chat/${chatId}`);
     }, 100);
   }
 };
