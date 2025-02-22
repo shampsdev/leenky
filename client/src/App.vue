@@ -17,7 +17,7 @@ if (backButton?.onClick) {
       miniApp.close();
     }
     if (profileStore.editMode) {
-      profileStore.editMode = !profileStore.editMode;
+      profileStore.toggleEditMode();
       router.push("/profile");
     } else {
       router.back();
