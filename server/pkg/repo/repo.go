@@ -30,5 +30,5 @@ type User interface {
 }
 
 type ImageStorage interface {
-	SavePhoto(ctx context.Context, url string) (string, error)
+	SaveImageByURL(ctx context.Context, url string) (string, error)
 }

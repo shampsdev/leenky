@@ -17,7 +17,7 @@ type Cases struct {
 func Setup(cfg *config.Config, db *pgxpool.Pool, b *bot.Bot) Cases {
 	chatRepo := pg.NewChatRepo(db)
 	userRepo := pg.NewUserRepo(db)
-	storage, err := s3.NewStorage(cfg.S3)
+	storage, err := s3.NewStorage(cfg.S3, "tglinked")
 	if err != nil {
 		panic(err)
 	}

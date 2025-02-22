@@ -21,9 +21,10 @@ type Storage struct {
 	cfg      config.S3Config
 	session  *session.Session
 	s3Client *s3.S3
+	folder   string
 }
 
-func NewStorage(cfg config.S3Config) (*Storage, error) {
+func NewStorage(cfg config.S3Config, folder string) (*Storage, error) {
 	sess, err := session.NewSession(&aws.Config{
 		Region:      &cfg.Region,
 		Endpoint:    &cfg.EndpointUrl,
@@ -39,15 +40,25 @@ func NewStorage(cfg config.S3Config) (*Storage, error) {
 		cfg:      cfg,
 		session:  sess,
 		s3Client: s3Client,
+		folder:   folder,
 	}, nil
 }
 
-func (s *Storage) SavePhoto(_ context.Context, imageURL string) (string, error) {
+func (s *Storage) SaveImageByURL(_ context.Context, imageURL string) (string, error) {
 	imageData, err := downloadFromURL(imageURL)
 	if err != nil {
 		return "", fmt.Errorf("failed to download image: %w", err)
 	}
 
+	fileURL, err := s.SaveImageByBytes(context.Background(), imageData)
+	if err != nil {
+		return "", fmt.Errorf("failed to save image: %w", err)
+	}
+
+	return fileURL, nil
+}
+
+func (s *Storage) SaveImageByBytes(_ context.Context, imageData []byte) (string, error) {
 	uniqueImageID := uuid.New()
 	mimeType := http.DetectContentType(imageData)
 	fileExtension, _ := mime.ExtensionsByType(mimeType)
@@ -55,9 +66,9 @@ func (s *Storage) SavePhoto(_ context.Context, imageURL string) (string, error) 
 		fileExtension = []string{".jpeg"}
 	}
 
-	key := fmt.Sprintf("tglinked/%s%s", uniqueImageID, fileExtension[0])
+	key := fmt.Sprintf("%s/%s%s", s.folder, uniqueImageID, fileExtension[0])
 
-	_, err = s.s3Client.PutObject(&s3.PutObjectInput{
+	_, err := s.s3Client.PutObject(&s3.PutObjectInput{
 		Bucket:      &s.cfg.Bucket,
 		Key:         aws.String(key),
 		Body:        bytes.NewReader(imageData),

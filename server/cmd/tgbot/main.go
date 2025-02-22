@@ -11,12 +11,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// @title           TGLinked server
-// @version         1.0
-// @description     Manage chats, users
-// @securityDefinitions.apikey ApiKeyAuth
-// @in header
-// @name X-API-Token
 func main() {
 	log.SetFormatter(&log.TextFormatter{
 		ForceColors:     true,

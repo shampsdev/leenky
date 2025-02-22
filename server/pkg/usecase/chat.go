@@ -178,7 +178,7 @@ func downloadTGFileByID(ctx context.Context, b *bot.Bot, s repo.ImageStorage, fi
 		return "", fmt.Errorf("error getting file: %w", err)
 	}
 
-	url, err := s.SavePhoto(ctx, b.FileDownloadLink(file))
+	url, err := s.SaveImageByURL(ctx, b.FileDownloadLink(file))
 	if err != nil {
 		return "", fmt.Errorf("failed to save photo: %w", err)
 	}

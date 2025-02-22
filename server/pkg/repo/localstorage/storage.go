@@ -30,7 +30,7 @@ func NewStorage(serverUrl, imagesDir string) *Storage {
 	}
 }
 
-func (s *Storage) SavePhoto(_ context.Context, url string) (string, error) {
+func (s *Storage) SaveImageByURL(_ context.Context, url string) (string, error) {
 	resp, err := http.Get(url)
 	if err != nil {
 		return "", fmt.Errorf("failed to download image: %w", err)
