@@ -147,3 +147,20 @@ export const searchChats = async (initData: string, query: string): Promise<Chat
     return null;
   }
 };
+
+export const leaveChat = async (initData: string, chatId: string): Promise<boolean> => {
+  try {
+    const response = await api.post<UserData[]>(
+      `/chats/id/${chatId}/leave`,
+      {},
+      {
+        headers: {
+          'X-Api-Token': initData,
+        },
+      }
+    );
+    return response.status === 200;
+  } catch (error) {
+    return false;
+  }
+};
