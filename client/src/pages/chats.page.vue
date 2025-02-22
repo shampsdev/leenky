@@ -65,6 +65,10 @@ onMounted(async () => {
     }
   }
 });
+
+const addBot = () => {
+  miniApp.openTelegramLink('https://t.me/leenky_bot?startgroup=');
+};
 const filteredChats = computed(() => chats.value);
 
 watchEffect(() => {
@@ -81,24 +85,27 @@ watchEffect(() => {
     "
     >ВАНЯЯЯ</Button
   >
-  <Profile />
   <KeepAlive>
     <div class="max-w-[95%] mx-auto px-4">
-      <header class="flex items-center justify-between py-4">
-        <h1 class="text-xl font-semibold">Чаты</h1>
+      <header class="flex items-center justify-between gap-[15px] py-4 mt-[25px]">
+        <h1 class="text-xl font-semibold">
+          Чаты
+          <p @click="addBot">add</p>
+        </h1>
+        <Profile />
       </header>
 
-      <div class="relative flex items-center bg-gray-100 rounded-lg px-3 py-2 mb-4">
+      <div class="relative flex items-center gap-[8px] bg-gray-100 rounded-lg px-3 py-2 mb-4">
+        <button>
+          <img src="/src/assets/search_transparent.svg" alt="mic" class="w-5 h-5" />
+        </button>
         <input
           @input="filterChats"
           v-model="searchQuery"
           type="text"
-          placeholder="Search"
-          class="flex-1 bg-transparent outline-none text-gray-700 placeholder-gray-400"
+          placeholder="Поиск"
+          class="flex-1 outline-none text-gray-700 placeholder-gray-400"
         />
-        <button>
-          <img src="/src/assets/Search.svg" alt="mic" class="w-5 h-5" />
-        </button>
       </div>
 
       <ul v-if="filteredChats.length" class="divide-y divide-gray-200">

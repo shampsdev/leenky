@@ -1,23 +1,27 @@
 <script setup>
-import { computed } from "vue";
+import { computed } from 'vue';
 
 const props = defineProps({
   type: {
     type: String,
-    default: "button",
+    default: 'button',
   },
   variant: {
     type: String,
-    default: "primary", // "primary", "secondary"
+    default: 'primary', // "primary", "secondary"
+  },
+  classes: {
+    type: String,
+    default: '',
   },
 });
 
 const buttonClasses = computed(() => {
-  const base = "rounded-[20px] py-[10px] px-[14px] transition duration-200";
+  const base = 'rounded-[20px] py-[10px] px-[14px] transition duration-200';
   const variants = {
-    primary: "btn-primary",
-    secondary: "btn ",
-    about: "bg-green",
+    primary: 'btn-primary',
+    secondary: 'btn ',
+    about: 'bg-green',
   };
 
   return `${base} ${variants[props.variant]} `;

@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { useRouter } from "vue-router";
-import { useMiniApp, usePopup } from "vue-tg";
-import { createMe, joinMe, postMe } from "@/api/api";
-import { useRegistrationStore } from "@/stores/registration.store";
-import Button from "@/components/button.vue";
+import { onMounted, ref } from 'vue';
+import { useRouter } from 'vue-router';
+import { useMiniApp, usePopup } from 'vue-tg';
+import { createMe, joinMe, postMe } from '@/api/api';
+import { useRegistrationStore } from '@/stores/registration.store';
+import Button from '@/components/button.vue';
 const router = useRouter();
 const profileStore = useRegistrationStore();
 
@@ -17,16 +17,18 @@ const chatId = miniApp.initDataUnsafe.start_param;
 const goToChats = async () => {
   const response = await createMe(initData, profileStore.profile);
   if (response === null) {
-    if (popUp.showAlert) popUp.showAlert("Произошла ошибка при создании пользователя");
+    if (popUp.showAlert) popUp.showAlert('Произошла ошибка при создании пользователя');
   } else {
     if (miniApp.initDataUnsafe.start_param !== undefined) {
-      const joinResponse = await joinMe(initData, miniApp.initDataUnsafe.start_param || "");
+      const joinResponse = await joinMe(initData, miniApp.initDataUnsafe.start_param || '');
       if (joinResponse === null) {
         if (popUp.showAlert)
-          popUp.showAlert("Произошла ошибка при регистрации в чате пользователя");
+          popUp.showAlert('Произошла ошибка при регистрации в чате пользователя');
       } else {
-        router.replace("/chats");
-        if (chatId !== undefined) router.push(`/chat/${chatId}`);
+        router.replace('/chats');
+        if (chatId !== undefined) {
+          router.push(`/chat/${chatId}`);
+        }
       }
     }
   }
@@ -35,7 +37,7 @@ const goToChats = async () => {
 function autoResize() {
   if (!textareaRef.value) return;
 
-  textareaRef.value.style.height = "auto";
+  textareaRef.value.style.height = 'auto';
   textareaRef.value.style.height = `${Math.min(textareaRef.value.scrollHeight, 200)}px`;
 }
 
@@ -43,7 +45,7 @@ const limitNewlines = (event: KeyboardEvent) => {
   const value = profileStore.profile.bio;
   if (value != null) {
     const newlines = (value.match(/\n/g) || []).length;
-    if (event.key === "Enter" && newlines >= 6) {
+    if (event.key === 'Enter' && newlines >= 6) {
       event.preventDefault();
     }
   }
@@ -59,7 +61,7 @@ const updateProfie = async () => {
   if (userData) {
     profileStore.setProfile(userData);
   } else {
-    console.error("Ошибка: данные пользователя не загружены");
+    console.error('Ошибка: данные пользователя не загружены');
   }
 };
 
@@ -71,17 +73,17 @@ const handleImageLoad = () => {
 
 onMounted(() => {
   profileStore.setProfile({
-    firstName: initDataUnsafe.user?.first_name || "имя",
-    lastName: initDataUnsafe.user?.last_name || "фамилия",
-    avatar: initDataUnsafe.user?.photo_url || "",
-    role: "роль",
-    company: "компания",
-    bio: "описание",
-    telegramUsername: initDataUnsafe.user?.username || "",
+    firstName: initDataUnsafe.user?.first_name || 'имя',
+    lastName: initDataUnsafe.user?.last_name || 'фамилия',
+    avatar: initDataUnsafe.user?.photo_url || '',
+    role: 'роль',
+    company: 'компания',
+    bio: 'описание',
+    telegramUsername: initDataUnsafe.user?.username || '',
   });
 
   const img = new Image();
-  img.src = initDataUnsafe.user?.photo_url || "";
+  img.src = initDataUnsafe.user?.photo_url || '';
   img.onload = () => {
     isLoaded.value = true;
   };

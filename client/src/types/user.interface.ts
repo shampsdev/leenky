@@ -20,3 +20,11 @@ export interface ChatData {
   avatar: string | null;
   users: UserData[];
 }
+
+export interface ChatPreviewData {
+  avatar: string | null;
+  users_amount: string | null;
+  name: string | null;
+  id: string | null;
+  telegram_id: string | null;
+}

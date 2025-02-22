@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { useBackButton, useMiniApp } from "vue-tg";
-import { onMounted, ref } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { useProfileStore } from "./stores/profile.store";
-import { useScrollStore } from "./stores/scroll.store";
-import { provide } from "vue";
+import { useBackButton, useMiniApp } from 'vue-tg';
+import { onMounted, ref } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useProfileStore } from './stores/profile.store';
+import { useScrollStore } from './stores/scroll.store';
+import { provide } from 'vue';
 const backButton = useBackButton();
 const router = useRouter();
 const route = useRoute();
@@ -16,7 +16,7 @@ if (backButton?.show) {
 
 if (backButton?.onClick) {
   backButton.onClick(() => {
-    if (route.fullPath === "/chats") {
+    if (route.fullPath === '/chats' || route.fullPath === '/invite') {
       miniApp.close();
     }
     if (profileStore.editMode) {
@@ -29,7 +29,7 @@ if (backButton?.onClick) {
 const scrollStore = useScrollStore();
 const scrollContainer = ref<HTMLDivElement | null>(null);
 
-provide("scrollContainer", scrollContainer);
+provide('scrollContainer', scrollContainer);
 
 const handleScroll = () => {
   if (scrollContainer.value) {
@@ -39,8 +39,8 @@ const handleScroll = () => {
 
 onMounted(() => {
   if (scrollContainer.value) {
-    scrollContainer.value.addEventListener("scroll", handleScroll);
-    scrollContainer.value.scrollTo({ top: scrollStore.scrollY, behavior: "smooth" });
+    scrollContainer.value.addEventListener('scroll', handleScroll);
+    scrollContainer.value.scrollTo({ top: scrollStore.scrollY, behavior: 'smooth' });
   }
 });
 </script>
@@ -52,52 +52,52 @@ onMounted(() => {
 </template>
 
 <style scoped>
-@import "tailwindcss";
+@import 'tailwindcss';
 
 @font-face {
-  font-family: "SF";
-  src: url("/src/assets/fonts/SFProText-Regular.ttf") format("truetype");
+  font-family: 'SF';
+  src: url('/src/assets/fonts/SFProText-Regular.ttf') format('truetype');
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "SF";
-  src: url("/src/assets/fonts/SFProText-Bold.ttf") format("truetype");
+  font-family: 'SF';
+  src: url('/src/assets/fonts/SFProText-Bold.ttf') format('truetype');
   font-weight: bold;
   font-style: normal;
 }
 
 /* Add additional font weights as needed */
 @font-face {
-  font-family: "SF";
-  src: url("/src/assets/fonts/SFProText-Light.ttf") format("truetype");
+  font-family: 'SF';
+  src: url('/src/assets/fonts/SFProText-Light.ttf') format('truetype');
   font-weight: 300;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "SF";
-  src: url("/src/assets/fonts/SFProText-Regular.ttf") format("truetype");
+  font-family: 'SF';
+  src: url('/src/assets/fonts/SFProText-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
 }
 @font-face {
-  font-family: "SF";
-  src: url("/src/assets/fonts/SFProText-Medium.ttf") format("truetype");
+  font-family: 'SF';
+  src: url('/src/assets/fonts/SFProText-Medium.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
 }
 
 @font-face {
-  font-family: "SF";
-  src: url("/src/assets/fonts/SFProText-Semibold.ttf") format("truetype");
+  font-family: 'SF';
+  src: url('/src/assets/fonts/SFProText-Semibold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
 }
 
 * {
-  font-family: "SF";
+  font-family: 'SF';
   font-weight: 400;
 }
 </style>
