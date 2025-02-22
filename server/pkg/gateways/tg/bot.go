@@ -66,6 +66,11 @@ func (b *Bot) Run(ctx context.Context) {
 
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/register", bot.MatchTypePrefix, b.handleCommandRegister)
 
+	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
+		return update.Message != nil &&
+			(len(update.Message.NewChatPhoto) != 0 || update.Message.NewChatTitle != "")
+	}, b.handleChatChanged)
+
 	b.Start(ctx)
 }
 
@@ -84,6 +89,21 @@ func (b *Bot) handleMyChatMember(ctx context.Context, _ *bot.Bot, update *models
 	}
 }
 
+func (b *Bot) handleChatChanged(ctx context.Context, _ *bot.Bot, update *models.Update) {
+	_, err := b.cases.Chat.CreateOrUpdateChat(ctx, update.Message.Chat.ID)
+	if err != nil {
+		b.log.Errorf("error registering chat: %v", err)
+	}
+
+	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text:   "О, у вас тут перемены? Запомнил 😉",
+	})
+	if err != nil {
+		b.log.Errorf("error sending message: %v", err)
+	}
+}
+
 func (b *Bot) registerChat(ctx context.Context, chatID int64) error {
 	chat, err := b.cases.Chat.CreateOrUpdateChat(ctx, chatID)
 	if err != nil {
@@ -92,10 +112,13 @@ func (b *Bot) registerChat(ctx context.Context, chatID int64) error {
 
 	msg, err := b.SendMessage(ctx, &bot.SendMessageParams{
 		ChatID: chat.TelegramID,
-		Text:   fmt.Sprintf("Hello, members of chat %s!\nChat is now connected to net\nPress join to confirm membership", chat.Name),
+		Text: fmt.Sprintf(
+			`Привет коллеги из "%s"!
+Ваш чат привязан к сети
+Нажмите [Open] и подтвердите участие`, chat.Name),
 		ReplyMarkup: models.InlineKeyboardMarkup{
 			InlineKeyboard: [][]models.InlineKeyboardButton{{{
-				Text: "Join",
+				Text: "Open",
 				URL:  b.urlForChat(chat.ID),
 			}}},
 		},

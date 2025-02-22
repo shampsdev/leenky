@@ -133,8 +133,10 @@ func (c *Chat) getChatFromTelegram(ctx context.Context, chatID int64) (*domain.C
 	if err != nil {
 		return nil, fmt.Errorf("error getting chat: %w", err)
 	}
-
-	avatar, err := downloadTGFileByID(ctx, c.bot, c.storage, tgchat.Photo.SmallFileID)
+	avatar := ""
+	if tgchat.Photo != nil {
+		avatar, err = downloadTGFileByID(ctx, c.bot, c.storage, tgchat.Photo.SmallFileID)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to download user avatar: %w", err)
 	}
