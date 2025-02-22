@@ -15,7 +15,6 @@ const chatId = useMiniApp().initDataUnsafe.start_param;
 const accept = async () => {
   const userData = await joinMe(initData, chatId);
   if (userData !== null) {
-    currentUser.logIn(userData);
     inviteStore.close();
     router.replace(`/chats`);
     setTimeout(() => {

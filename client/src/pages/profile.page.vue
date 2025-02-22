@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
-import { useRouter, useRoute } from "vue-router";
-import { useProfileStore } from "@/stores/profile.store";
-import Button from "@/components/button.vue";
-import { useUserStore } from "@/stores/user.store";
-import { getMe, getUserById, postMe } from "@/api/api";
-import { useMiniApp } from "vue-tg";
+import { onMounted, ref } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
+import { useProfileStore } from '@/stores/profile.store';
+import Button from '@/components/button.vue';
+import { useUserStore } from '@/stores/user.store';
+import { getMe, getUserById, postMe } from '@/api/api';
+import { useMiniApp } from 'vue-tg';
 
 const router = useRouter();
 const route = useRoute();
 const profileStore = useProfileStore();
 const goToChats = () => {
-  router.push("/chats");
+  router.push('/chats');
 };
 
 const currentUser = useUserStore();
@@ -24,7 +24,7 @@ const textareaRef = ref<HTMLTextAreaElement | null>(null);
 
 function autoResize() {
   if (!textareaRef.value) return;
-  textareaRef.value.style.height = "auto";
+  textareaRef.value.style.height = 'auto';
   textareaRef.value.style.height = `${Math.min(textareaRef.value.scrollHeight, 200)}px`;
 }
 
@@ -32,7 +32,7 @@ const limitNewlines = (event: KeyboardEvent) => {
   const value = profileStore.editFieldProfile.bio;
   if (value != null) {
     const newlines = (value.match(/\n/g) || []).length;
-    if (event.key === "Enter" && newlines >= 6) {
+    if (event.key === 'Enter' && newlines >= 6) {
       event.preventDefault();
     }
   }
@@ -63,12 +63,13 @@ const saveChanges = async () => {
     await RefreshProfile();
     profileStore.toggleEditMode();
   } catch (error) {
-    console.error("Ошибка при сохранении изменений:", error);
+    console.error('Ошибка при сохранении изменений:', error);
   }
 };
 
 onMounted(async () => {
-  isCurrentUserProfile.value = currentUser.id === userId || userId === "null";
+  console.log(currentUser.id, userId);
+  isCurrentUserProfile.value = currentUser.id === userId || userId === 'null';
   await RefreshProfile();
   console.log(isCurrentUserProfile, currentUser.id, currentUser.telegramId, userId);
 });
