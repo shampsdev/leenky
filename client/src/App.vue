@@ -31,6 +31,7 @@ if (backButton?.onClick) {
 
 useWebAppTheme().setHeaderColor('#FFFFFF');
 useWebAppTheme().setBackgroundColor('#FFFFFF');
+
 const scrollStore = useScrollStore();
 const scrollContainer = ref<HTMLDivElement | null>(null);
 

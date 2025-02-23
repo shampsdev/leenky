@@ -80,6 +80,17 @@ const isLoading = ref(true);
 
 const filterChats = async () => {
   isLoading.value = true;
+  if (searchQuery.value.trim() === '') {
+    const fetchedChats = await getChats(initData);
+    if (fetchedChats !== null) {
+      chatsSearchStore.chatsData = fetchedChats;
+      chats.value = chatsSearchStore.chatsData;
+    }
+
+    isLoading.value = false;
+    return;
+  }
+
   if (searchQuery.value === chatsSearchStore.searchQuery) {
     chats.value = chatsSearchStore.chatsData;
     chatsSearchStore.searchQuery = searchQuery.value;

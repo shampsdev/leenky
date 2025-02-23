@@ -56,13 +56,19 @@ const animateScreenEntry = () => {
 
 const filterUsers = async () => {
   isLoading.value = true;
+
   if (searchQuery.value.trim() === '') {
+    // Когда строка пустая, запрашиваем всех пользователей
     const fetchedUsers = await getChat(initData, chatId);
-    users.value = fetchedUsers.users ?? [];
+    users.value = fetchedUsers.users;
+    isLoading.value = false;
     return;
   }
+
+  // Когда есть текст, выполняем поиск
   if (searchQuery.value === chatSearchStore.searchQuery) {
     users.value = chatSearchStore.users;
+    isLoading.value = false;
   } else {
     const fetchedUsers = await searchInChat(initData, chatId, searchQuery.value);
     chatSearchStore.users = fetchedUsers ?? [];
