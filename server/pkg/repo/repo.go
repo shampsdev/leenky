@@ -9,6 +9,7 @@ import (
 type Chat interface {
 	CreateChat(ctx context.Context, chat *domain.Chat) (string, error)
 	UpdateChat(ctx context.Context, chat *domain.Chat) (*domain.Chat, error)
+	DeleteChat(ctx context.Context, id string) error
 	GetChatByID(ctx context.Context, id string) (*domain.Chat, error)
 	GetChatPreviewByID(ctx context.Context, id string) (*domain.ChatPreview, error)
 	GetChatByTelegramID(ctx context.Context, telegramID int64) (*domain.Chat, error)

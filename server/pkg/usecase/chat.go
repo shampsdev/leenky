@@ -126,6 +126,14 @@ func (c *Chat) CreateChat(ctx context.Context, chatID int64) (*domain.Chat, erro
 	return chat, nil
 }
 
+func (c *Chat) ForgetChatByTGID(ctx context.Context, chatID int64) error {
+	chat, err := c.chatRepo.GetChatByTelegramID(ctx, chatID)
+	if err != nil {
+		return fmt.Errorf("error getting chat: %w", err)
+	}
+	return c.chatRepo.DeleteChat(ctx, chat.ID)
+}
+
 func (c *Chat) getChatFromTelegram(ctx context.Context, chatID int64) (*domain.Chat, error) {
 	tgchat, err := c.bot.GetChat(ctx, &bot.GetChatParams{
 		ChatID: chatID,

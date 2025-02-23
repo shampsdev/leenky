@@ -59,6 +59,14 @@ func (r *ChatRepo) UpdateChat(ctx context.Context, chat *domain.Chat) (*domain.C
 	return chat, nil
 }
 
+func (r *ChatRepo) DeleteChat(ctx context.Context, id string) error {
+	_, err := r.db.Exec(ctx, `DELETE FROM "chat" WHERE "id" = $1`, id)
+	if err != nil {
+		return fmt.Errorf("failed to delete chat: %w", err)
+	}
+	return nil
+}
+
 func (r *ChatRepo) IsChatExists(ctx context.Context, id string) (bool, error) {
 	var exists bool
 	err := r.db.QueryRow(ctx, `SELECT EXISTS (SELECT 1 FROM "chat" WHERE "id" = $1)`, id).Scan(&exists)

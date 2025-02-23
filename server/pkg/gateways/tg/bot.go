@@ -117,9 +117,16 @@ func (b *Bot) handleCommandStart(ctx context.Context, _ *bot.Bot, update *models
 
 func (b *Bot) handleMyChatMember(ctx context.Context, _ *bot.Bot, update *models.Update) {
 	mcm := update.MyChatMember
-	err := b.registerChat(ctx, mcm.Chat.ID)
-	if err != nil {
-		b.log.Errorf("error registering chat: %v", err)
+	if mcm.NewChatMember.Type == models.ChatMemberTypeBanned || mcm.NewChatMember.Type == models.ChatMemberTypeLeft {
+		err := b.cases.Chat.ForgetChatByTGID(ctx, mcm.Chat.ID)
+		if err != nil {
+			b.log.Errorf("error forgetting chat: %v", err)
+		}
+	} else {
+		err := b.registerChat(ctx, mcm.Chat.ID)
+		if err != nil {
+			b.log.Errorf("error registering chat: %v", err)
+		}
 	}
 }
 
