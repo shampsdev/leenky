@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { onMounted, ref, onUnmounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileStore } from '@/stores/profile.store';
-import Button from '@/components/button.vue';
 import { useUserStore } from '@/stores/user.store';
 import { getMe, getUserById, postMe } from '@/api/api';
 import { useMiniApp } from 'vue-tg';
 import { animate } from 'motion';
+import { handleImageError } from '@/utils/errorHandlers';
 const router = useRouter();
 const route = useRoute();
 const profileStore = useProfileStore();
@@ -126,8 +126,8 @@ onMounted(async () => {
           <div class="flex flex-col items-center gap-[17px]">
             <img
               class="w-[115px] h-[115px] rounded-full object-cover"
-              :src="`${profileStore.profile.avatar}`"
-              alt="User Avatar"
+              :src="profileStore.profile.avatar || ''"
+              @error="handleImageError"
             />
 
             <div v-if="!profileStore.editMode" class="text-center">

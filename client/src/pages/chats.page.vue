@@ -34,8 +34,8 @@
           >
             <img
               :src="chat.avatar"
-              alt="Avatar"
-              class="max-w-[60px] max-h-[60px] rounded-full aspect-square object-cover"
+              @error="handleImageError"
+              class="w-[60px] h-[60px] rounded-full aspect-square object-cover"
             />
             <div
               :class="[
@@ -68,6 +68,7 @@ import { getChats, searchChats, leaveChat } from '@/api/api';
 import { useMiniApp } from 'vue-tg';
 import { animate } from 'motion';
 import Profile from '@/components/profile.vue';
+import { handleImageError } from '@/utils/errorHandlers';
 const chats = ref([]);
 const searchQuery = ref('');
 const chatsSearchStore = useChatsSearchStore();

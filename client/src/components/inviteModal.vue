@@ -1,11 +1,11 @@
 <script setup>
-import { useInviteStore } from "@/stores/invite.store";
-import Button from "./button.vue";
-import { useRouter } from "vue-router";
-import { useUserStore } from "@/stores/user.store";
-import { getChat, getMe } from "@/api/api";
-import { useMiniApp } from "vue-tg";
-import { onMounted } from "vue";
+import { useInviteStore } from '@/stores/invite.store';
+import Button from './button.vue';
+import { useRouter } from 'vue-router';
+import { useUserStore } from '@/stores/user.store';
+import { getChat, getMe } from '@/api/api';
+import { useMiniApp } from 'vue-tg';
+import { handleError, onMounted } from 'vue';
 const router = useRouter();
 const inviteStore = useInviteStore();
 const currentUser = useUserStore();
@@ -43,7 +43,7 @@ onMounted(async () => {
       </p>
 
       <div v-if="inviteStore.chat" class="flex items-center gap-[10px] rounded-lg mt-[36px]">
-        <img :src="inviteStore.chat.avatar" alt="Аватар чата" class="w-12 h-12 rounded-full" />
+        <img :src="inviteStore.chat.avatar" @error="handleError" class="w-12 h-12 rounded-full" />
         <div class="ml-3 text-left">
           <p class="font-medium text-black">{{ inviteStore.chat.name }}</p>
           <p class="text-gray-500 text-sm">
