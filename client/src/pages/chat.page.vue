@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, inject, onBeforeMount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useMiniApp } from 'vue-tg';
-import { getChat, searchInChat } from '@/api/api';
+import { getChat, getChatPreview, searchInChat } from '@/api/api';
 import { useProfileStore } from '@/stores/profile.store';
 import { useChatSearchStore } from '@/stores/chatSearch.store';
 import { animate } from 'motion';
@@ -56,42 +56,35 @@ const animateScreenEntry = () => {
 };
 
 const filterUsers = async () => {
-  isLoading.value = true;
-
   if (searchQuery.value.trim() === '') {
-    // Когда строка пустая, запрашиваем всех пользователей
     const fetchedUsers = await getChat(initData, chatId);
-    users.value = fetchedUsers.users;
-    isLoading.value = false;
+    users.value = fetchedUsers.users ?? [];
     return;
   }
-
-  // Когда есть текст, выполняем поиск
   if (searchQuery.value === chatSearchStore.searchQuery) {
     users.value = chatSearchStore.users;
-    isLoading.value = false;
   } else {
     const fetchedUsers = await searchInChat(initData, chatId, searchQuery.value);
     chatSearchStore.users = fetchedUsers ?? [];
     chatSearchStore.setQuery(searchQuery.value);
     users.value = fetchedUsers ?? [];
-    isLoading.value = false;
   }
 };
 
 onMounted(async () => {
   isLoading.value = true;
+
   animateScreenEntry();
   searchQuery.value = chatSearchStore.searchQuery;
   if (chatSearchStore.chatData) {
     chat.value = await getChat(initData, chatId);
-    users_count.value = chat.value.users.length;
     if (chatSearchStore.searchQuery === searchQuery) {
       searchQuery.value = chatSearchStore.searchQuery;
       users.value = chatSearchStore.users;
       chat.value.users = chatSearchStore.chatData;
     } else {
       const fetchedUsers = await searchInChat(initData, chatId, searchQuery.value);
+      console.log('AAAA');
       if (fetchedUsers !== null) {
         users.value = fetchedUsers;
         chatSearchStore.chatData.users = fetchedUsers;
@@ -99,10 +92,14 @@ onMounted(async () => {
     }
     chat.value.users = chatSearchStore.chatData;
   } else {
+    chat.value = await getChat(initData, chatId);
     chatSearchStore.chatData = chat.value.users;
     users.value = chatSearchStore.chatData.users;
     chatSearchStore.searchQuery = '';
   }
+  console.log(chat.value);
+  const chatPreview = await getChatPreview(initData, chatId);
+  chat.value = chatPreview;
   isLoading.value = false;
 });
 
@@ -131,7 +128,9 @@ const filteredUsers = computed(() => users.value ?? []);
             >
               <div class="flex flex-col gap-[2px]">
                 <p class="font-normal text-[17px]">{{ chat.name ?? '  название чата ' }}</p>
-                <p class="text-hint font-light text-[15px]">{{ users_count ?? '0' }} участников</p>
+                <p class="text-hint font-light text-[15px]">
+                  {{ chat.usersAmount ?? '0' }} участников
+                </p>
               </div>
             </div>
           </li>

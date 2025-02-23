@@ -24,9 +24,20 @@
           />
         </div>
 
-        <ul v-if="filteredChats.length" name="chat" tag="ul" class="flex flex-col gap-0 mt-[25px]">
+        <ul
+          v-show="filteredChats.length"
+          name="chat"
+          tag="ul"
+          class="flex flex-col gap-0 mt-[25px]"
+        >
           <li
-            @click="() => router.push(`/chat/${chat.id}`)"
+            @click="
+              () => {
+                chatsSearchStore.setChats(chats);
+                chatsSearchStore.setQuery(searchQuery);
+                router.push(`/chat/${chat.id}`);
+              }
+            "
             v-if="!isLoading"
             v-for="(chat, chatIndex) in filteredChats"
             :key="chat.id"
@@ -55,7 +66,10 @@
             </div>
           </li>
         </ul>
-        <div v-else class="flex w-full flex-col items-center text-center mt-[120px] gap-[20px]">
+        <div
+          v-if="!filteredChats.length"
+          class="flex w-full flex-col items-center text-center mt-[120px] gap-[20px]"
+        >
           <img src="/src/assets/notFound.svg" />
 
           <div class="flex flex-col items-center text-center gap-[8px]">
@@ -90,29 +104,14 @@ const initData = miniApp.initData;
 const isLoading = ref(true);
 
 const filterChats = async () => {
-  isLoading.value = true;
-  if (searchQuery.value.trim() === '') {
-    const fetchedChats = await getChats(initData);
-    if (fetchedChats !== null) {
-      chatsSearchStore.chatsData = fetchedChats;
-      chats.value = chatsSearchStore.chatsData;
-    }
-
-    isLoading.value = false;
-    return;
-  }
-
   if (searchQuery.value === chatsSearchStore.searchQuery) {
     chats.value = chatsSearchStore.chatsData;
-    chatsSearchStore.searchQuery = searchQuery.value;
   } else {
     const fetchedChats = await searchChats(initData, searchQuery.value);
     chatsSearchStore.chatsData = fetchedChats ?? [];
     chatsSearchStore.setQuery(searchQuery.value);
     chats.value = chatsSearchStore.chatsData;
-    chatsSearchStore.searchQuery = searchQuery.value;
   }
-  isLoading.value = false;
 };
 
 const leaveChatHandler = async chatId => {
