@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, onUnmounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileStore } from '@/stores/profile.store';
 import Button from '@/components/button.vue';
@@ -12,6 +12,10 @@ const route = useRoute();
 const profileStore = useProfileStore();
 const goToChats = () => {
   router.push('/chats');
+};
+
+const closeKeyboard = (event: any) => {
+  event.target.blur();
 };
 
 const currentUser = useUserStore();
@@ -72,12 +76,14 @@ const saveChanges = async () => {
   }
 };
 
+const isLoadedAnimnation = ref(false);
+
 const animateScreenEntry = () => {
   animate(
     '.screen-container',
     {
       opacity: [0, 1],
-      scale: [0.7, 1],
+      scale: [0.9, 1],
     },
     {
       ease: 'circInOut',
@@ -96,6 +102,11 @@ onMounted(async () => {
   await RefreshProfile();
   console.log(isCurrentUserProfile, currentUser.id, currentUser.telegramId, userId);
 });
+
+//const handleScroll = (event:) => {
+//if (document.activeElement && document.activeElement.tagName === 'TEXTAREA') {
+// document.activeElement.blur();
+//}
 </script>
 
 <template>
@@ -104,8 +115,11 @@ onMounted(async () => {
       <div
         v-if="!isLoading"
         :class="[
-          'max-w-[95%] overflow-auto scroll-container py-4 mx-auto px-4',
-          { 'h-[170vh]': profileStore.editMode, 'max-h-[100vh]': !profileStore.editMode },
+          'max-w-[95%] overflow-y-auto scroll-container py-4 mx-auto px-4',
+          {
+            'h-[170vh]': profileStore.editMode,
+            'max-h-[calc(100vh-100px)]': !profileStore.editMode,
+          },
         ]"
       >
         <div class="w-full">
@@ -125,7 +139,7 @@ onMounted(async () => {
               </p>
             </div>
 
-            <div v-if="!profileStore.editMode" class="flex justify-center">
+            <div v-if="!isCurrentUserProfile" class="flex justify-center">
               <button
                 class="inline-flex items-center gap-[6px] px-[30px] py-[12px] bg-[#20C86E] rounded-[30px] text-white font-semibold"
                 @click="goToPersonChat"
@@ -138,7 +152,7 @@ onMounted(async () => {
           <div v-if="!profileStore.editMode">
             <div class="mt-[15px] rounded-lg">
               <div
-                class="bg-form flex flex-col gap-[10px] px-[16px] rounded-[12px] divide-y divide-black"
+                class="bg-form flex flex-col gap-[10px] px-[16px] rounded-[12px] divide-y divide-[#707579]"
               >
                 <div class="flex flex-col py-[17px]">
                   <p class="text-[15px] text-hint">Место работы</p>
@@ -152,7 +166,7 @@ onMounted(async () => {
 
                 <div class="py-[17px]">
                   <p class="text-[15px] text-hint">Описание</p>
-                  <p class="text-[17px]">
+                  <p class="text-[17px] whitespace-pre-wrap">
                     {{ profileStore.profile.bio }}
                   </p>
                 </div>
@@ -168,6 +182,7 @@ onMounted(async () => {
                   Имя
                 </legend>
                 <input
+                  @keydown.enter="closeKeyboard"
                   type="text"
                   maxlength="40"
                   v-model="profileStore.editFieldProfile.firstName"
@@ -183,6 +198,7 @@ onMounted(async () => {
                   Фамилия
                 </legend>
                 <input
+                  @keydown.enter="closeKeyboard"
                   type="text"
                   maxlength="40"
                   v-model="profileStore.editFieldProfile.lastName"
@@ -196,6 +212,7 @@ onMounted(async () => {
               >
                 <legend class="px-2 text-sm transition-all">Место работы</legend>
                 <input
+                  @keydown.enter="closeKeyboard"
                   type="text"
                   maxlength="40"
                   v-model="profileStore.editFieldProfile.company"
@@ -213,6 +230,7 @@ onMounted(async () => {
                   Должность
                 </legend>
                 <input
+                  @keydown.enter="closeKeyboard"
                   type="text"
                   maxlength="40"
                   v-model="profileStore.editFieldProfile.role"
@@ -231,43 +249,45 @@ onMounted(async () => {
                   @input="autoResize"
                   @keydown="limitNewlines"
                   maxlength="230"
-                  rows="1"
+                  rows="6"
+                  style="white-space: pre-wrap"
                   class="resize-none w-full text-main outline-none pb-[6px] py-[3px] px-[16px] bg-transparent"
                 ></textarea>
               </fieldset>
             </section>
           </div>
         </div>
-        <div
-          class="flex w-[100vw] h-[100px] absolute right-0 bottom-0 left-0 text-center items-center justify-center bg-white"
-        >
-          <div class="block h-full w-full bg-white absolute z-0"></div>
-
-          <button
-            v-if="profileStore.isChanged && profileStore.editMode"
-            class="px-[30px] py-[12px] z-10 bg-[#20C86E] rounded-[30px] text-white font-semibold"
-            @click="saveChanges"
-          >
-            Сохранить
-          </button>
-
-          <button
-            v-else-if="!profileStore.isChanged && profileStore.editMode"
-            class="px-[30px] py-[12px] z-10 bg-white rounded-[30px] text-main font-semibold"
-            @click="profileStore.toggleEditMode"
-          >
-            Редактировать
-          </button>
-          <button
-            v-else
-            class="px-[30px] py-[12px] z-10 bg-[#20C86E] rounded-[30px] text-white font-semibold"
-            @click="profileStore.toggleEditMode"
-          >
-            Редактировать
-          </button>
-        </div>
       </div>
     </transition>
+  </div>
+  <div
+    v-if="isCurrentUserProfile"
+    class="flex w-[100vw] h-[100px] absolute right-0 bottom-0 left-0 text-center items-center justify-center bg-white"
+  >
+    <div class="block h-full w-full bg-white absolute z-0"></div>
+
+    <button
+      v-if="profileStore.isChanged && profileStore.editMode"
+      class="px-[30px] py-[12px] z-10 bg-[#20C86E] rounded-[30px] text-white font-semibold"
+      @click="saveChanges"
+    >
+      Сохранить
+    </button>
+
+    <button
+      v-else-if="!profileStore.isChanged && profileStore.editMode"
+      class="px-[30px] py-[12px] z-10 bg-white rounded-[30px] text-main font-semibold"
+      @click="profileStore.toggleEditMode"
+    >
+      Редактировать
+    </button>
+    <button
+      v-else
+      class="px-[30px] py-[12px] z-10 bg-[#20C86E] rounded-[30px] text-white font-semibold"
+      @click="profileStore.toggleEditMode"
+    >
+      Редактировать
+    </button>
   </div>
 </template>
 

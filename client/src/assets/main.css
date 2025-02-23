@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import 'tailwindcss';
 
 /* Telegram Theme Support */
 .bg-tg {
@@ -73,4 +73,10 @@ html {
 
 .scrollbar-none {
   scrollbar-width: none;
+}
+
+html,
+body {
+  overflow: hidden;
+  height: 100%;
 }
