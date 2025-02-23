@@ -58,7 +58,7 @@ onMounted(() => {
 
           <div class="mt-6" v-if="isLoaded">
             <p class="text-[20px] mt-2 text-main font-semibold">
-              Расширяейте круг полезных знакомств
+              Расширяйте круг полезных знакомств
             </p>
           </div>
         </div>
