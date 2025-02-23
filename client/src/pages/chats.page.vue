@@ -1,7 +1,7 @@
 <template>
   <div class="screen-container">
     <transition name="fade" @before-enter="animateScreenEntry" @enter="animateScreenEntry">
-      <div class="max-w-[95%] h-[100%] overflow-auto scroll-container mx-auto px-4">
+      <div class="max-w-[95%] max-h-[100vh] overflow-auto scroll-container mx-auto px-4">
         <div class="flex items-center justify-between gap-[15px] py-4 pt-[25px]">
           <div class="flex gap-[10px] items-center">
             <h1 class="text-xl font-semibold">Чаты</h1>
@@ -23,8 +23,9 @@
           />
         </div>
 
-        <transition-group name="chat" tag="ul" class="flex flex-col gap-0 mt-[25px]">
+        <ul name="chat" tag="ul" class="flex flex-col gap-0 mt-[25px]">
           <li
+            v-if="!isLoading"
             v-for="(chat, chatIndex) in filteredChats"
             :key="chat.id"
             class="chat-item flex w-full flex-row items-center gap-[7px] cursor-pointer"
@@ -52,7 +53,7 @@
               />
             </div>
           </li>
-        </transition-group>
+        </ul>
       </div>
     </transition>
   </div>
@@ -74,15 +75,21 @@ const router = useRouter();
 const miniApp = useMiniApp();
 const initData = miniApp.initData;
 
+const isLoading = ref(true);
+
 const filterChats = async () => {
+  isLoading.value = true;
   if (searchQuery.value === chatsSearchStore.searchQuery) {
     chats.value = chatsSearchStore.chatsData;
+    chatsSearchStore.searchQuery = searchQuery.value;
   } else {
     const fetchedChats = await searchChats(initData, searchQuery.value);
     chatsSearchStore.chatsData = fetchedChats ?? [];
     chatsSearchStore.setQuery(searchQuery.value);
     chats.value = chatsSearchStore.chatsData;
+    chatsSearchStore.searchQuery = searchQuery.value;
   }
+  isLoading.value = false;
 };
 
 const leaveChatHandler = async chatId => {
@@ -94,11 +101,6 @@ const leaveChatHandler = async chatId => {
 };
 
 onMounted(async () => {
-  chatsSearchStore.resetQuery();
-  chatsSearchStore.resetChatsData();
-
-  searchQuery.value = chatsSearchStore.searchQuery;
-
   if (chatsSearchStore.chatsData.length !== 0) {
     if (chatsSearchStore.searchQuery === searchQuery.value) {
       searchQuery.value = chatsSearchStore.searchQuery;
@@ -118,6 +120,7 @@ onMounted(async () => {
       chats.value = chatsSearchStore.chatsData;
     }
   }
+  isLoading.value = false;
 });
 
 const addBot = () => {
@@ -135,27 +138,11 @@ const animateScreenEntry = () => {
     '.screen-container',
     {
       opacity: [0, 1],
-      y: [100, 0],
-      scale: [0.5, 1],
-    },
-    {
-      ease: 'circInOut',
-      duration: 1,
-    }
-  );
-};
-
-const animateChatEntry = index => {
-  animate(
-    `.chat-item-${index}`,
-    {
-      opacity: [0, 1],
-      y: [50, 0],
+      scale: [0.7, 1],
     },
     {
       ease: 'circInOut',
       duration: 0.5,
-      delay: index * 0.1,
     }
   );
 };
@@ -167,12 +154,10 @@ onMounted(() => {
 
 <style scoped>
 .screen-container {
-  opacity: 0;
-  transform: translateY(50px);
-  transform: scale(0.9);
+  opacity: 0.5;
 }
 
-.chat-enter-active,
+/* .chat-enter-active,
 .chat-leave-active {
   transition: opacity 0.5s, transform 0.5s;
 }
@@ -181,5 +166,5 @@ onMounted(() => {
 .chat-leave-to {
   opacity: 0;
   transform: translateY(50px);
-}
+} */
 </style>
