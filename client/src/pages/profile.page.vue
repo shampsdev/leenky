@@ -105,7 +105,7 @@ onMounted(async () => {
         v-if="!isLoading"
         :class="[
           'max-w-[95%] overflow-auto scroll-container py-4 mx-auto px-4',
-          { 'max-h-[120vh]': profileStore.editMode, 'max-h-[100vh]': !profileStore.editMode },
+          { 'h-[170vh]': profileStore.editMode, 'max-h-[100vh]': !profileStore.editMode },
         ]"
       >
         <div class="w-full">
@@ -119,28 +119,10 @@ onMounted(async () => {
             <div v-if="!profileStore.editMode" class="text-center">
               <p class="font-semibold inline-flex text-[20px] gap-[10px] items-center">
                 {{ profileStore.profile.firstName }} {{ profileStore.profile.lastName }}
-
-                <img
-                  v-if="isCurrentUserProfile"
-                  src="/src/assets/edit_24.svg"
-                  alt=""
-                  srcset=""
-                  class="w-[20px] h-[20px]"
-                  @click="profileStore.toggleEditMode"
-                />
               </p>
               <p v-if="!profileStore.editMode" class="text-hint text-[15px]">
                 {{ `@${profileStore.profile.telegramUsername}` }}
               </p>
-            </div>
-            <div v-else>
-              <button
-                v-if="profileStore.isChanged"
-                @click="saveChanges"
-                class="bg-blue-500 text-white px-4 py-2 rounded mt-4"
-              >
-                Сохранить
-              </button>
             </div>
 
             <div v-if="!profileStore.editMode" class="flex justify-center">
@@ -255,6 +237,34 @@ onMounted(async () => {
               </fieldset>
             </section>
           </div>
+        </div>
+        <div
+          class="flex w-[100vw] h-[100px] absolute right-0 bottom-0 left-0 text-center items-center justify-center bg-white"
+        >
+          <div class="block h-full w-full bg-white absolute z-0"></div>
+
+          <button
+            v-if="profileStore.isChanged && profileStore.editMode"
+            class="px-[30px] py-[12px] z-10 bg-[#20C86E] rounded-[30px] text-white font-semibold"
+            @click="saveChanges"
+          >
+            Сохранить
+          </button>
+
+          <button
+            v-else-if="!profileStore.isChanged && profileStore.editMode"
+            class="px-[30px] py-[12px] z-10 bg-white rounded-[30px] text-main font-semibold"
+            @click="profileStore.toggleEditMode"
+          >
+            Редактировать
+          </button>
+          <button
+            v-else
+            class="px-[30px] py-[12px] z-10 bg-[#20C86E] rounded-[30px] text-white font-semibold"
+            @click="profileStore.toggleEditMode"
+          >
+            Редактировать
+          </button>
         </div>
       </div>
     </transition>
