@@ -145,7 +145,6 @@ const animateScreenEntry = () => {
   );
 };
 
-// Анимация для каждого чата
 const animateChatEntry = index => {
   animate(
     `.chat-item-${index}`,
