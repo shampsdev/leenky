@@ -498,14 +498,20 @@
                 "avatar": {
                     "type": "string"
                 },
+                "createdAt": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
-                "telegram_id": {
+                "telegramId": {
                     "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
                 },
                 "users": {
                     "type": "array",
@@ -527,10 +533,10 @@
                 "name": {
                     "type": "string"
                 },
-                "telegram_id": {
+                "telegramId": {
                     "type": "integer"
                 },
-                "users_amount": {
+                "usersAmount": {
                     "type": "integer"
                 }
             }
@@ -567,6 +573,9 @@
                 "company": {
                     "type": "string"
                 },
+                "createdAt": {
+                    "type": "string"
+                },
                 "firstName": {
                     "type": "string"
                 },
@@ -583,6 +592,9 @@
                     "type": "integer"
                 },
                 "telegramUsername": {
+                    "type": "string"
+                },
+                "updatedAt": {
                     "type": "string"
                 }
             }

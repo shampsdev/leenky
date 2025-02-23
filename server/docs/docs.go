@@ -506,14 +506,20 @@ const docTemplate = `{
                 "avatar": {
                     "type": "string"
                 },
+                "createdAt": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
-                "telegram_id": {
+                "telegramId": {
                     "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
                 },
                 "users": {
                     "type": "array",
@@ -535,10 +541,10 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "telegram_id": {
+                "telegramId": {
                     "type": "integer"
                 },
-                "users_amount": {
+                "usersAmount": {
                     "type": "integer"
                 }
             }
@@ -575,6 +581,9 @@ const docTemplate = `{
                 "company": {
                     "type": "string"
                 },
+                "createdAt": {
+                    "type": "string"
+                },
                 "firstName": {
                     "type": "string"
                 },
@@ -591,6 +600,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "telegramUsername": {
+                    "type": "string"
+                },
+                "updatedAt": {
                     "type": "string"
                 }
             }
