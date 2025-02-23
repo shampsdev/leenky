@@ -7,6 +7,7 @@ import (
 
 	"github.com/blevesearch/bleve/v2"
 	"github.com/blevesearch/bleve/v2/analysis/lang/ru"
+	"github.com/blevesearch/bleve/v2/search/query"
 	"github.com/shampsdev/tglinked/server/pkg/domain"
 	"github.com/shampsdev/tglinked/server/pkg/utils"
 )
@@ -82,7 +83,7 @@ func (i *usersIndex) Search(req *bleve.SearchRequest) ([]*domain.User, error) {
 
 	var users []*domain.User
 	for _, hit := range res.Hits {
-		// fmt.Println(hit.Fragments)
+		fmt.Println(hit.Fragments)
 		users = append(users, i.users[hit.ID])
 	}
 	return users, nil
@@ -102,21 +103,32 @@ func (i *chatsIndex) Search(req *bleve.SearchRequest) ([]*domain.ChatPreview, er
 }
 
 func (s *Search) buildSearchRequest(text string) *bleve.SearchRequest {
-	prefixQuery := bleve.NewMatchQuery(text)
+	tText := utils.Transliterate(text)
+	sText := utils.SwapKeyboardLayout(text)
+	stText := utils.Transliterate(sText)
 
-	fuzzyQuery := bleve.NewFuzzyQuery(text)
-	fuzzyQuery.Fuzziness = 2
-	translitQuery := bleve.NewFuzzyQuery(utils.Transliterate(text))
-	translitQuery.Fuzziness = 2
+	texts := []string{text, tText, sText, stText}
+	boosts := []float64{1, 0.75, 0.75, 0.5}
 
-	fieldQuery := bleve.NewMatchQuery(text)
+	var qs []query.Query
+	for i := range texts {
+		q := bleve.NewMatchQuery(texts[i])
+		q.BoostVal = (*query.Boost)(&boosts[i])
+		qs = append(qs, q)
+	}
+	for i := range texts {
+		q := bleve.NewPrefixQuery(texts[i])
+		q.BoostVal = (*query.Boost)(&boosts[i])
+		qs = append(qs, q)
+	}
+	for i := range texts {
+		q := bleve.NewFuzzyQuery(texts[i])
+		q.Fuzziness = 2
+		q.BoostVal = (*query.Boost)(&boosts[i])
+		qs = append(qs, q)
+	}
 
-	query := bleve.NewDisjunctionQuery(
-		prefixQuery,
-		fuzzyQuery,
-		translitQuery,
-		fieldQuery,
-	)
+	query := bleve.NewDisjunctionQuery(qs...)
 	return bleve.NewSearchRequest(query)
 }
 
@@ -192,9 +204,15 @@ func (s *Search) buildUsersIndex(users []*domain.User) (*usersIndex, error) {
 
 	mapping := bleve.NewIndexMapping()
 	userMapping := bleve.NewDocumentMapping()
-	userMapping.AddFieldMappingsAt("bio", russianTextAnalyzer)
+	userMapping.AddFieldMappingsAt("company", russianTextAnalyzer)
 	userMapping.AddFieldMappingsAt("role", russianTextAnalyzer)
-	userMapping.AddFieldMappingsAt("avatar")
+	userMapping.AddFieldMappingsAt("bio", russianTextAnalyzer)
+	noneMapping := bleve.NewTextFieldMapping()
+	noneMapping.Store = false
+	userMapping.AddFieldMappingsAt("avatar", noneMapping)
+	userMapping.AddFieldMappingsAt("firstName", bleve.NewTextFieldMapping())
+	userMapping.AddFieldMappingsAt("lastName", bleve.NewTextFieldMapping())
+	userMapping.AddFieldMappingsAt("username", bleve.NewTextFieldMapping())
 
 	mapping.AddDocumentMapping("user", userMapping)
 	mapping.DefaultType = "user"

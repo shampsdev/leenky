@@ -2,7 +2,7 @@ package utils
 
 import "testing"
 
-func TestTransliterate(t *testing.T) {
+func TestSwapKeyboardLayout(t *testing.T) {
 	tests := []struct {
 		input    string
 		expected string
@@ -19,7 +19,7 @@ func TestTransliterate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.input, func(t *testing.T) {
-			result := Transliterate(tt.input)
+			result := SwapKeyboardLayout(tt.input)
 			if result != tt.expected {
 				t.Errorf("transliterate(%q) = %q; expected %q", tt.input, result, tt.expected)
 			}

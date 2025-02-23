@@ -4,7 +4,7 @@ import (
 	"strings"
 )
 
-var translitMap = map[rune]rune{
+var swapKeyboardLayoutMap = map[rune]rune{
 	// Латиница -> Кириллица
 	'q': 'й', 'w': 'ц', 'e': 'у', 'r': 'к', 't': 'е', 'y': 'н',
 	'u': 'г', 'i': 'ш', 'o': 'щ', 'p': 'з', '[': 'х', ']': 'ъ',
@@ -36,10 +36,10 @@ var translitMap = map[rune]rune{
 	'Ь': 'M', 'Б': '<', 'Ю': '>',
 }
 
-func Transliterate(text string) string {
+func SwapKeyboardLayout(text string) string {
 	var result strings.Builder
 	for _, char := range text {
-		if t, exists := translitMap[char]; exists {
+		if t, exists := swapKeyboardLayoutMap[char]; exists {
 			result.WriteRune(t)
 		} else {
 			result.WriteRune(char)
