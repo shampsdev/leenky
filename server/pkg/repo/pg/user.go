@@ -33,7 +33,7 @@ func (r *UserRepo) UpdateUser(ctx context.Context, id string, user *domain.EditU
 	newUser := &domain.User{}
 	err := r.db.QueryRow(ctx, `
 		UPDATE "user" 
-		SET "first_name" = $1, "last_name" = $2, "company" = $3, "role" = $4, "bio" = $5
+		SET "first_name" = $1, "last_name" = $2, "company" = $3, "role" = $4, "bio" = $5, "updated_at" = NOW()
 		WHERE "id" = $6 
 		RETURNING "id", "telegram_id", "telegram_username", "avatar", "first_name", "last_name", "company", "role", "bio"`,
 		user.FirstName, user.LastName, user.Company, user.Role, user.Bio, id,
@@ -58,7 +58,7 @@ func (r *UserRepo) UpdateUserTGData(ctx context.Context, id string, user *domain
 	newUser := &domain.User{}
 	err := r.db.QueryRow(ctx, `
 		UPDATE "user" 
-		SET "telegram_id" = $1, "telegram_username" = $2, "avatar" = $3
+		SET "telegram_id" = $1, "telegram_username" = $2, "avatar" = $3, "updated_at" = NOW()
 		WHERE "id" = $4 
 		RETURNING "id", "telegram_id", "telegram_username", "avatar", "first_name", "last_name", "company", "role", "bio"`,
 		user.TelegramID, user.TelegramUsername, user.Avatar, id,

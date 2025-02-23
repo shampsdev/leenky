@@ -1,7 +1,5 @@
 package domain
 
-import "time"
-
 type User struct {
 	ID               string `json:"id"`
 	TelegramID       int64  `json:"telegramId"`
@@ -13,9 +11,6 @@ type User struct {
 	Company   string `json:"company"`
 	Role      string `json:"role"`
 	Bio       string `json:"bio"`
-
-	CreatedAt time.Time `json:"createdAt"`
-	UpdatedAt time.Time `json:"updatedAt"`
 }
 
 type EditUser struct {
