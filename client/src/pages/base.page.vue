@@ -22,7 +22,6 @@ const accept = async () => {
   const userData = await getMe(initData);
   if (userData === null) {
     // currentUser.logIn(userData);
-    inviteStore.close();
     router.push(`/profile/${currentUser.id}`);
   }
 };

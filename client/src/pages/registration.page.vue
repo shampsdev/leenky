@@ -27,7 +27,7 @@ const goToChats = async () => {
       } else {
         router.replace('/chats');
         if (chatId !== undefined) {
-          router.push(`/chat/${chatId}`);
+          setTimeout(() => router.push(`/chat/${chatId}`), 100);
         }
       }
     }
