@@ -75,7 +75,6 @@ onMounted(async () => {
   isLoading.value = true;
 
   animateScreenEntry();
-  searchQuery.value = chatSearchStore.searchQuery;
   if (chatSearchStore.chatData) {
     chat.value = await getChat(initData, chatId);
     if (chatSearchStore.searchQuery === searchQuery) {
@@ -207,7 +206,10 @@ const filteredUsers = computed(() => users.value ?? []);
           </li>
         </ul>
 
-        <div v-else class="flex w-full flex-col items-center text-center mt-[120px] gap-[20px]">
+        <div
+          v-if="!filteredUsers.length && !isLoading"
+          class="flex w-full flex-col items-center text-center mt-[120px] gap-[20px]"
+        >
           <img src="/src/assets/notFound.svg" />
 
           <div class="flex flex-col items-center text-center gap-[8px]">
