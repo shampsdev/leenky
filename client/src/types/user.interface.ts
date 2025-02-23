@@ -15,7 +15,7 @@ export interface UserData extends ProfileUserData {
 
 export interface ChatData {
   id: string; // backend ID
-  telegram_id: string;
+  telegramId: string;
   name: string | null;
   avatar: string | null;
   users: UserData[];
@@ -23,8 +23,8 @@ export interface ChatData {
 
 export interface ChatPreviewData {
   avatar: string | null;
-  users_amount: string | null;
+  usersAmount: string | null;
   name: string | null;
   id: string | null;
-  telegram_id: string | null;
+  telegramId: string | null;
 }

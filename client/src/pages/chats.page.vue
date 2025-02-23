@@ -45,7 +45,7 @@
             >
               <div class="flex flex-col gap-[2px]">
                 <p class="font-normal text-[17px]">{{ chat.name }}</p>
-                <p class="text-hint font-light text-[15px]">{{ chat.users_amount }} участников</p>
+                <p class="text-hint font-light text-[15px]">{{ chat.usersAmount }} участников</p>
               </div>
               <img
                 src="/src/assets/navigation.svg"
