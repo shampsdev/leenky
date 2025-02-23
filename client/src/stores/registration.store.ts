@@ -1,28 +1,28 @@
-import { defineStore } from "pinia";
-import type { ProfileUserData } from "@/types/user.interface";
+import { defineStore } from 'pinia';
+import type { ProfileUserData } from '@/types/user.interface';
 
-export const useRegistrationStore = defineStore("registration", {
+export const useRegistrationStore = defineStore('registration', {
   state: () => ({
     editMode: false as boolean,
 
     profile: <ProfileUserData>{
-      firstName: "",
-      lastName: "",
-      role: "",
-      company: "",
-      bio: "",
-      avatar: "",
-      telegramUsername: "",
+      firstName: '',
+      lastName: '',
+      role: '',
+      company: '',
+      bio: '',
+      avatar: '',
+      telegramUsername: '',
     },
 
     editFieldProfile: <ProfileUserData>{
-      firstName: "",
-      lastName: "",
-      role: "",
-      company: "",
-      bio: "",
-      avatar: "",
-      telegramUsername: "",
+      firstName: '',
+      lastName: '',
+      role: '',
+      company: '',
+      bio: '',
+      avatar: '',
+      telegramUsername: '',
     },
   }),
 
@@ -37,6 +37,32 @@ export const useRegistrationStore = defineStore("registration", {
 
       console.log(isChanged);
       return isChanged;
+    },
+    isFilled(): boolean {
+      try {
+        if (
+          this.profile.firstName !== null &&
+          this.profile.lastName !== null &&
+          this.profile.bio !== null &&
+          this.profile.role !== null &&
+          this.profile.company !== null
+        ) {
+          if (
+            this.profile.firstName?.length > 0 &&
+            this.profile.lastName?.length > 0 &&
+            this.profile.bio.length > 0 &&
+            this.profile.company.length > 0 &&
+            this.profile.role.length > 0
+          ) {
+            return true;
+          }
+          return false;
+        }
+      } catch (error) {
+        return false;
+      }
+
+      return false;
     },
   },
 

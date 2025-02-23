@@ -20,7 +20,7 @@
             @keydown.enter="closeKeyboard"
             type="text"
             placeholder="Поиск"
-            class="flex-1 outline-none placeholder-[#838388] rounded-full text-main"
+            class="flex-1 outline-none placeholder-[#838388] text-main"
           />
         </div>
 
