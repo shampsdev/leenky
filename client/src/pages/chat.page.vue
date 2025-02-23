@@ -99,6 +99,8 @@ onMounted(async () => {
   console.log(chat.value);
   const chatPreview = await getChatPreview(initData, chatId);
   chat.value = chatPreview;
+  searchQuery.value = chatSearchStore.searchQuery;
+  filterUsers();
   isLoading.value = false;
 });
 
