@@ -54,7 +54,7 @@ onMounted(async () => {
       />
       <div class="flex flex-col gap-0 max-w-[80%]">
         <p class="font-normal mt-[17px] text-black">{{ inviteStore.chat.name }}</p>
-        <p class="text-hint text-[15px]">Число участников: {{ inviteStore.chat.users_amount }}</p>
+        <p class="text-hint text-[15px]">Число участников: {{ inviteStore.chat.usersAmount }}</p>
       </div>
     </div>
 
