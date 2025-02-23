@@ -83,7 +83,6 @@ onMounted(async () => {
       chat.value.users = chatSearchStore.chatData;
     } else {
       const fetchedUsers = await searchInChat(initData, chatId, searchQuery.value);
-      console.log('AAAA');
       if (fetchedUsers !== null) {
         users.value = fetchedUsers;
         chatSearchStore.chatData.users = fetchedUsers;
@@ -96,9 +95,10 @@ onMounted(async () => {
     users.value = chatSearchStore.chatData.users;
     chatSearchStore.searchQuery = '';
   }
-  console.log(chat.value);
   const chatPreview = await getChatPreview(initData, chatId);
   chat.value = chatPreview;
+  searchQuery.value = chatSearchStore.searchQuery;
+  filterUsers();
   isLoading.value = false;
 });
 
