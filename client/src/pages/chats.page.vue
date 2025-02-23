@@ -3,9 +3,9 @@
     <transition name="fade" @before-enter="animateScreenEntry" @enter="animateScreenEntry">
       <div class="max-w-[95%] max-h-[100vh] overflow-auto scroll-container mx-auto px-4">
         <div class="flex items-center justify-between gap-[15px] py-4 pt-[25px]">
-          <div class="flex gap-[10px] items-center">
+          <div class="flex gap-[12px] items-center">
             <h1 class="text-xl font-semibold">Чаты</h1>
-            <img class="w-[15px] h-[15px]" src="/src/assets/add_green.svg" @click="addBot" />
+            <img class="w-[22px] h-[22px]" src="/src/assets/add_green.svg" @click="addBot" />
           </div>
           <Profile />
         </div>
@@ -17,6 +17,7 @@
           <input
             @input="filterChats"
             v-model="searchQuery"
+            @keydown.enter="closeKeyboard"
             type="text"
             placeholder="Поиск"
             class="flex-1 outline-none placeholder-[#838388] text-main"
@@ -25,13 +26,13 @@
 
         <ul name="chat" tag="ul" class="flex flex-col gap-0 mt-[25px]">
           <li
+            @click="() => router.push(`/chat/${chat.id}`)"
             v-if="!isLoading"
             v-for="(chat, chatIndex) in filteredChats"
             :key="chat.id"
             class="chat-item flex w-full flex-row items-center gap-[7px] cursor-pointer"
           >
             <img
-              @click="() => router.push(`/chat/${chat.id}`)"
               :src="chat.avatar"
               alt="Avatar"
               class="max-w-[60px] max-h-[60px] rounded-full aspect-square object-cover"
@@ -79,6 +80,17 @@ const isLoading = ref(true);
 
 const filterChats = async () => {
   isLoading.value = true;
+  if (searchQuery.value.trim() === '') {
+    const fetchedChats = await getChats(initData);
+    if (fetchedChats !== null) {
+      chatsSearchStore.chatsData = fetchedChats;
+      chats.value = chatsSearchStore.chatsData;
+    }
+
+    isLoading.value = false;
+    return;
+  }
+
   if (searchQuery.value === chatsSearchStore.searchQuery) {
     chats.value = chatsSearchStore.chatsData;
     chatsSearchStore.searchQuery = searchQuery.value;
@@ -98,6 +110,10 @@ const leaveChatHandler = async chatId => {
     chats.value = chats.value.filter(item => item.id !== chatId);
     chatsSearchStore.chatsData = chats.value.filter(item => item.id !== chatId);
   }
+};
+
+const closeKeyboard = event => {
+  event.target.blur();
 };
 
 onMounted(async () => {
@@ -138,7 +154,7 @@ const animateScreenEntry = () => {
     '.screen-container',
     {
       opacity: [0, 1],
-      scale: [0.7, 1],
+      scale: [0.9, 1],
     },
     {
       ease: 'circInOut',

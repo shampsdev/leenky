@@ -12,6 +12,10 @@ const goToProfile = () => {
 </script>
 <template>
   <div class="" @click="goToProfile">
-    <img class="w-[36px] h-[36px]" :src="avatar ?? '/src/assests/chat_avatar_example.png'" alt="" />
+    <img
+      class="w-[36px] h-[36px] rounded-full"
+      :src="avatar ?? '/src/assests/chat_avatar_example.png'"
+      alt=""
+    />
   </div>
 </template>

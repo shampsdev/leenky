@@ -23,6 +23,10 @@ const chatId = route.params.chatId;
 const users_count = ref(0);
 const chatSearchStore = useChatSearchStore();
 
+const closeKeyboard = event => {
+  event.target.blur();
+};
+
 onBeforeMount(async () => {
   isLoading.value = true;
   isLoadingChatAvatar.value = true;
@@ -41,7 +45,7 @@ const animateScreenEntry = () => {
     '.screen-container',
     {
       opacity: [0, 1],
-      scale: [0.7, 1],
+      scale: [0.9, 1],
     },
     {
       ease: 'circInOut',
@@ -52,13 +56,19 @@ const animateScreenEntry = () => {
 
 const filterUsers = async () => {
   isLoading.value = true;
+
   if (searchQuery.value.trim() === '') {
+    // Когда строка пустая, запрашиваем всех пользователей
     const fetchedUsers = await getChat(initData, chatId);
-    users.value = fetchedUsers.users ?? [];
+    users.value = fetchedUsers.users;
+    isLoading.value = false;
     return;
   }
+
+  // Когда есть текст, выполняем поиск
   if (searchQuery.value === chatSearchStore.searchQuery) {
     users.value = chatSearchStore.users;
+    isLoading.value = false;
   } else {
     const fetchedUsers = await searchInChat(initData, chatId, searchQuery.value);
     chatSearchStore.users = fetchedUsers ?? [];
@@ -131,6 +141,7 @@ const filteredUsers = computed(() => users.value ?? []);
             <img src="/src/assets/search_transparent.svg" alt="search" class="w-5 h-5" />
           </button>
           <input
+            @keydown.enter="closeKeyboard"
             @input="filterUsers"
             v-model="searchQuery"
             type="text"

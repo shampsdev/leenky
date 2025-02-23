@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useBackButton, useMiniApp } from 'vue-tg';
+import { useBackButton, useMiniApp, useTheme, useWebAppBackButton, useWebAppTheme } from 'vue-tg';
 import { onMounted, ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useProfileStore } from './stores/profile.store';
@@ -10,6 +10,9 @@ const router = useRouter();
 const route = useRoute();
 const miniApp = useMiniApp();
 const profileStore = useProfileStore();
+
+const theme = useTheme();
+
 if (backButton?.show) {
   backButton.show();
 }
@@ -25,6 +28,9 @@ if (backButton?.onClick) {
     router.back();
   });
 }
+
+useWebAppTheme().setHeaderColor('#FFFFFF');
+useWebAppTheme().setBackgroundColor('#FFFFFF');
 
 const scrollStore = useScrollStore();
 const scrollContainer = ref<HTMLDivElement | null>(null);
@@ -46,7 +52,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div ref="scroll" class="bg-main w-[100vw] h-[100vh] overflow-auto scroll-container">
+  <div class="bg-main w-[100vw] h-[100vh]">
     <router-view />
   </div>
 </template>
