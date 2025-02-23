@@ -19,7 +19,7 @@
             v-model="searchQuery"
             type="text"
             placeholder="Поиск"
-            class="flex-1 outline-none text-gray-700 placeholder-gray-400"
+            class="flex-1 outline-none placeholder-[#838388] text-main"
           />
         </div>
 
