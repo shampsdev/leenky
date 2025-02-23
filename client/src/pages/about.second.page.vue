@@ -4,6 +4,7 @@ import Button from '@/components/button.vue';
 import { ref } from 'vue';
 import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { animate } from 'motion';
 import { handleImageError } from '@/utils/errorHandlers';
 const router = useRouter();
 const goToRegistration = () => {
@@ -16,43 +17,68 @@ if (backButton?.show) {
 }
 const isLoaded = ref(false);
 
-const handleImageLoad = () => {
-  isLoaded.value = true;
+const animateScreenEntry = () => {
+  animate(
+    '.screen-container',
+    {
+      opacity: [0, 1],
+      scale: [0.9, 1],
+    },
+    {
+      ease: 'circInOut',
+      duration: 0.7,
+    }
+  );
 };
 
 onMounted(() => {
+  animateScreenEntry();
   const img = new Image();
-  img.src = '/src/assets/about.png';
+  img.src = '/src/assets/about2.png';
   img.onload = () => {
     isLoaded.value = true;
   };
+  isLoaded.value = true;
 });
 </script>
 
 <template>
-  <div
-    v-if="isLoaded"
-    class="flex flex-col items-center justify-center text-center max-w-[90%] mx-auto max-h-[90vh] overflow-auto"
-  >
-    <div
-      class="w-full max-w-[320px] bg-gray-200 flex items-center justify-center rounded-lg mt-[20px]"
-    >
-      <img src="/src/assets/about.png" class="" @load="handleImageLoad" />
-    </div>
+  <div class="screen-container">
+    <transition>
+      <div>
+        <div
+          class="flex flex-col items-center justify-center text-center h-[95vh] max-w-[90%] mx-auto overflow-auto"
+        >
+          <div class="w-full max-w-[320px] flex items-center justify-center rounded-lg mt-[20px]">
+            <img src="/src/assets/things2.png" @error="handleImageError" />
+          </div>
 
-    <div class="mt-6">
-      <h1 class="text-2xl font-bold">Какой-то крутой заголовок</h1>
-      <p class="text-lg mt-2 text-gray-600">
-        И объяснение почему это приложение мегааа крутое полезное. Настя напишет что-то невероятное.
-      </p>
-    </div>
-  </div>
-  <div class="w-full fixed bottom-0">
-    <Button
-      @click="goToRegistration"
-      class="fixed bottom-5 left-1/2 -translate-x-1/2 bg-green-500 text-white text-lg font-semibold py-3 px-6 rounded-full shadow-md hover:bg-green-600 transition"
-    >
-      Зарегистрироваться
-    </Button>
+          <div class="mt-6" v-if="isLoaded">
+            <p class="mt-2 text-main text-[20px] font-semibold">
+              Рассказывайте о себе и узнавайте больше о других участниках чата
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="flex w-[100vw] h-[100px] absolute right-0 bottom-0 left-0 text-center items-center justify-center"
+        >
+          <button
+            class="px-[30px] py-[12px] z-10 bg-[#20C86E] rounded-[30px] text-white font-semibold"
+            @click="goToRegistration"
+          >
+            Зарегистрироваться
+          </button>
+        </div>
+      </div>
+    </transition>
   </div>
 </template>
+
+<style scoped>
+.screen-container {
+  opacity: 0.5;
+  overflow-y: auto;
+  height: 100vh;
+}
+</style>
