@@ -11,6 +11,8 @@ type Chat interface {
 	UpdateChat(ctx context.Context, chat *domain.Chat) (*domain.Chat, error)
 	DeleteChat(ctx context.Context, id string) error
 	GetChatByID(ctx context.Context, id string) (*domain.Chat, error)
+	GetChatIDByTelegramID(ctx context.Context, telegramID int64) (string, error)
+	GetChatTelegramIDByID(ctx context.Context, id string) (int64, error)
 	GetChatPreviewByID(ctx context.Context, id string) (*domain.ChatPreview, error)
 	GetChatByTelegramID(ctx context.Context, telegramID int64) (*domain.Chat, error)
 	GetChatPreviewsWithUser(ctx context.Context, userID string) ([]*domain.ChatPreview, error)
@@ -29,6 +31,7 @@ type User interface {
 	DeleteUser(ctx context.Context, id string) error
 	GetUserByID(ctx context.Context, id string) (*domain.User, error)
 	GetUserByTelegramID(ctx context.Context, telegramID int64) (*domain.User, error)
+	GetUserIDByTelegramID(ctx context.Context, telegramID int64) (string, error)
 }
 
 type ImageStorage interface {

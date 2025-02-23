@@ -134,3 +134,17 @@ func (r *UserRepo) GetUserByTelegramID(ctx context.Context, telegramID int64) (*
 	}
 	return user, nil
 }
+
+func (r *UserRepo) GetUserIDByTelegramID(ctx context.Context, telegramID int64) (string, error) {
+	var id string
+	err := r.db.QueryRow(ctx, `
+		SELECT "id" 
+		FROM "user" 
+		WHERE "telegram_id" = $1`,
+		telegramID,
+	).Scan(&id)
+	if err != nil {
+		return "", fmt.Errorf("failed to get user ID by telegram ID: %w", err)
+	}
+	return id, nil
+}

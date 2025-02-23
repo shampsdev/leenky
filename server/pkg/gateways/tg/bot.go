@@ -74,6 +74,10 @@ func (b *Bot) Run(ctx context.Context) {
 			(len(update.Message.NewChatPhoto) != 0 || update.Message.NewChatTitle != "")
 	}, b.handleChatChanged)
 
+	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
+		return update.ChatMember != nil
+	}, b.handleChatMember)
+
 	b.Start(ctx)
 }
 
@@ -147,6 +151,21 @@ func (b *Bot) handleMyChatMember(ctx context.Context, _ *bot.Bot, update *models
 		}
 	} else {
 		err := b.registerChat(ctx, mcm.Chat.ID)
+		if err != nil {
+			b.log.Errorf("error registering chat: %v", err)
+		}
+	}
+}
+
+func (b *Bot) handleChatMember(ctx context.Context, _ *bot.Bot, update *models.Update) {
+	cm := update.ChatMember
+	if cm.NewChatMember.Type == models.ChatMemberTypeBanned || cm.NewChatMember.Type == models.ChatMemberTypeLeft {
+		err := b.cases.Chat.ForgetChatByTGID(ctx, cm.Chat.ID)
+		if err != nil {
+			b.log.Errorf("error forgetting chat: %v", err)
+		}
+	} else {
+		_, err := b.cases.Chat.CreateOrUpdateChat(ctx, cm.Chat.ID)
 		if err != nil {
 			b.log.Errorf("error registering chat: %v", err)
 		}
