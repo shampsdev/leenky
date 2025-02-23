@@ -156,7 +156,7 @@ const animateChatEntry = index => {
     {
       ease: 'circInOut',
       duration: 0.5,
-      delay: index * 0.1, // Добавляем задержку для каждого элемента
+      delay: index * 0.1,
     }
   );
 };
@@ -167,14 +167,12 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* Стили для контейнера анимации */
 .screen-container {
   opacity: 0;
   transform: translateY(50px);
   transform: scale(0.9);
 }
 
-/* Анимации для элементов */
 .chat-enter-active,
 .chat-leave-active {
   transition: opacity 0.5s, transform 0.5s;

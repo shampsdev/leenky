@@ -131,7 +131,6 @@ const filteredUsers = computed(() => users.value ?? []);
           </button>
         </div>
 
-        <!-- Список пользователей с анимацией появления -->
         <ul v-if="filteredUsers.length" class="divide-y divide-gray-200">
           <transition-group name="user-fade" tag="ul">
             <li
@@ -206,7 +205,6 @@ const filteredUsers = computed(() => users.value ?? []);
   transform: translateY(10px);
 }
 
-/* Стили для нажатия на элементы списка */
 /*.user-item:hover {
   background-color: #f7f7f7;
   transform: scale(1.02);
