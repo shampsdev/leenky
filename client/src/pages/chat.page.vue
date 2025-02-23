@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed, onMounted, inject } from 'vue';
+import { ref, computed, onMounted, inject, onBeforeMount } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { useMiniApp } from 'vue-tg';
 import { getChat, searchInChat } from '@/api/api';
@@ -7,7 +7,6 @@ import { useProfileStore } from '@/stores/profile.store';
 import { useChatSearchStore } from '@/stores/chatSearch.store';
 import { animate } from 'motion';
 import { press } from 'motion';
-
 const chat = ref({});
 const miniApp = useMiniApp();
 const router = useRouter();
@@ -16,32 +15,43 @@ const initData = miniApp.initData;
 const profileStore = useProfileStore();
 const users = ref([]);
 const searchQuery = ref('');
-
+const isLoading = ref(true);
+const isLoadingChatAvatar = ref(true);
+const chatAvatarUrl = ref('');
 const route = useRoute();
 const chatId = route.params.chatId;
-
+const users_count = ref(0);
 const chatSearchStore = useChatSearchStore();
 
-// press('li', element => {
-//   animate(element, { scale: 0.95 }, { type: 'spring', stiffness: 300 });
-//   return () => animate(element, { scale: 1 }, { type: 'spring', stiffness: 500 });
-// });
+onBeforeMount(async () => {
+  isLoading.value = true;
+  isLoadingChatAvatar.value = true;
+  try {
+    chat.value = await getChat(initData, chatId);
+    users.value = chat.value.users ?? [];
+    chatAvatarUrl.value = chat.value.avatar;
+  } catch (error) {
+    console.error('Ошибка загрузки чата:', error);
+  }
+  isLoadingChatAvatar.value = false;
+});
+
 const animateScreenEntry = () => {
   animate(
     '.screen-container',
     {
       opacity: [0, 1],
-      x: [50, 0],
-      scale: [0.5, 1],
+      scale: [0.7, 1],
     },
     {
-      ease: 'easeInOut',
-      duration: 1,
+      ease: 'circInOut',
+      duration: 0.5,
     }
   );
 };
 
 const filterUsers = async () => {
+  isLoading.value = true;
   if (searchQuery.value.trim() === '') {
     const fetchedUsers = await getChat(initData, chatId);
     users.value = fetchedUsers.users ?? [];
@@ -54,14 +64,17 @@ const filterUsers = async () => {
     chatSearchStore.users = fetchedUsers ?? [];
     chatSearchStore.setQuery(searchQuery.value);
     users.value = fetchedUsers ?? [];
+    isLoading.value = false;
   }
 };
 
 onMounted(async () => {
+  isLoading.value = true;
   animateScreenEntry();
   searchQuery.value = chatSearchStore.searchQuery;
   if (chatSearchStore.chatData) {
     chat.value = await getChat(initData, chatId);
+    users_count.value = chat.value.users.length;
     if (chatSearchStore.searchQuery === searchQuery) {
       searchQuery.value = chatSearchStore.searchQuery;
       users.value = chatSearchStore.users;
@@ -75,11 +88,11 @@ onMounted(async () => {
     }
     chat.value.users = chatSearchStore.chatData;
   } else {
-    chat.value = await getChat(initData, chatId);
     chatSearchStore.chatData = chat.value.users;
     users.value = chatSearchStore.chatData.users;
     chatSearchStore.searchQuery = '';
   }
+  isLoading.value = false;
 });
 
 const filteredUsers = computed(() => users.value ?? []);
@@ -92,17 +105,22 @@ const filteredUsers = computed(() => users.value ?? []);
         <header class="flex items-center space-x-4 py-4">
           <li class="flex w-full flex-row items-center gap-[7px] cursor-pointer">
             <img
-              @click="() => {}"
-              :src="chat.avatar"
+              v-if="!isLoadingChatAvatar"
+              :src="chatAvatarUrl"
               alt="Avatar"
               class="max-w-[68px] max-h-[68px] rounded-full aspect-square object-cover"
             />
             <div
+              v-if="isLoadingChatAvatar"
+              class="w-[68px] h-[68px] rounded-full aspect-square"
+              alt=""
+            ></div>
+            <div
               :class="'flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px] border-b-[#c8d4d9]'"
             >
               <div class="flex flex-col gap-[2px]">
-                <p class="font-normal text-[17px]">{{ chat.name }}</p>
-                <p class="text-hint font-light text-[15px]">{{ users_count }} участников</p>
+                <p class="font-normal text-[17px]">{{ chat.name ?? '  название чата ' }}</p>
+                <p class="text-hint font-light text-[15px]">{{ users_count ?? '0' }} участников</p>
               </div>
               <img
                 src="/src/assets/navigation.svg"
@@ -134,6 +152,7 @@ const filteredUsers = computed(() => users.value ?? []);
         <ul v-if="filteredUsers.length" class="divide-y divide-gray-200">
           <transition-group name="user-fade" tag="ul">
             <li
+              v-if="!isLoading"
               v-for="user in filteredUsers"
               :key="user.id"
               class="flex items-center py-3 cursor-pointer user-item"
@@ -182,32 +201,4 @@ const filteredUsers = computed(() => users.value ?? []);
   </div>
 </template>
 
-<style scoped>
-/* @keyframes userFadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-} */
-/*
-.user-fade-enter-active,
-.user-fade-leave-active {
-  transition: opacity 0.3s ease, transform 0.3s ease;
-}
-
-.user-fade-enter,
-.user-fade-leave-to {
-  opacity: 0;
-  transform: translateY(10px);
-}
-
-/*.user-item:hover {
-  background-color: #f7f7f7;
-  transform: scale(1.02);
-  transition: transform 0.3s ease-in-out;
-} */
-</style>
+<style scoped></style>
