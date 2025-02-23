@@ -13,6 +13,6 @@ const goToProfile = () => {
 </script>
 <template>
   <div class="" @click="goToProfile">
-    <img class="w-[36px] h-[36px]" :src="avatar" @error="handleImageError" />
+    <img class="w-[36px] h-[36px] rounded-full" :src="avatar" @error="handleImageError" />
   </div>
 </template>

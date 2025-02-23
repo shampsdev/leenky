@@ -15,7 +15,7 @@ const goToChats = () => {
 };
 
 const closeKeyboard = (event: any) => {
-  event.target.blur();
+  if (event.target.tagName !== 'INPUT' && event.target.tagName !== 'TEXTAREA') event.target.blur();
 };
 
 const currentUser = useUserStore();
@@ -113,12 +113,13 @@ onMounted(async () => {
   <div class="screen-container">
     <transition name="fade" @before-enter="animateScreenEntry" @enter="animateScreenEntry">
       <div
+        @click="closeKeyboard"
         v-if="!isLoading"
         :class="[
           'max-w-[95%] overflow-y-auto scroll-container py-4 mx-auto px-4',
           {
-            'h-[170vh]': profileStore.editMode,
-            'max-h-[calc(100vh-100px)]': !profileStore.editMode,
+            'h-[150vh]': profileStore.editMode,
+            'h-[120vh]': !profileStore.editMode,
           },
         ]"
       >
@@ -164,6 +165,17 @@ onMounted(async () => {
                   <p class="text-[17px]">{{ profileStore.profile.role }}</p>
                 </div>
 
+                <!-- <div class="py-[17px]">
+                  <p class="text-[15px] text-hint">Описание</p>
+                  <p class="text-[17px] whitespace-pre-wrap">
+                    {{ profileStore.profile.bio }}
+                  </p>
+                </div> -->
+              </div>
+              <div class="px-[16px] text-hint mb-[8px] mt-[15px] text-[13px]">ПОДРОБНЕЕ</div>
+              <div
+                class="bg-form flex flex-col gap-[10px] px-[16px] rounded-[12px] divide-y divide-[#707579]"
+              >
                 <div class="py-[17px]">
                   <p class="text-[15px] text-hint">Описание</p>
                   <p class="text-[17px] whitespace-pre-wrap">
@@ -262,10 +274,8 @@ onMounted(async () => {
   </div>
   <div
     v-if="isCurrentUserProfile"
-    class="flex w-[100vw] h-[100px] absolute right-0 bottom-0 left-0 text-center items-center justify-center bg-white"
+    class="flex w-[100vw] h-[100px] absolute right-0 bottom-0 left-0 text-center items-center justify-center"
   >
-    <div class="block h-full w-full bg-white absolute z-0"></div>
-
     <button
       v-if="profileStore.isChanged && profileStore.editMode"
       class="px-[30px] py-[12px] z-10 bg-[#20C86E] rounded-[30px] text-white font-semibold"
@@ -276,7 +286,7 @@ onMounted(async () => {
 
     <button
       v-else-if="!profileStore.isChanged && profileStore.editMode"
-      class="px-[30px] py-[12px] z-10 bg-white rounded-[30px] text-main font-semibold"
+      class="px-[30px] py-[12px] z-10 bg-form rounded-[30px] text-main font-semibold"
       @click="profileStore.toggleEditMode"
     >
       Редактировать
@@ -294,6 +304,8 @@ onMounted(async () => {
 <style scoped>
 .screen-container {
   opacity: 0.5;
+  overflow-y: auto; /* Позволяет прокручивать содержимое только по вертикали */
+  height: 100vh; /* Устанавливает высоту контейнера на 100% высоты экрана */
 }
 
 fieldset {
