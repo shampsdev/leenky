@@ -208,7 +208,16 @@ const filteredUsers = computed(() => users.value ?? []);
           </li>
         </ul>
 
-        <p v-else class="text-gray-500 text-center py-4">Нет найденных пользователей</p>
+        <div v-else class="flex w-full flex-col items-center text-center mt-[120px] gap-[20px]">
+          <img src="/src/assets/notFound.svg" />
+
+          <div class="flex flex-col items-center text-center gap-[8px]">
+            <h1 class="font-semibold text-[20px]">Тут пока ничего нет</h1>
+            <p class="text-hint text-[17px]">
+              Но вы можете исправить это! Добавьте чаты, чтобы видеть информацию о других участниках
+            </p>
+          </div>
+        </div>
       </div>
     </transition>
   </div>
