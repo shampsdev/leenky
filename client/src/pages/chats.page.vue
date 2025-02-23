@@ -67,7 +67,7 @@
           </li>
         </ul>
         <div
-          v-if="!filteredChats.length"
+          v-if="!filteredChats.length && !isLoading"
           class="flex w-full flex-col items-center text-center mt-[120px] gap-[20px]"
         >
           <img src="/src/assets/notFound.svg" />
@@ -127,6 +127,7 @@ const closeKeyboard = event => {
 };
 
 onMounted(async () => {
+  isLoading.value = true;
   if (chatsSearchStore.chatsData.length !== 0) {
     if (chatsSearchStore.searchQuery === searchQuery.value) {
       searchQuery.value = chatsSearchStore.searchQuery;
