@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 
@@ -83,7 +84,6 @@ func (i *usersIndex) Search(req *bleve.SearchRequest) ([]*domain.User, error) {
 
 	var users []*domain.User
 	for _, hit := range res.Hits {
-		fmt.Println(hit.Fragments)
 		users = append(users, i.users[hit.ID])
 	}
 	return users, nil
@@ -103,16 +103,19 @@ func (i *chatsIndex) Search(req *bleve.SearchRequest) ([]*domain.ChatPreview, er
 }
 
 func (s *Search) buildSearchRequest(text string) *bleve.SearchRequest {
+	text = strings.ToLower(text)
+
 	tText := utils.Transliterate(text)
 	sText := utils.SwapKeyboardLayout(text)
 	stText := utils.Transliterate(sText)
 
 	texts := []string{text, tText, sText, stText}
-	boosts := []float64{1, 0.75, 0.75, 0.5}
+	boosts := []float64{1, 0.5, 0.5, 0.25}
 
 	var qs []query.Query
 	for i := range texts {
 		q := bleve.NewMatchQuery(texts[i])
+		q.Analyzer = ru.AnalyzerName
 		q.BoostVal = (*query.Boost)(&boosts[i])
 		qs = append(qs, q)
 	}
@@ -198,22 +201,24 @@ func (s *Search) getChatsIndex(ctx Context) (*chatsIndex, error) {
 	return newIndex, nil
 }
 
+type searchUser struct {
+	Data string `json:"data"`
+}
+
+func userToSearchUser(user *domain.User) *searchUser {
+	return &searchUser{
+		Data: user.FirstName + " " + user.LastName + " " + user.TelegramUsername + " " +
+			user.Company + " " + user.Role + " " + user.Bio,
+	}
+}
+
 func (s *Search) buildUsersIndex(users []*domain.User) (*usersIndex, error) {
 	russianTextAnalyzer := bleve.NewTextFieldMapping()
 	russianTextAnalyzer.Analyzer = ru.AnalyzerName
 
 	mapping := bleve.NewIndexMapping()
 	userMapping := bleve.NewDocumentMapping()
-	userMapping.AddFieldMappingsAt("company", russianTextAnalyzer)
-	userMapping.AddFieldMappingsAt("role", russianTextAnalyzer)
-	userMapping.AddFieldMappingsAt("bio", russianTextAnalyzer)
-	noneMapping := bleve.NewTextFieldMapping()
-	noneMapping.Store = false
-	userMapping.AddFieldMappingsAt("avatar", noneMapping)
-	userMapping.AddFieldMappingsAt("firstName", bleve.NewTextFieldMapping())
-	userMapping.AddFieldMappingsAt("lastName", bleve.NewTextFieldMapping())
-	userMapping.AddFieldMappingsAt("username", bleve.NewTextFieldMapping())
-
+	userMapping.AddFieldMappingsAt("data", russianTextAnalyzer)
 	mapping.AddDocumentMapping("user", userMapping)
 	mapping.DefaultType = "user"
 
@@ -222,7 +227,7 @@ func (s *Search) buildUsersIndex(users []*domain.User) (*usersIndex, error) {
 		panic(err)
 	}
 	for _, user := range users {
-		err := index.Index(user.ID, user)
+		err := index.Index(user.ID, userToSearchUser(user))
 		if err != nil {
 			return nil, fmt.Errorf("failed to index user: %w", err)
 		}
@@ -241,7 +246,17 @@ func (s *Search) buildUsersIndex(users []*domain.User) (*usersIndex, error) {
 }
 
 func (s *Search) buildChatsIndex(chats []*domain.ChatPreview) (*chatsIndex, error) {
+	chatMapping := bleve.NewDocumentMapping()
+	chatNameMapping := bleve.NewTextFieldMapping()
+	chatNameMapping.Analyzer = ru.AnalyzerName
+	chatMapping.AddFieldMappingsAt("name", chatNameMapping)
+	noneMapping := bleve.NewTextFieldMapping()
+	noneMapping.Store = false
+	chatMapping.AddFieldMappingsAt("id", noneMapping)
+	chatMapping.AddFieldMappingsAt("avatar", noneMapping)
+
 	mapping := bleve.NewIndexMapping()
+	mapping.AddDocumentMapping("chat", chatMapping)
 	index, err := bleve.NewMemOnly(mapping)
 	if err != nil {
 		panic(err)
