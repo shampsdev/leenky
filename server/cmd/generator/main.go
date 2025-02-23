@@ -63,7 +63,7 @@ type ImageStorage interface {
 }
 
 func updateAvatars(ctx context.Context, pool *pgxpool.Pool, storage ImageStorage) error {
-	rows, err := pool.Query(ctx, `SELECT id FROM "user" WHERE LENGTH(id) < 10`)
+	rows, err := pool.Query(ctx, `SELECT id FROM "chat" WHERE LENGTH(id) < 10`)
 	if err != nil {
 		return fmt.Errorf("query failed: %w", err)
 	}
@@ -85,7 +85,7 @@ func updateAvatars(ctx context.Context, pool *pgxpool.Pool, storage ImageStorage
 			continue
 		}
 
-		_, err = pool.Exec(ctx, `UPDATE "user" SET avatar=$1 WHERE id=$2`, catImageURL, userID)
+		_, err = pool.Exec(ctx, `UPDATE "chat" SET avatar=$1 WHERE id=$2`, catImageURL, userID)
 		if err != nil {
 			log.Printf("failed to update user %s: %v", userID, err)
 			continue

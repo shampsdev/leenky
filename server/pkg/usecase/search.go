@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/blevesearch/bleve/v2"
+	"github.com/blevesearch/bleve/v2/analysis/lang/ru"
 	"github.com/shampsdev/tglinked/server/pkg/domain"
 	"github.com/shampsdev/tglinked/server/pkg/utils"
 )
@@ -81,6 +82,7 @@ func (i *usersIndex) Search(req *bleve.SearchRequest) ([]*domain.User, error) {
 
 	var users []*domain.User
 	for _, hit := range res.Hits {
+		// fmt.Println(hit.Fragments)
 		users = append(users, i.users[hit.ID])
 	}
 	return users, nil
@@ -185,7 +187,18 @@ func (s *Search) getChatsIndex(ctx Context) (*chatsIndex, error) {
 }
 
 func (s *Search) buildUsersIndex(users []*domain.User) (*usersIndex, error) {
+	russianTextAnalyzer := bleve.NewTextFieldMapping()
+	russianTextAnalyzer.Analyzer = ru.AnalyzerName
+
 	mapping := bleve.NewIndexMapping()
+	userMapping := bleve.NewDocumentMapping()
+	userMapping.AddFieldMappingsAt("bio", russianTextAnalyzer)
+	userMapping.AddFieldMappingsAt("role", russianTextAnalyzer)
+	userMapping.AddFieldMappingsAt("avatar")
+
+	mapping.AddDocumentMapping("user", userMapping)
+	mapping.DefaultType = "user"
+
 	index, err := bleve.NewMemOnly(mapping)
 	if err != nil {
 		panic(err)
