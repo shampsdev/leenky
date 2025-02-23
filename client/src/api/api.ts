@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-import type { UserData, ChatData } from '@/types/user.interface';
+import type { UserData, ChatData, ChatPreviewData } from '@/types/user.interface';
 
 export const api = axios.create({
   baseURL: import.meta.env.VITE_BASE_URL,
@@ -13,6 +13,21 @@ export const api = axios.create({
 export const getChat = async (initData: string, chatId: string): Promise<ChatData | null> => {
   try {
     const response = await api.get<ChatData>(`/chats/id/${chatId}`, {
+      headers: { 'X-Api-Token': initData },
+    });
+    return response.data;
+  } catch (error) {
+    console.error('Ошибка при получении чата:', error);
+    return null;
+  }
+};
+
+export const getChatPreview = async (
+  initData: string,
+  chatId: string
+): Promise<ChatPreviewData | null> => {
+  try {
+    const response = await api.get<ChatPreviewData>(`/chats/id/${chatId}/preview`, {
       headers: { 'X-Api-Token': initData },
     });
     return response.data;

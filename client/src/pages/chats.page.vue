@@ -1,22 +1,77 @@
+<template>
+  <div class="screen-container">
+    <transition name="fade" @before-enter="animateScreenEntry" @enter="animateScreenEntry">
+      <div class="max-w-[95%] h-[100%] overflow-auto scroll-container mx-auto px-4">
+        <div class="flex items-center justify-between gap-[15px] py-4 pt-[25px]">
+          <div class="flex gap-[10px] items-center">
+            <h1 class="text-xl font-semibold">Чаты</h1>
+            <img class="w-[15px] h-[15px]" src="/src/assets/add_green.svg" @click="addBot" />
+          </div>
+          <Profile />
+        </div>
+
+        <div class="relative flex items-center gap-[8px] bg-[#EEEEEF] rounded-lg px-3 py-2 mb-4">
+          <button>
+            <img src="/src/assets/search_transparent.svg" alt="search" class="w-5 h-5" />
+          </button>
+          <input
+            @input="filterChats"
+            v-model="searchQuery"
+            type="text"
+            placeholder="Поиск"
+            class="flex-1 outline-none text-gray-700 placeholder-gray-400"
+          />
+        </div>
+
+        <transition-group name="chat" tag="ul" class="flex flex-col gap-0 mt-[25px]">
+          <li
+            v-for="(chat, chatIndex) in filteredChats"
+            :key="chat.id"
+            class="chat-item flex w-full flex-row items-center gap-[7px] cursor-pointer"
+          >
+            <img
+              @click="() => router.push(`/chat/${chat.id}`)"
+              :src="chat.avatar"
+              alt="Avatar"
+              class="max-w-[60px] max-h-[60px] rounded-full aspect-square object-cover"
+            />
+            <div
+              :class="[
+                'flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px] border-b-[#c8d4d9]',
+                chatIndex <= filteredChats.length - 2 ? 'border-b-1' : '',
+              ]"
+            >
+              <div class="flex flex-col gap-[2px]">
+                <p class="font-normal text-[17px]">{{ chat.name }}</p>
+                <p class="text-hint font-light text-[15px]">{{ chat.users_amount }} участников</p>
+              </div>
+              <img
+                src="/src/assets/navigation.svg"
+                @click="leaveChatHandler(chat.id)"
+                class="text-gray-400 text-xl"
+              />
+            </div>
+          </li>
+        </transition-group>
+      </div>
+    </transition>
+  </div>
+</template>
+
 <script setup>
-import { ref, watchEffect } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { computed, onMounted } from 'vue';
-import { getChat, getChats, searchChats, leaveChat } from '@/api/api';
-import { useMiniApp, useBackButton } from 'vue-tg';
-import Profile from '@/components/profile.vue';
-import Button from '@/components/button.vue';
-import { useChatSearchStore } from '@/stores/chatSearch.store';
+import { ref, computed, onMounted, watchEffect } from 'vue';
+import { useRouter } from 'vue-router';
 import { useChatsSearchStore } from '@/stores/chatsSearch.store';
-import { searchInChat } from '@/api/api';
+import { getChats, searchChats, leaveChat } from '@/api/api';
+import { useMiniApp } from 'vue-tg';
+import { animate } from 'motion';
+import Profile from '@/components/profile.vue';
 const chats = ref([]);
 const searchQuery = ref('');
 const chatsSearchStore = useChatsSearchStore();
-const chatSearchStore = useChatSearchStore();
 const router = useRouter();
 
 const miniApp = useMiniApp();
-
 const initData = miniApp.initData;
 
 const filterChats = async () => {
@@ -36,12 +91,11 @@ const leaveChatHandler = async chatId => {
     chats.value = chats.value.filter(item => item.id !== chatId);
     chatsSearchStore.chatsData = chats.value.filter(item => item.id !== chatId);
   }
-  console.log(response, 'LEAVED');
 };
 
 onMounted(async () => {
-  chatSearchStore.resetQuery();
-  chatSearchStore.resetChatData();
+  chatsSearchStore.resetQuery();
+  chatsSearchStore.resetChatsData();
 
   searchQuery.value = chatsSearchStore.searchQuery;
 
@@ -60,85 +114,73 @@ onMounted(async () => {
   } else {
     const fetchedChats = await getChats(initData);
     if (fetchedChats !== null) {
-      chatsSearchStore.chatsData = await getChats(initData);
+      chatsSearchStore.chatsData = fetchedChats;
       chats.value = chatsSearchStore.chatsData;
     }
   }
 });
+
+const addBot = () => {
+  miniApp.openTelegramLink('https://t.me/leenky_bot?startgroup=');
+};
+
 const filteredChats = computed(() => chats.value);
 
 watchEffect(() => {
   chats.value = chatsSearchStore.chatsData;
 });
+
+const animateScreenEntry = () => {
+  animate(
+    '.screen-container',
+    {
+      opacity: [0, 1],
+      y: [100, 0],
+      scale: [0.5, 1],
+    },
+    {
+      ease: 'circInOut',
+      duration: 1,
+    }
+  );
+};
+
+// Анимация для каждого чата
+const animateChatEntry = index => {
+  animate(
+    `.chat-item-${index}`,
+    {
+      opacity: [0, 1],
+      y: [50, 0],
+    },
+    {
+      ease: 'circInOut',
+      duration: 0.5,
+      delay: index * 0.1,
+    }
+  );
+};
+
+onMounted(() => {
+  animateScreenEntry();
+});
 </script>
 
-<template>
-  <Button
-    @click="
-      () => {
-        router.push('/vaniog');
-      }
-    "
-    >ВАНЯЯЯ</Button
-  >
-  <Profile />
-  <KeepAlive>
-    <div class="max-w-[95%] mx-auto px-4">
-      <header class="flex items-center justify-between py-4">
-        <h1 class="text-xl font-semibold">Чаты</h1>
-      </header>
+<style scoped>
+.screen-container {
+  opacity: 0;
+  transform: translateY(50px);
+  transform: scale(0.9);
+}
 
-      <div class="relative flex items-center bg-gray-100 rounded-lg px-3 py-2 mb-4">
-        <input
-          @input="filterChats"
-          v-model="searchQuery"
-          type="text"
-          placeholder="Search"
-          class="flex-1 bg-transparent outline-none text-gray-700 placeholder-gray-400"
-        />
-        <button>
-          <img src="/src/assets/Search.svg" alt="mic" class="w-5 h-5" />
-        </button>
-      </div>
+.chat-enter-active,
+.chat-leave-active {
+  transition: opacity 0.5s, transform 0.5s;
+}
 
-      <ul v-if="filteredChats.length" class="divide-y divide-gray-200">
-        <li
-          v-for="chat in filteredChats"
-          :key="chat.id"
-          class="flex items-center py-3 cursor-pointer"
-        >
-          <img
-            @click="
-              () => {
-                chatsSearchStore.chatsData = chats;
-                router.push(`/chat/${chat.id}`);
-              }
-            "
-            :src="chat.avatar"
-            alt="Avatar"
-            class="w-12 h-12 rounded-full object-cover mr-4"
-          />
-
-          <div class="flex-1">
-            <p class="font-medium">{{ chat.name }}</p>
-            <p class="text-sm text-gray-500">{{ chat.members }} участников</p>
-          </div>
-
-          <div
-            @click="
-              () => {
-                leaveChatHandler(chat.id);
-                filterChats();
-              }
-            "
-            class="text-gray-400 text-xl"
-          >
-            LEAVE
-          </div>
-        </li>
-      </ul>
-      <p v-else>Нет найденных чатов</p>
-    </div></KeepAlive
-  >
-</template>
-// СДЕЛАТЬ АПДЕЙТ СТОРА ПРИ НАЖАТИИ НА ЧАТ
+.chat-enter,
+.chat-leave-to {
+  opacity: 0;
+  transform: translateY(50px);
+}
+</style>

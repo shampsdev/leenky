@@ -8,7 +8,11 @@ const goToProfile = () => {
 };
 </script>
 <template>
-  <div class="absolute top-[15px] right-[23px] z-10" @click="goToProfile">
-    <img class="w-[30px] h-[30px]" src="/src/assets/Profile.svg" alt="" />
+  <div class="" @click="goToProfile">
+    <img
+      class="w-[36px] h-[36px]"
+      :src="currentUser.avatar ?? '/src/assests/chat_avatar_example.png'"
+      alt=""
+    />
   </div>
 </template>
