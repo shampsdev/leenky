@@ -57,6 +57,11 @@ async function RefreshProfile() {
   isLoading.value = false;
 }
 
+const goToPersonChat = () => {
+  const miniapp = useMiniApp();
+  miniapp.openTelegramLink(`https://t.me/${profileStore.profile.telegramUsername}`);
+};
+
 const saveChanges = async () => {
   try {
     await postMe(initData, profileStore.editFieldProfile);
@@ -96,29 +101,37 @@ onMounted(async () => {
 <template>
   <div class="screen-container">
     <transition name="fade" @before-enter="animateScreenEntry" @enter="animateScreenEntry">
-      <div v-if="!isLoading" class="w-full flex flex-col h-full items-center p-4 screen-container">
+      <div
+        v-if="!isLoading"
+        :class="[
+          'max-w-[95%] overflow-auto scroll-container py-4 mx-auto px-4',
+          { 'max-h-[120vh]': profileStore.editMode, 'max-h-[100vh]': !profileStore.editMode },
+        ]"
+      >
         <div class="w-full">
-          <div class="flex flex-col items-center">
+          <div class="flex flex-col items-center gap-[17px]">
             <img
-              class="w-28 h-28 rounded-full object-cover"
+              class="w-[115px] h-[115px] rounded-full object-cover"
               :src="`${profileStore.profile.avatar}`"
               alt="User Avatar"
             />
 
-            <div
-              v-if="!profileStore.editMode"
-              class="flex flex-row items-center gap-[10px] mt-[17px]"
-            >
-              <p class="font-semibold text-[20px text-center">
+            <div v-if="!profileStore.editMode" class="text-center">
+              <p class="font-semibold inline-flex text-[20px] gap-[10px] items-center">
                 {{ profileStore.profile.firstName }} {{ profileStore.profile.lastName }}
+
+                <img
+                  v-if="isCurrentUserProfile"
+                  src="/src/assets/edit_24.svg"
+                  alt=""
+                  srcset=""
+                  class="w-[20px] h-[20px]"
+                  @click="profileStore.toggleEditMode"
+                />
               </p>
-              <img
-                v-if="isCurrentUserProfile"
-                src="/src/assets/edit_24.svg"
-                alt=""
-                srcset=""
-                @click="profileStore.toggleEditMode"
-              />
+              <p v-if="!profileStore.editMode" class="text-hint text-[15px]">
+                {{ `@${profileStore.profile.telegramUsername}` }}
+              </p>
             </div>
             <div v-else>
               <button
@@ -130,87 +143,90 @@ onMounted(async () => {
               </button>
             </div>
 
-            <p v-if="!profileStore.editMode" class="text-gray-500">
-              {{ `@${profileStore.profile.telegramUsername}` }}
-            </p>
+            <div v-if="!profileStore.editMode" class="flex justify-center">
+              <button
+                class="inline-flex items-center gap-[6px] px-[30px] py-[12px] bg-[#20C86E] rounded-[30px] text-white font-semibold"
+                @click="goToPersonChat"
+              >
+                Написать <img src="/src/assets/tg_white.svg" alt="" />
+              </button>
+            </div>
           </div>
 
-          <Button
-            v-if="!profileStore.editMode"
-            class="flex flex-row mt-[10px] items-center gap-[6px] m-auto"
-          >
-            Написать <img class="w-4 h-4" src="/src/assets/tg_white.svg" alt="Telegram" />
-          </Button>
-
           <div v-if="!profileStore.editMode">
-            <div class="mt-6 p-4 rounded-lg">
-              <h2 class="text-sm px-[16px] font-semibold mb-2">ABOUT</h2>
-              <div class="bg-form px-[16px] rounded-[12px]">
-                <div class="border-b py-[12px] border-tint">
-                  <p class="text-xs text-hint">Место работы</p>
-                  <p class="">{{ profileStore.profile.company }}</p>
+            <div class="mt-[15px] rounded-lg">
+              <div
+                class="bg-form flex flex-col gap-[10px] px-[16px] rounded-[12px] divide-y divide-black"
+              >
+                <div class="flex flex-col py-[17px]">
+                  <p class="text-[15px] text-hint">Место работы</p>
+                  <p class="text-[17px]">{{ profileStore.profile.company }}</p>
                 </div>
 
-                <div class="py-[12px] border-b border-tint">
-                  <p class="text-xs text-hint">Должность</p>
-                  <p class="whitespace-pre-line">{{ profileStore.profile.role }}</p>
+                <div class="py-[17px]">
+                  <p class="text-[15px] text-hint">Должность</p>
+                  <p class="text-[17px]">{{ profileStore.profile.role }}</p>
                 </div>
 
-                <div class="py-2">
-                  <p class="text-xs text-hint">Описание</p>
-                  <p class="text-sm whitespace-pre-line">
+                <div class="py-[17px]">
+                  <p class="text-[15px] text-hint">Описание</p>
+                  <p class="text-[17px]">
                     {{ profileStore.profile.bio }}
                   </p>
                 </div>
               </div>
             </div>
           </div>
-          <div v-else class="w-full flex flex-col mt-6 p-4 rounded-lg gap-[25px]">
+          <div v-else class="w-full flex flex-col mt-[25px] gap-[12px] caret-[#20C86E]">
             <section>
-              <h2 class="text-sm px-[16px] font-semibold mb-2">Персональные данные</h2>
               <fieldset
-                class="border-2 rounded-xl p-3 relative transition-all duration-100 focus-within:border-[#007aff] focus-within:text-[#007aff] border-gray-300 text-gray-400"
+                class="border-2 rounded-xl px-3 relative transition-all duration-100 focus-within:border-[#20C86E] focus-within:text-[#20C86E] border-gray-300 text-gray-400"
               >
-                <legend class="px-2 text-sm transition-all duration-100">Имя</legend>
+                <legend class="px-2 text-[15px] font-semibold transition-all duration-100">
+                  Имя
+                </legend>
                 <input
                   type="text"
                   maxlength="40"
                   v-model="profileStore.editFieldProfile.firstName"
-                  class="w-full text-main outline-none px-2 py-1 bg-transparent"
-                />
-              </fieldset>
-
-              <fieldset
-                class="w-full border-2 rounded-xl p-3 relative transition-all duration-100 focus-within:border-[#007aff] focus-within:text-[#007aff] border-gray-300 text-gray-400"
-              >
-                <legend class="px-2 text-sm transition-all duration-100">Фамилия</legend>
-                <input
-                  type="text"
-                  maxlength="40"
-                  v-model="profileStore.editFieldProfile.lastName"
-                  class="w-full outline-none px-2 py-1 bg-transparent text-main"
+                  class="w-full text-main outline-none pb-[12px] py-[3px] px-[16px] bg-transparent"
                 />
               </fieldset>
             </section>
             <section>
-              <h2 class="text-sm px-[16px] font-semibold mb-2">Краткое описание</h2>
               <fieldset
-                class="border-2 rounded-xl p-3 relative transition-all duration-100 focus-within:border-[#007aff] focus-within:text-[#007aff] border-gray-300 text-gray-400"
+                class="w-full border-2 rounded-xl p-3 relative transition-all duration-100 focus-within:border-[#20C86E] focus-within:text-[#20C86E] border-gray-300 text-gray-400"
+              >
+                <legend class="px-2 text-[15px] font-semibold transition-all duration-100">
+                  Фамилия
+                </legend>
+                <input
+                  type="text"
+                  maxlength="40"
+                  v-model="profileStore.editFieldProfile.lastName"
+                  class="w-full text-main outline-none pb-[12px] py-[3px] px-[16px] bg-transparent"
+                />
+              </fieldset>
+            </section>
+            <section>
+              <fieldset
+                class="border-2 rounded-xl p-3 relative transition-all duration-100 focus-within:border-[#20C86E] focus-within:text-[#20C86E] border-gray-300 text-gray-400"
               >
                 <legend class="px-2 text-sm transition-all">Место работы</legend>
                 <input
                   type="text"
                   maxlength="40"
                   v-model="profileStore.editFieldProfile.company"
-                  class="w-full outline-none px-2 py-1 bg-transparent text-main"
+                  class="w-full text-main outline-none pb-[12px] py-[3px] px-[16px] bg-transparent"
                 />
               </fieldset>
-
+            </section>
+            <section>
               <fieldset
-                class="border-2 rounded-xl p-3 relative transition-all duration-100 focus-within:border-[#007aff] focus-within:text-[#007aff] border-gray-300 text-gray-400"
+                class="border-2 rounded-xl p-3 relative transition-all duration-100 focus-within:border-[#20C86E] focus-within:text-[#20C86E] border-gray-300 text-gray-400"
               >
                 <legend
-                  class="px-2 text-sm transition-all duration-100 focus-within:border-[#007aff]"
+                  class="px-2 text-sm transition-all duration-100 focus-within:border-[#20C86E]"
                 >
                   Должность
                 </legend>
@@ -218,12 +234,13 @@ onMounted(async () => {
                   type="text"
                   maxlength="40"
                   v-model="profileStore.editFieldProfile.role"
-                  class="w-full outline-none py-1 bg-transparent text-main px-[16px]"
+                  class="w-full text-main outline-none pb-[12px] py-[3px] px-[16px] bg-transparent"
                 />
               </fieldset>
-
+            </section>
+            <section>
               <fieldset
-                class="border-2 rounded-xl p-3 relative border-gray-300 focus-within:border-[#007aff] focus-within:text-[#007aff] text-gray-400"
+                class="border-2 rounded-xl p-3 relative border-gray-300 focus-within:border-[#20C86E] focus-within:text-[#20C86E] text-gray-400"
               >
                 <legend class="px-2 text-sm">Описание</legend>
                 <textarea
@@ -233,14 +250,12 @@ onMounted(async () => {
                   @keydown="limitNewlines"
                   maxlength="230"
                   rows="1"
-                  class="resize-none w-full outline-none text-main px-[16px]"
+                  class="resize-none w-full text-main outline-none pb-[6px] py-[3px] px-[16px] bg-transparent"
                 ></textarea>
               </fieldset>
             </section>
           </div>
         </div>
-
-        <Button v-if="!profileStore.editMode" @click="goToChats">GOTO CHATS</Button>
       </div>
     </transition>
   </div>
