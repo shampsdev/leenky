@@ -67,14 +67,35 @@ const filteredUsers = computed(() => users.value ?? []);
 </script>
 
 <template>
-  <Profile />
-  <div class="max-w-md mx-auto px-4">
+  <div class="max-w-[95%] h-[100%] overflow-auto scroll-container mx-auto px-4">
     <header class="flex items-center space-x-4 py-4">
-      <img :src="chat.avatar" alt="Chat Avatar" class="w-12 h-12 rounded-full object-cover" />
-      <div class="flex-1">
-        <h1 class="text-lg font-semibold">{{ chat.name }}</h1>
-        <p class="text-sm text-gray-500">{{ chat.members }} участников</p>
-      </div>
+      <li class="flex w-full flex-row items-center gap-[7px] cursor-pointer">
+        <img
+          @click="() => {}"
+          :src="chat.avatar"
+          alt="Avatar"
+          class="max-w-[68px] max-h-[68px] rounded-full aspect-square object-cover"
+        />
+
+        <div
+          :class="'flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px] border-b-[#c8d4d9]'"
+        >
+          <div class="flex flex-col gap-[2px]">
+            <p class="font-normal text-[17px]">{{ chat.name }}</p>
+            <p class="text-hint font-light text-[15px]">{{ users_count }} участников</p>
+          </div>
+          <img
+            src="/src/assets/navigation.svg"
+            @click="
+              () => {
+                leaveChatHandler(chat.id);
+                filterChats();
+              }
+            "
+            class="text-gray-400 text-xl"
+          />
+        </div>
+      </li>
     </header>
 
     <div class="relative flex items-center bg-gray-100 rounded-lg px-3 py-2 mb-4">
@@ -95,27 +116,7 @@ const filteredUsers = computed(() => users.value ?? []);
         v-for="user in filteredUsers"
         :key="user.id"
         class="flex items-center py-3 cursor-pointer"
-        @click="
-          () => {
-            router.push(`/profile/${user.id}`);
-            profileStore.initialProfile = {
-              firstName: user.firstName,
-              lastName: user.lastName,
-              avatar: user.avatar,
-              company: user.company,
-              role: user.role,
-              bio: user.bio,
-            };
-            profileStore.profile = {
-              firstName: user.firstName,
-              lastName: user.lastName,
-              avatar: user.avatar,
-              company: user.company,
-              role: user.role,
-              bio: user.bio,
-            };
-          }
-        "
+        @click="navigateToProfile(user.id)"
       >
         <img
           :src="`${user.avatar}`"

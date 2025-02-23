@@ -77,27 +77,20 @@ watchEffect(() => {
 </script>
 
 <template>
-  <Button
-    @click="
-      () => {
-        router.push('/vaniog');
-      }
-    "
-    >ВАНЯЯЯ</Button
-  >
-  <KeepAlive>
-    <div class="max-w-[95%] mx-auto px-4">
-      <header class="flex items-center justify-between gap-[15px] py-4 mt-[25px]">
-        <h1 class="text-xl font-semibold">
-          Чаты
-          <p @click="addBot">add</p>
-        </h1>
+  <transition name="slide-up">
+    <div class="max-w-[95%] h-[100%] overflow-auto scroll-container mx-auto px-4">
+      <!-- Ваши элементы и контент -->
+      <div class="flex items-center justify-between gap-[15px] py-4 pt-[25px]">
+        <div class="flex gap-[10px] items-center">
+          <h1 class="text-xl font-semibold">Чаты</h1>
+          <img class="w-[15px] h-[15px]" src="/src/assets/add_green.svg" @click="addBot" />
+        </div>
         <Profile />
-      </header>
+      </div>
 
-      <div class="relative flex items-center gap-[8px] bg-gray-100 rounded-lg px-3 py-2 mb-4">
+      <div class="relative flex items-center gap-[8px] bg-[#EEEEEF] rounded-lg px-3 py-2 mb-4">
         <button>
-          <img src="/src/assets/search_transparent.svg" alt="mic" class="w-5 h-5" />
+          <img src="/src/assets/search_transparent.svg" alt="search" class="w-5 h-5" />
         </button>
         <input
           @input="filterChats"
@@ -108,11 +101,11 @@ watchEffect(() => {
         />
       </div>
 
-      <ul v-if="filteredChats.length" class="divide-y divide-gray-200">
+      <ul v-if="filteredChats.length" class="flex flex-col gap-0 mt-[25px]">
         <li
-          v-for="chat in filteredChats"
+          v-for="(chat, chatIndex) in filteredChats"
           :key="chat.id"
-          class="flex items-center py-3 cursor-pointer"
+          class="flex w-full flex-row items-center gap-[7px] cursor-pointer slide-in"
         >
           <img
             @click="
@@ -123,29 +116,30 @@ watchEffect(() => {
             "
             :src="chat.avatar"
             alt="Avatar"
-            class="w-12 h-12 rounded-full object-cover mr-4"
+            class="max-w-[60px] max-h-[60px] rounded-full aspect-square object-cover"
           />
 
-          <div class="flex-1">
-            <p class="font-medium">{{ chat.name }}</p>
-            <p class="text-sm text-gray-500">{{ chat.members }} участников</p>
-          </div>
-
           <div
-            @click="
-              () => {
-                leaveChatHandler(chat.id);
-                filterChats();
-              }
-            "
-            class="text-gray-400 text-xl"
+            :class="[
+              ' flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px] border-b-[#c8d4d9]',
+              chatIndex <= filteredChats.length - 2 ? 'border-b-1' : '',
+            ]"
           >
-            LEAVE
+            <div class="flex flex-col gap-[2px]">
+              <p class="font-normal text-[17px]">{{ chat.name }}</p>
+              <p class="text-hint font-light text-[15px]">{{ chat.users_amount }} участников</p>
+            </div>
+            <img
+              src="/src/assets/navigation.svg"
+              @click="leaveChatHandler(chat.id)"
+              class="text-gray-400 text-xl"
+            />
           </div>
         </li>
       </ul>
       <p v-else>Нет найденных чатов</p>
-    </div></KeepAlive
-  >
+    </div>
+  </transition>
 </template>
-// СДЕЛАТЬ АПДЕЙТ СТОРА ПРИ НАЖАТИИ НА ЧАТ
+
+<style scoped></style>
