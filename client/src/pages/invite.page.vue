@@ -5,6 +5,7 @@ import { useUserStore } from '@/stores/user.store';
 import { getChat, joinMe, getChatPreview } from '@/api/api';
 import { useMiniApp } from 'vue-tg';
 import { onMounted } from 'vue';
+import { handleImageError } from '@/utils/errorHandlers';
 const router = useRouter();
 const inviteStore = useInviteStore();
 const currentUser = useUserStore();
@@ -48,7 +49,7 @@ onMounted(async () => {
     <div v-if="inviteStore.chat" class="flex flex-col gap-[10px] items-center rounded-lg">
       <img
         :src="inviteStore.chat.avatar"
-        alt="Аватар чата"
+        @error="handleImageError"
         class="w-[116px] h-[116px] rounded-full"
       />
       <div class="flex flex-col gap-0 max-w-[80%]">

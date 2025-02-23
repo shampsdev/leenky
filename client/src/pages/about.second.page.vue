@@ -1,12 +1,13 @@
 <script setup lang="ts">
-import { useBackButton } from "vue-tg";
-import Button from "@/components/button.vue";
-import { ref } from "vue";
-import { onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useBackButton } from 'vue-tg';
+import Button from '@/components/button.vue';
+import { ref } from 'vue';
+import { onMounted } from 'vue';
+import { useRouter } from 'vue-router';
+import { handleImageError } from '@/utils/errorHandlers';
 const router = useRouter();
 const goToRegistration = () => {
-  router.push("/registration");
+  router.push('/registration');
 };
 
 const backButton = useBackButton();
@@ -21,7 +22,7 @@ const handleImageLoad = () => {
 
 onMounted(() => {
   const img = new Image();
-  img.src = "/src/assets/about.png";
+  img.src = '/src/assets/about.png';
   img.onload = () => {
     isLoaded.value = true;
   };
@@ -36,7 +37,7 @@ onMounted(() => {
     <div
       class="w-full max-w-[320px] bg-gray-200 flex items-center justify-center rounded-lg mt-[20px]"
     >
-      <img src="/src/assets/about.png" alt="About" class="" @load="handleImageLoad" />
+      <img src="/src/assets/about.png" class="" @load="handleImageLoad" />
     </div>
 
     <div class="mt-6">

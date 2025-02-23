@@ -98,8 +98,12 @@ onMounted(() => {
           @load="handleImageLoad"
           class="w-28 h-28 rounded-full object-cover"
           :src="`${profileStore.profile.avatar}`"
-          alt="User Avatar"
+          v-if="profileStore.profile.avatar"
         />
+        <div
+          v-else
+          class="w-28 h-28 rounded-full bg-gray-300 flex items-center justify-center"
+        ></div>
       </div>
       <button
         v-if="profileStore.isChanged"

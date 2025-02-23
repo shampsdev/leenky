@@ -7,6 +7,7 @@ import { useProfileStore } from '@/stores/profile.store';
 import { useChatSearchStore } from '@/stores/chatSearch.store';
 import { animate } from 'motion';
 import { press } from 'motion';
+import { handleImageError } from '@/utils/errorHandlers';
 const chat = ref({});
 const miniApp = useMiniApp();
 const router = useRouter();
@@ -117,8 +118,8 @@ const filteredUsers = computed(() => users.value ?? []);
             <img
               v-if="!isLoadingChatAvatar"
               :src="chatAvatarUrl"
-              alt="Avatar"
-              class="max-w-[68px] max-h-[68px] rounded-full aspect-square object-cover"
+              @error="handleImageError"
+              class="w-[68px] h-[68px] rounded-full aspect-square object-cover"
             />
             <div
               v-if="isLoadingChatAvatar"
@@ -179,9 +180,10 @@ const filteredUsers = computed(() => users.value ?? []);
             "
           >
             <img
+              @error="handleImageError"
               :src="`${user.avatar}`"
               alt="Avatar"
-              class="max-w-[60px] max-h-[60px] rounded-full aspect-square object-cover"
+              class="w-[60px] h-[60px] rounded-full aspect-square object-cover"
             />
 
             <div
