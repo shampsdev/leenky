@@ -78,7 +78,30 @@ func (b *Bot) Run(ctx context.Context) {
 }
 
 func (b *Bot) handleCommandRegister(ctx context.Context, _ *bot.Bot, update *models.Update) {
-	err := b.registerChat(ctx, update.Message.Chat.ID)
+	msg := update.Message
+	if msg.Chat.Type != models.ChatTypeGroup && msg.Chat.Type != models.ChatTypeSupergroup {
+		_, err := b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID:    update.Message.Chat.ID,
+			Text:      "Команда `/register` доступна только в чатах, поскорее добавь меня туда 👁️🫦👁️",
+			ParseMode: models.ParseModeMarkdown,
+
+			ReplyMarkup: &models.InlineKeyboardMarkup{
+				InlineKeyboard: [][]models.InlineKeyboardButton{
+					{
+						{
+							Text: "⭐️ Добавить в чат",
+							URL:  fmt.Sprintf("%s?startgroup=", b.botUrl),
+						},
+					},
+				},
+			},
+		})
+		if err != nil {
+			b.log.Errorf("error sending message: %v", err)
+		}
+		return
+	}
+	err := b.registerChat(ctx, msg.Chat.ID)
 	if err != nil {
 		b.log.Errorf("error registering chat: %v", err)
 	}

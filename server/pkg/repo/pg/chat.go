@@ -50,7 +50,7 @@ func (r *ChatRepo) generateID() string {
 
 func (r *ChatRepo) UpdateChat(ctx context.Context, chat *domain.Chat) (*domain.Chat, error) {
 	_, err := r.db.Exec(ctx, `
-		UPDATE "chat" SET "name" = $1, "avatar" = $2, "telegram_id" = $3, "updated_at" = NOW(), WHERE "id" = $4`,
+		UPDATE "chat" SET "name" = $1, "avatar" = $2, "telegram_id" = $3, "updated_at" = NOW() WHERE "id" = $4`,
 		chat.Name, chat.Avatar, chat.TelegramID, chat.ID,
 	)
 	if err != nil {
