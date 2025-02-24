@@ -51,7 +51,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/chats/{id}": {
+        "/chats/id/{id}": {
             "get": {
                 "security": [
                     {
@@ -93,7 +93,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/chats/{id}/join": {
+        "/chats/id/{id}/join": {
             "post": {
                 "security": [
                     {
@@ -132,7 +132,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/chats/{id}/leave": {
+        "/chats/id/{id}/leave": {
             "post": {
                 "security": [
                     {
@@ -171,7 +171,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/chats/{id}/preview": {
+        "/chats/id/{id}/preview": {
             "get": {
                 "security": [
                     {
@@ -213,8 +213,8 @@ const docTemplate = `{
                 }
             }
         },
-        "/users": {
-            "put": {
+        "/chats/id/{id}/search": {
+            "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
@@ -227,25 +227,32 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "chats"
                 ],
-                "summary": "Update user",
+                "summary": "Search users in chat",
                 "parameters": [
                     {
-                        "description": "User data",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.EditUser"
-                        }
+                        "type": "string",
+                        "description": "Chat ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Search query",
+                        "name": "q",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "User data",
+                        "description": "Users",
                         "schema": {
-                            "$ref": "#/definitions/domain.User"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.User"
+                            }
                         }
                     },
                     "400": {
@@ -255,8 +262,10 @@ const docTemplate = `{
                         "description": "Internal Server Error"
                     }
                 }
-            },
-            "post": {
+            }
+        },
+        "/chats/search": {
+            "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
@@ -269,25 +278,25 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "users"
+                    "chats"
                 ],
-                "summary": "Create user",
+                "summary": "Search chats",
                 "parameters": [
                     {
-                        "description": "User data",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.EditUser"
-                        }
+                        "type": "string",
+                        "description": "Search query",
+                        "name": "q",
+                        "in": "query"
                     }
                 ],
                 "responses": {
                     "200": {
-                        "description": "User data",
+                        "description": "Chats",
                         "schema": {
-                            "$ref": "#/definitions/domain.User"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/domain.ChatPreview"
+                            }
                         }
                     },
                     "400": {
@@ -297,8 +306,10 @@ const docTemplate = `{
                         "description": "Internal Server Error"
                     }
                 }
-            },
-            "delete": {
+            }
+        },
+        "/users/id/{id}": {
+            "get": {
                 "security": [
                     {
                         "ApiKeyAuth": []
@@ -313,7 +324,16 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Delete user",
+                "summary": "Get user",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "User ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "User data",
@@ -361,10 +381,8 @@ const docTemplate = `{
                         "description": "Internal Server Error"
                     }
                 }
-            }
-        },
-        "/users/{id}": {
-            "get": {
+            },
+            "put": {
                 "security": [
                     {
                         "ApiKeyAuth": []
@@ -379,16 +397,91 @@ const docTemplate = `{
                 "tags": [
                     "users"
                 ],
-                "summary": "Get user",
+                "summary": "Update me",
                 "parameters": [
                     {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
+                        "description": "User data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.EditUser"
+                        }
                     }
                 ],
+                "responses": {
+                    "200": {
+                        "description": "User data",
+                        "schema": {
+                            "$ref": "#/definitions/domain.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Create me",
+                "parameters": [
+                    {
+                        "description": "User data",
+                        "name": "user",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.EditUser"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "User data",
+                        "schema": {
+                            "$ref": "#/definitions/domain.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "delete": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Delete me",
                 "responses": {
                     "200": {
                         "description": "User data",
@@ -413,14 +506,20 @@ const docTemplate = `{
                 "avatar": {
                     "type": "string"
                 },
+                "createdAt": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
                 "name": {
                     "type": "string"
                 },
-                "telegram_id": {
+                "telegramId": {
                     "type": "integer"
+                },
+                "updatedAt": {
+                    "type": "string"
                 },
                 "users": {
                     "type": "array",
@@ -442,10 +541,10 @@ const docTemplate = `{
                 "name": {
                     "type": "string"
                 },
-                "telegram_id": {
+                "telegramId": {
                     "type": "integer"
                 },
-                "users_amount": {
+                "usersAmount": {
                     "type": "integer"
                 }
             }
@@ -482,6 +581,9 @@ const docTemplate = `{
                 "company": {
                     "type": "string"
                 },
+                "createdAt": {
+                    "type": "string"
+                },
                 "firstName": {
                     "type": "string"
                 },
@@ -498,6 +600,9 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "telegramUsername": {
+                    "type": "string"
+                },
+                "updatedAt": {
                     "type": "string"
                 }
             }

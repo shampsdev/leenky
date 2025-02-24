@@ -10,8 +10,8 @@ import (
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
 )
 
-// CreateUser godoc
-// @Summary Create user
+// CreateMe godoc
+// @Summary Create me
 // @Tags users
 // @Accept json
 // @Produce json
@@ -21,17 +21,21 @@ import (
 // @Failure 400 "Bad Request"
 // @Failure 500 "Internal Server Error"
 // @Security ApiKeyAuth
-// @Router /users [post]
-func CreateUser(userCase *usecase.User) gin.HandlerFunc {
+// @Router /users/me [post]
+func CreateMe(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user := middlewares.MustGetUser(c)
+		userTGData := middlewares.MustGetUserTGData(c)
 
 		toCreate := &domain.EditUser{}
 		if err := c.ShouldBindJSON(toCreate); ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to bind user") {
 			return
 		}
 
-		user, err := userCase.CreateUser(usecase.NewContext(c, user), toCreate)
+		user, err := userCase.CreateUser(usecase.NewContext(c, &domain.User{
+			TelegramID:       userTGData.TelegramID,
+			TelegramUsername: userTGData.TelegramUsername,
+			Avatar:           userTGData.Avatar,
+		}), toCreate)
 		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to create user") {
 			return
 		}

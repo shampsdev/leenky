@@ -20,3 +20,9 @@ type EditUser struct {
 	Role      string `json:"role"`
 	Bio       string `json:"bio"`
 }
+
+type UserTGData struct {
+	TelegramID       int64  `json:"telegramId"`
+	TelegramUsername string `json:"telegramUsername"`
+	Avatar           string `json:"avatar"`
+}

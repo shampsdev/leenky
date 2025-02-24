@@ -45,8 +45,34 @@ func (u *User) GetUserByID(ctx Context, id string) (*domain.User, error) {
 	return u.userRepo.GetUserByID(ctx, id)
 }
 
-func (u *User) GetUserByTelegramID(ctx context.Context, tgID int64) (*domain.User, error) {
-	return u.userRepo.GetUserByTelegramID(ctx, tgID)
+func (u *User) GetUserByTGData(ctx context.Context, tgData *domain.UserTGData) (*domain.User, error) {
+	user, err := u.userRepo.GetUserByTelegramID(ctx, tgData.TelegramID)
+	if err != nil {
+		return nil, err
+	}
+
+	needUpdate := false
+	if tgData.TelegramUsername != user.TelegramUsername {
+		needUpdate = true
+	}
+
+	if tgData.Avatar != user.Avatar {
+		var err error
+		tgData.Avatar, err = u.storage.SaveImageByURL(ctx, tgData.Avatar)
+		if err != nil {
+			return nil, fmt.Errorf("failed to upload user avatar: %w", err)
+		}
+		needUpdate = true
+	}
+
+	if needUpdate {
+		user, err = u.userRepo.UpdateUserTGData(ctx, user.ID, tgData)
+		if err != nil {
+			return nil, fmt.Errorf("failed to update user: %w", err)
+		}
+	}
+
+	return user, nil
 }
 
 func (u *User) UpdateUser(ctx Context, id string, user *domain.EditUser) (*domain.User, error) {

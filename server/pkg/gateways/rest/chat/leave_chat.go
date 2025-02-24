@@ -20,7 +20,7 @@ import (
 // @Failure 400 "Bad Request"
 // @Failure 500 "Internal Server Error"
 // @Security ApiKeyAuth
-// @Router /chats/{id}/leave [post]
+// @Router /chats/id/{id}/leave [post]
 func LeaveChat(chatCase *usecase.Chat) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)

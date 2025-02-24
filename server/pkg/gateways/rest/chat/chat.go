@@ -8,13 +8,18 @@ import (
 
 func Setup(r *gin.RouterGroup, cases usecase.Cases) {
 	g := r.Group("/chats")
-	g.Use(middlewares.AuthTelegramID())
-	g.GET("/:id/preview", GetChatPreview(cases.Chat))
+	g.Use(middlewares.ExtractUserTGData())
+	g.GET("/id/:id/preview", GetChatPreview(cases.Chat))
 
 	gAuth := g.Group("")
 	gAuth.Use(middlewares.AuthUser(cases.User))
-	gAuth.GET("/:id", GetChat(cases.Chat))
-	gAuth.GET("/", GetChatPreviews(cases.Chat))
-	gAuth.POST("/:id/join", JoinChat(cases.Chat))
-	gAuth.POST("/:id/leave", LeaveChat(cases.Chat))
+	gAuth.
+		GET("", GetChatPreviews(cases.Chat)).
+		GET("/search", SearchChats(cases.Chat, cases.Search))
+
+	gAuth.Group("/id/:id").
+		GET("", GetChat(cases.Chat)).
+		POST("/join", JoinChat(cases.Chat)).
+		POST("/leave", LeaveChat(cases.Chat)).
+		GET("/search", SearchInChat(cases.Chat, cases.Search))
 }

@@ -12,13 +12,15 @@ import (
 
 type Chat struct {
 	chatRepo repo.Chat
+	userRepo repo.User
 	bot      *bot.Bot
 	storage  repo.ImageStorage
 }
 
-func NewChat(chatRepo repo.Chat, s repo.ImageStorage, tgbot *bot.Bot) *Chat {
+func NewChat(chatRepo repo.Chat, userRepo repo.User, s repo.ImageStorage, tgbot *bot.Bot) *Chat {
 	return &Chat{
 		chatRepo: chatRepo,
+		userRepo: userRepo,
 		bot:      tgbot,
 		storage:  s,
 	}
@@ -40,12 +42,12 @@ func (c *Chat) GetChat(ctx Context, chatID string) (*domain.Chat, error) {
 	return chat, nil
 }
 
-func (c *Chat) GetChatPreview(ctx Context, chatID string) (*domain.ChatPreview, error) {
+func (c *Chat) GetChatPreview(ctx context.Context, userTGID int64, chatID string) (*domain.ChatPreview, error) {
 	cp, err := c.chatRepo.GetChatPreviewByID(ctx, chatID)
 	if err != nil {
 		return nil, fmt.Errorf("error getting chat preview: %w", err)
 	}
-	if err := c.ensureUserInTGChat(ctx, cp.TelegramID); err != nil {
+	if err := c.ensureUserInTGChat(ctx, userTGID, cp.TelegramID); err != nil {
 		return nil, fmt.Errorf("error ensuring user in chat: %w", err)
 	}
 	return cp, nil
@@ -126,6 +128,14 @@ func (c *Chat) CreateChat(ctx context.Context, chatID int64) (*domain.Chat, erro
 	return chat, nil
 }
 
+func (c *Chat) ForgetChatByTGID(ctx context.Context, chatID int64) error {
+	chat, err := c.chatRepo.GetChatByTelegramID(ctx, chatID)
+	if err != nil {
+		return fmt.Errorf("error getting chat: %w", err)
+	}
+	return c.chatRepo.DeleteChat(ctx, chat.ID)
+}
+
 func (c *Chat) getChatFromTelegram(ctx context.Context, chatID int64) (*domain.Chat, error) {
 	tgchat, err := c.bot.GetChat(ctx, &bot.GetChatParams{
 		ChatID: chatID,
@@ -133,8 +143,10 @@ func (c *Chat) getChatFromTelegram(ctx context.Context, chatID int64) (*domain.C
 	if err != nil {
 		return nil, fmt.Errorf("error getting chat: %w", err)
 	}
-
-	avatar, err := downloadTGFileByID(ctx, c.bot, c.storage, tgchat.Photo.SmallFileID)
+	avatar := ""
+	if tgchat.Photo != nil {
+		avatar, err = downloadTGFileByID(ctx, c.bot, c.storage, tgchat.Photo.SmallFileID)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to download user avatar: %w", err)
 	}
@@ -148,10 +160,10 @@ func (c *Chat) getChatFromTelegram(ctx context.Context, chatID int64) (*domain.C
 	return chat, nil
 }
 
-func (c *Chat) ensureUserInTGChat(ctx Context, chatID int64) error {
+func (c *Chat) ensureUserInTGChat(ctx context.Context, userID, chatID int64) error {
 	_, err := c.bot.GetChatMember(ctx, &bot.GetChatMemberParams{
 		ChatID: chatID,
-		UserID: ctx.User.TelegramID,
+		UserID: userID,
 	})
 	if err != nil {
 		return fmt.Errorf("error getting chat member: %w", err)
@@ -167,7 +179,28 @@ func (c *Chat) ensureUserInChat(ctx Context, chatID string) error {
 	if !inChat {
 		return fmt.Errorf("user is not in chat")
 	}
+
+	tgID, err := c.chatRepo.GetChatTelegramIDByID(ctx, chatID)
+	if err != nil {
+		return fmt.Errorf("error getting chat preview: %w", err)
+	}
+	if err := c.ensureUserInTGChat(ctx, ctx.User.TelegramID, tgID); err != nil {
+		return fmt.Errorf("error checking if user is in tg chat: %w", err)
+	}
+
 	return nil
+}
+
+func (c *Chat) DetachUserFromChat(ctx context.Context, chatTGID, userTGID int64) error {
+	chatID, err := c.chatRepo.GetChatIDByTelegramID(ctx, chatTGID)
+	if err != nil {
+		return fmt.Errorf("error getting chat ID: %w", err)
+	}
+	userID, err := c.userRepo.GetUserIDByTelegramID(ctx, userTGID)
+	if err != nil {
+		return fmt.Errorf("error getting user ID: %w", err)
+	}
+	return c.chatRepo.DetachUserFromChat(ctx, chatID, userID)
 }
 
 func downloadTGFileByID(ctx context.Context, b *bot.Bot, s repo.ImageStorage, fileID string) (string, error) {
@@ -178,7 +211,7 @@ func downloadTGFileByID(ctx context.Context, b *bot.Bot, s repo.ImageStorage, fi
 		return "", fmt.Errorf("error getting file: %w", err)
 	}
 
-	url, err := s.SavePhoto(ctx, b.FileDownloadLink(file))
+	url, err := s.SaveImageByURL(ctx, b.FileDownloadLink(file))
 	if err != nil {
 		return "", fmt.Errorf("failed to save photo: %w", err)
 	}
