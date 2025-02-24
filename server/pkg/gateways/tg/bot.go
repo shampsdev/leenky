@@ -180,12 +180,12 @@ func (b *Bot) handleChatMember(ctx context.Context, _ *bot.Bot, update *models.U
 		}
 	}
 }
+
 func (b *Bot) handleLeftChatMember(ctx context.Context, _ *bot.Bot, update *models.Update) {
 	err := b.cases.Chat.DetachUserFromChat(ctx, update.Message.Chat.ID, update.Message.From.ID)
 	if err != nil {
 		b.log.Errorf("error detaching user from chat: %v", err)
 	}
-	return
 }
 
 func (b *Bot) handleChatChanged(ctx context.Context, _ *bot.Bot, update *models.Update) {
