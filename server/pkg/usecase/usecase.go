@@ -21,7 +21,7 @@ func Setup(cfg *config.Config, db *pgxpool.Pool, b *bot.Bot) Cases {
 	if err != nil {
 		panic(err)
 	}
-	chatCase := NewChat(chatRepo, storage, b)
+	chatCase := NewChat(chatRepo, userRepo, storage, b)
 	userCase := NewUser(userRepo, chatRepo, storage, b)
 	searchCase := NewSearch(chatCase)
 

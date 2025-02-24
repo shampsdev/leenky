@@ -78,6 +78,10 @@ func (b *Bot) Run(ctx context.Context) {
 		return update.ChatMember != nil
 	}, b.handleChatMember)
 
+	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
+		return update.Message != nil && update.Message.LeftChatMember != nil
+	}, b.handleLeftChatMember)
+
 	b.Start(ctx)
 }
 
@@ -159,10 +163,15 @@ func (b *Bot) handleMyChatMember(ctx context.Context, _ *bot.Bot, update *models
 
 func (b *Bot) handleChatMember(ctx context.Context, _ *bot.Bot, update *models.Update) {
 	cm := update.ChatMember
-	if cm.NewChatMember.Type == models.ChatMemberTypeBanned || cm.NewChatMember.Type == models.ChatMemberTypeLeft {
-		err := b.cases.Chat.ForgetChatByTGID(ctx, cm.Chat.ID)
+	if cm.NewChatMember.Type == models.ChatMemberTypeBanned {
+		err := b.cases.Chat.DetachUserFromChat(ctx, cm.Chat.ID, cm.NewChatMember.Banned.User.ID)
 		if err != nil {
-			b.log.Errorf("error forgetting chat: %v", err)
+			b.log.Errorf("error detaching user from chat: %v", err)
+		}
+	} else if cm.NewChatMember.Type == models.ChatMemberTypeLeft {
+		err := b.cases.Chat.DetachUserFromChat(ctx, cm.Chat.ID, cm.NewChatMember.Left.User.ID)
+		if err != nil {
+			b.log.Errorf("error detaching user from chat: %v", err)
 		}
 	} else {
 		_, err := b.cases.Chat.CreateOrUpdateChat(ctx, cm.Chat.ID)
@@ -170,6 +179,13 @@ func (b *Bot) handleChatMember(ctx context.Context, _ *bot.Bot, update *models.U
 			b.log.Errorf("error registering chat: %v", err)
 		}
 	}
+}
+func (b *Bot) handleLeftChatMember(ctx context.Context, _ *bot.Bot, update *models.Update) {
+	err := b.cases.Chat.DetachUserFromChat(ctx, update.Message.Chat.ID, update.Message.From.ID)
+	if err != nil {
+		b.log.Errorf("error detaching user from chat: %v", err)
+	}
+	return
 }
 
 func (b *Bot) handleChatChanged(ctx context.Context, _ *bot.Bot, update *models.Update) {
