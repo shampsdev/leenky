@@ -200,7 +200,7 @@ const filteredUsers = computed(() => users.value ?? []);
               <img
                 src="/src/assets/navigation.svg"
                 @click="leaveChatHandler(chat.id)"
-                class="text-gray-400 text-xl"
+                class="text-gray-400 opacity-0 text-xl"
               />
             </div>
           </li>
