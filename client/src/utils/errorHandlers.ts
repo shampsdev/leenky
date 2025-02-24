@@ -1,4 +1,6 @@
 export const handleImageError = (event: any) => {
-  event.target.src = '';
-  event.target.classList.add('bg-gray-300');
+  const target = event.target as HTMLImageElement;
+  if (target) {
+    target.src = '/src/assets/dev.png';
+  }
 };
