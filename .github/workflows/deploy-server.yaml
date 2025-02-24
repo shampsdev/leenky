@@ -19,6 +19,6 @@ jobs:
     with:
       dockerfile_path: 'server/Dockerfile.server'
       context_path: 'server'
-      image_name: 'tglinked-server'
+      image_name: 'leenky-server'
       environment: 'PROD'
       secret-service-hash: 'SERVER_SERVICE_HASH'

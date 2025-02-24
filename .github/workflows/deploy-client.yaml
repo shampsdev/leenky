@@ -15,6 +15,6 @@ jobs:
     with:
       dockerfile_path: 'client/Dockerfile'
       context_path: 'client'
-      image_name: 'tglinked-client'
+      image_name: 'leenky-client'
       environment: 'PROD'
       secret-service-hash: 'CLIENT_SERVICE_HASH'

@@ -16,6 +16,6 @@ jobs:
     with:
       dockerfile_path: 'server/Dockerfile.tgbot'
       context_path: 'server'
-      image_name: 'tglinked-bot'
+      image_name: 'leenky-bot'
       environment: 'PROD'
       secret-service-hash: 'BOT_SERVICE_HASH'
