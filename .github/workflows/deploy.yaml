@@ -69,8 +69,8 @@ jobs:
           file: ./${{ inputs.dockerfile_path }}
           push: true
           tags: |
-            ${{ secrets.DOCKER_USERNAME }}/${{ inputs.image_name }}:${{ env.VERSION_TAG }}
-            ${{ secrets.DOCKER_USERNAME }}/${{ inputs.image_name }}:${{ env.COMMIT_SHORT_SHA }}
+            ${{ secrets.REGISTRY_URL }}/${{ secrets.DOCKER_USERNAME }}/${{ inputs.image_name }}:${{ env.VERSION_TAG }}
+            ${{ secrets.REGISTRY_URL }}/${{ secrets.DOCKER_USERNAME }}/${{ inputs.image_name }}:${{ env.COMMIT_SHORT_SHA }}
 
       - name: Registry push notification
         uses: containrrr/shoutrrr-action@v1
