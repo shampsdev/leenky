@@ -71,7 +71,7 @@ func (b *Bot) Run(ctx context.Context) {
 
 	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
 		return update.Message != nil &&
-			(len(update.Message.NewChatPhoto) != 0 || update.Message.NewChatTitle != "")
+			(len(update.Message.NewChatPhoto) != 0 || update.Message.NewChatTitle != "" || update.Message.DeleteChatPhoto)
 	}, b.handleChatChanged)
 
 	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
