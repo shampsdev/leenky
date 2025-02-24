@@ -33,17 +33,10 @@
           <li
             v-for="(chat, chatIndex) in filteredChats"
             :key="chat.id"
-            class="chat-item rounded-[20px] relative flex w-full items-center gap-[7px] cursor-pointer overflow-hidden"
-            @mousedown="startSwipe(chat.id, $event)"
-            @mousemove="onSwipeMove($event)"
-            @mouseup="endSwipe"
-            @mouseleave="endSwipe"
-            @touchstart="startSwipe(chat.id, $event)"
-            @touchmove="onSwipeMove($event)"
-            @touchend="endSwipe"
+            class="chat-item rounded-[15px] relative flex w-full items-center gap-[7px] cursor-pointer overflow-hidden"
           >
             <div
-              class="chat-bg rounded-[20px] absolute top-0 left-0 w-full h-full bg-[#EEEEEF] transition-all duration-300"
+              class="chat-bg absolute top-0 left-0 w-full h-full bg-[#EEEEEF] transition-all duration-300"
             ></div>
 
             <button
@@ -51,17 +44,19 @@
               @pointerup.stop="leaveChatHandler(chat.id)"
               :class="{ 'show-delete': swipedChatId === chat.id }"
             >
-              <img @click.stop="leaveChatHandler(chat.id)" src="/src/assets/bin.svg" alt="" />
-              <p
-                @click.stop="leaveChatHandler(chat.id)"
-                class="font-medium text-[13px] text-[#838388]"
-              >
-                Удалить
-              </p>
+              <img src="/src/assets/bin.svg" alt="" />
+              <p class="font-medium text-[13px]">Удалить</p>
             </button>
 
             <div
-              class="chat-content rounded-[20px] flex items-center gap-[7px] w-full transition-transform duration-300"
+              @click="
+                () => {
+                  chatsSearchStore.setChats(chats);
+                  chatsSearchStore.setQuery(searchQuery);
+                  router.push(`/chat/${chat.id}`);
+                }
+              "
+              class="chat-content flex items-center gap-[7px] w-full transition-transform duration-300"
               :class="{ swiped: swipedChatId === chat.id }"
             >
               <img
@@ -70,14 +65,23 @@
                 class="w-[60px] h-[60px] rounded-full aspect-square object-cover"
               />
               <div
-                class="flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px] border-b-[#c8d4d9]"
-                :class="chatIndex <= filteredChats.length - 2 ? 'border-b-1' : ''"
+                class="flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px]"
               >
                 <div class="flex flex-col gap-[2px]">
                   <p class="font-normal text-[17px]">{{ chat.name }}</p>
                   <p class="text-hint font-light text-[15px]">{{ chat.usersAmount }} участников</p>
                 </div>
-                <img src="/src/assets/navigation.svg" class="text-gray-400 pr-[5px] text-xl" />
+                <img
+                  @mousedown="startSwipe(chat.id, $event)"
+                  @mousemove="onSwipeMove($event)"
+                  @mouseup="endSwipe"
+                  @mouseleave="endSwipe"
+                  @touchstart="startSwipe(chat.id, $event)"
+                  @touchmove="onSwipeMove($event)"
+                  @touchend="endSwipe"
+                  src="/src/assets/navigation.svg"
+                  class="text-gray-400 pr-[5px] text-xl"
+                />
               </div>
             </div>
           </li>
