@@ -31,38 +31,54 @@
           class="flex flex-col gap-0 mt-[25px]"
         >
           <li
-            @click="
-              () => {
-                chatsSearchStore.setChats(chats);
-                chatsSearchStore.setQuery(searchQuery);
-                router.push(`/chat/${chat.id}`);
-              }
-            "
-            v-if="!isLoading"
             v-for="(chat, chatIndex) in filteredChats"
             :key="chat.id"
-            class="chat-item flex w-full flex-row items-center gap-[7px] cursor-pointer"
+            class="chat-item rounded-[20px] relative flex w-full items-center gap-[7px] cursor-pointer overflow-hidden"
+            @mousedown="startSwipe(chat.id, $event)"
+            @mousemove="onSwipeMove($event)"
+            @mouseup="endSwipe"
+            @mouseleave="endSwipe"
+            @touchstart="startSwipe(chat.id, $event)"
+            @touchmove="onSwipeMove($event)"
+            @touchend="endSwipe"
           >
-            <img
-              :src="chat.avatar"
-              @error="handleImageError"
-              class="w-[60px] h-[60px] rounded-full aspect-square object-cover"
-            />
             <div
-              :class="[
-                'flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px] border-b-[#c8d4d9]',
-                chatIndex <= filteredChats.length - 2 ? 'border-b-1' : '',
-              ]"
+              class="chat-bg rounded-[20px] absolute top-0 left-0 w-full h-full bg-[#EEEEEF] transition-all duration-300"
+            ></div>
+
+            <button
+              class="delete-btn absolute right-0 top-0 h-full w-[80px] bg-transparent flex-col flex justify-center items-center transition-all duration-300"
+              @pointerup.stop="leaveChatHandler(chat.id)"
+              :class="{ 'show-delete': swipedChatId === chat.id }"
             >
-              <div class="flex flex-col gap-[2px]">
-                <p class="font-normal text-[17px]">{{ chat.name }}</p>
-                <p class="text-hint font-light text-[15px]">{{ chat.usersAmount }} участников</p>
-              </div>
+              <img @click.stop="leaveChatHandler(chat.id)" src="/src/assets/bin.svg" alt="" />
+              <p
+                @click.stop="leaveChatHandler(chat.id)"
+                class="font-medium text-[13px] text-[#838388]"
+              >
+                Удалить
+              </p>
+            </button>
+
+            <div
+              class="chat-content rounded-[20px] flex items-center gap-[7px] w-full transition-transform duration-300"
+              :class="{ swiped: swipedChatId === chat.id }"
+            >
               <img
-                src="/src/assets/navigation.svg"
-                @click="leaveChatHandler(chat.id)"
-                class="text-gray-400 text-xl"
+                :src="chat.avatar"
+                @error="handleImageError"
+                class="w-[60px] h-[60px] rounded-full aspect-square object-cover"
               />
+              <div
+                class="flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px] border-b-[#c8d4d9]"
+                :class="chatIndex <= filteredChats.length - 2 ? 'border-b-1' : ''"
+              >
+                <div class="flex flex-col gap-[2px]">
+                  <p class="font-normal text-[17px]">{{ chat.name }}</p>
+                  <p class="text-hint font-light text-[15px]">{{ chat.usersAmount }} участников</p>
+                </div>
+                <img src="/src/assets/navigation.svg" class="text-gray-400 pr-[5px] text-xl" />
+              </div>
             </div>
           </li>
         </ul>
@@ -174,6 +190,32 @@ const animateScreenEntry = () => {
   );
 };
 
+const swipedChatId = ref(null);
+const startX = ref(0);
+const currentX = ref(0);
+const threshold = 200;
+
+const startSwipe = (chatId, event) => {
+  startX.value = event.touches ? event.touches[0].clientX : event.clientX;
+  currentX.value = startX.value;
+  swipedChatId.value = chatId;
+};
+
+const onSwipeMove = event => {
+  if (!swipedChatId.value) return;
+  currentX.value = event.touches ? event.touches[0].clientX : event.clientX;
+};
+
+const endSwipe = () => {
+  if (!swipedChatId.value) return;
+  const deltaX = startX.value - currentX.value;
+  if (deltaX > threshold) {
+    swipedChatId.value = swipedChatId.value;
+  } else {
+    swipedChatId.value = null;
+  }
+};
+
 onMounted(() => {
   animateScreenEntry();
 });
@@ -184,14 +226,30 @@ onMounted(() => {
   opacity: 0.5;
 }
 
-/* .chat-enter-active,
-.chat-leave-active {
-  transition: opacity 0.5s, transform 0.5s;
+.chat-content {
+  background-color: white;
+  transform: translateX(0);
 }
 
-.chat-enter,
-.chat-leave-to {
+.swiped {
+  border-top-right-radius: 30px;
+  border-bottom-right-radius: 30px;
+  transform: translateX(-130px);
+}
+
+.delete-btn {
   opacity: 0;
-  transform: translateY(50px);
-} */
+  pointer-events: none;
+}
+
+.chat-bg {
+  z-index: 0;
+  opacity: 1;
+  transition: opacity 0.3s;
+}
+
+.show-delete {
+  opacity: 1;
+  pointer-events: all;
+}
 </style>
