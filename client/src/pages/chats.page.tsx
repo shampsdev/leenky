@@ -3,14 +3,15 @@ import ProfileComponent from "../components/profile.component";
 import SearchBarComponent from "../components/searchBar.component";
 import { ChatData } from "../types/user.interface";
 import { searchChats } from "../api/api";
-import { initDataRaw } from "@telegram-apps/sdk-react";
+import { initData } from "@telegram-apps/sdk-react";
+import ChatPreviewComponent from "../components/chatPreview.component";
 
 const ChatsPage = () => {
-  const [chats, setChats] = useState<ChatData[]>();
-  const [searchQuery, setSearchQuery] = useState<string>();
+  const [chats, setChats] = useState<ChatData[]>([]);
+  const [searchQuery, setSearchQuery] = useState<string>("");
 
   const fetchChats = async () => {
-    const data = await searchChats(initDataRaw() ?? "", searchQuery ?? "");
+    const data = await searchChats(initData.raw() ?? "", searchQuery ?? "");
     if (data) {
       setChats(data);
     }
@@ -36,6 +37,11 @@ const ChatsPage = () => {
           inputHandler={(value) => setSearchQuery(value)}
           placeholder="Поиск"
         />
+        <ul className="flex flex-col gap-0 mt-[25px]">
+          {chats.map((chat) => (
+            <ChatPreviewComponent chatData={chat} />
+          ))}
+        </ul>
       </div>
     </>
   );

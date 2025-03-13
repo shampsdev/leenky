@@ -1,4 +1,4 @@
-import { initDataRaw } from "@telegram-apps/sdk-react";
+import { initData } from "@telegram-apps/sdk-react";
 import { useState, useEffect } from "react";
 import { getMe, getUserById } from "../api/api";
 import { UserData } from "../types/user.interface";
@@ -25,13 +25,13 @@ const ProfileViewComponent = (props: ProfileViewComponentProps) => {
 
   const fetchProfileData = async () => {
     if (props.isCurrentUser) {
-      const data = await getMe(initDataRaw() ?? "");
+      const data = await getMe(initData.raw() ?? "");
       if (data) {
         setProfileData(data);
       }
     } else {
       if (props.id !== undefined) {
-        const data = await getUserById(initDataRaw() ?? "", props.id);
+        const data = await getUserById(initData.raw() ?? "", props.id);
         if (data) {
           setProfileData(data);
         }

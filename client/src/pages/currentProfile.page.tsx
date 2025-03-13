@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
 import { ProfileUserData, UserData } from "../types/user.interface";
 import { getMe, postMe } from "../api/api";
-import { initDataRaw } from "@telegram-apps/sdk-react";
+import { initData, initDataRaw } from "@telegram-apps/sdk-react";
 import { handleImageError } from "../utils/imageErrorHandler";
 import useCurrentProfileStore, {
   useEditProfileStore,
@@ -38,7 +38,7 @@ const ProfileEdit = () => {
   };
 
   const fetchProfileData = async () => {
-    const data = await getMe(initDataRaw() ?? "");
+    const data = await getMe(initData.raw() ?? "");
     if (data) {
       setProfileData(data);
       currentProfileStore.updateProfileData(data);

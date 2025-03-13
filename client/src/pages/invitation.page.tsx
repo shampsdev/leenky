@@ -2,20 +2,19 @@ import { useEffect, useState } from "react";
 import { ChatPreviewData } from "../types/user.interface";
 import { handleImageError } from "../utils/imageErrorHandler";
 import { getChatPreview, joinMe } from "../api/api";
-import { initDataRaw, initDataStartParam } from "@telegram-apps/sdk-react";
+import { initData, initDataStartParam } from "@telegram-apps/sdk-react";
 
 const InvitationPage = () => {
   const chatId = initDataStartParam() ?? "";
-  const initData = initDataRaw() ?? "";
 
   const accept = async () => {
-    await joinMe(initData, chatId);
+    await joinMe(initData.raw() ?? "", chatId);
   };
 
   const [chatData, setChatData] = useState<ChatPreviewData>();
 
   const fetchChatData = async () => {
-    const fetchedChatData = await getChatPreview(initData, chatId);
+    const fetchedChatData = await getChatPreview(initData.raw() ?? "", chatId);
     if (fetchedChatData) {
       setChatData(fetchedChatData);
     }
@@ -63,3 +62,5 @@ const InvitationPage = () => {
     </div>
   );
 };
+
+export default InvitationPage;

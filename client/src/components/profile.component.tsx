@@ -1,8 +1,8 @@
-import { initDataUser } from "@telegram-apps/sdk-react";
+import { initData } from "@telegram-apps/sdk-react";
 import { handleImageError } from "../utils/imageErrorHandler";
 
 const ProfileComponent = () => {
-  const avatar = initDataUser()?.photo_url;
+  const avatar = initData.user()?.photo_url;
   const goToProfile = () => {
     //
   };
