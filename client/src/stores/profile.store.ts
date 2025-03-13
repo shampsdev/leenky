@@ -1,57 +1,84 @@
-import { defineStore } from "pinia";
-import type { ProfileUserData } from "@/types/user.interface";
-import { getMe, postMe } from "@/api/api";
+import { create } from "zustand";
+import { ProfileUserData, UserData } from "../types/user.interface";
 
-export const useProfileStore = defineStore("profile", {
-  state: () => ({
-    editMode: false as boolean,
+interface CurrentProfileState {
+  isEditing: boolean;
+  isChanged: boolean;
+  profileData: ProfileUserData;
+  updateIsEditing: (isEditing: boolean) => void;
+  updateProfileData: (data: UserData) => void;
+  updateIsChanged: (isChanged: boolean) => void;
+  reset: () => void;
+}
 
-    profile: <ProfileUserData>{
-      firstName: "",
-      lastName: "",
-      role: "",
-      company: "",
-      bio: "",
-      avatar: "",
-      telegramUsername: "",
-    },
+const useCurrentProfileStore = create<CurrentProfileState>((set) => ({
+  isEditing: false,
+  isChanged: false,
+  profileData: {
+    firstName: null,
+    lastName: null,
+    company: null,
+    role: null,
+    avatar: null,
+    telegramUsername: null,
+    bio: null,
+    id: null,
+    telegramId: null,
+  },
+  reset: () =>
+    set({
+      profileData: {
+        firstName: null,
+        lastName: null,
+        company: null,
+        role: null,
+        avatar: null,
+        telegramUsername: null,
+        bio: null,
+      },
+      isChanged: false,
+      isEditing: false,
+    }),
+  updateProfileData: (data: UserData) =>
+    set((state) => ({
+      profileData: data,
+    })),
+  updateIsEditing: (isEditing: boolean) => set({ isEditing }),
+  updateIsChanged: (isChanged: boolean) => set({ isChanged }),
+}));
 
-    editFieldProfile: <ProfileUserData>{
-      firstName: "",
-      lastName: "",
-      role: "",
-      company: "",
-      bio: "",
-      avatar: "",
-      telegramUsername: "",
-    },
-  }),
-
-  getters: {
-    isChanged(): boolean {
-      const isChanged =
-        this.profile.firstName !== this.editFieldProfile.firstName ||
-        this.profile.lastName !== this.editFieldProfile.lastName ||
-        this.profile.role !== this.editFieldProfile.role ||
-        this.profile.company !== this.editFieldProfile.company ||
-        this.profile.bio !== this.editFieldProfile.bio;
-
-      console.log(isChanged);
-      return isChanged;
-    },
+interface EditProfileState {
+  profileData: ProfileUserData;
+  setProfileData: (data: ProfileUserData) => void;
+  reset: () => void;
+}
+export const useEditProfileStore = create<EditProfileState>((set) => ({
+  profileData: {
+    firstName: null,
+    lastName: null,
+    company: null,
+    role: null,
+    avatar: null,
+    telegramUsername: null,
+    bio: null,
   },
 
-  actions: {
-    setProfile(newProfile: ProfileUserData) {
-      this.editFieldProfile = { ...newProfile };
-      this.profile = { ...newProfile };
-    },
+  setProfileData: (data: ProfileUserData) =>
+    set((state) => ({
+      profileData: data,
+    })),
 
-    toggleEditMode() {
-      if (!this.editMode) {
-        this.editFieldProfile = { ...this.profile };
-      }
-      this.editMode = !this.editMode;
-    },
-  },
-});
+  reset: () =>
+    set({
+      profileData: {
+        firstName: null,
+        lastName: null,
+        company: null,
+        role: null,
+        avatar: null,
+        telegramUsername: null,
+        bio: null,
+      },
+    }),
+}));
+export default useCurrentProfileStore;
