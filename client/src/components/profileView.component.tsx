@@ -1,5 +1,5 @@
 import { initData } from "@telegram-apps/sdk-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getMe, getUserById } from "../api/api";
 import { UserData } from "../types/user.interface";
 import { handleImageError } from "../utils/imageErrorHandler";
@@ -23,7 +23,7 @@ const ProfileViewComponent = (props: ProfileViewComponentProps) => {
     telegramId: null,
   });
 
-  const fetchProfileData = async () => {
+  const fetchProfileData = useCallback(async () => {
     if (props.isCurrentUser) {
       const data = await getMe(initData.raw() ?? "");
       if (data) {
@@ -37,18 +37,18 @@ const ProfileViewComponent = (props: ProfileViewComponentProps) => {
         }
       }
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchProfileData();
-  }, [profileData]);
+  }, []);
 
   return (
     <>
       <div className="flex flex-col items-center gap-[17px]">
         <img
           className="w-[115px] h-[115px] rounded-full object-cover"
-          src={profileData.avatar ?? ""}
+          src={profileData.avatar ?? "../"}
           onError={handleImageError}
         />
 

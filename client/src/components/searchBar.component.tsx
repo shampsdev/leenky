@@ -1,12 +1,19 @@
 import SearchIcon from "../assets/search_transparent.svg";
+
 interface SearchBarProps {
+  value: string;
   inputHandler: (value: string) => void;
   placeholder: string;
 }
-const SearchBarComponent = (props: SearchBarProps) => {
-  const closeKeyboard = (event: React.KeyboardEvent) => {
-    if (event.target instanceof HTMLElement) {
-      event.target.blur();
+
+const SearchBarComponent = ({
+  value,
+  inputHandler,
+  placeholder,
+}: SearchBarProps) => {
+  const closeKeyboard = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.currentTarget.blur();
     }
   };
 
@@ -16,10 +23,11 @@ const SearchBarComponent = (props: SearchBarProps) => {
         <img src={SearchIcon} alt="search" className="w-5 h-5" />
       </button>
       <input
-        onKeyDown={closeKeyboard}
-        onInput={(event: any) => props.inputHandler(event.target.value)}
         type="text"
-        placeholder={props.placeholder}
+        value={value}
+        onKeyDown={closeKeyboard}
+        onChange={(event) => inputHandler(event.target.value)}
+        placeholder={placeholder}
         className="flex-1 outline-none placeholder-[#838388] text-main"
       />
     </div>

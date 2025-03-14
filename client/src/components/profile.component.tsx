@@ -1,10 +1,12 @@
 import { initData } from "@telegram-apps/sdk-react";
 import { handleImageError } from "../utils/imageErrorHandler";
+import { useNavigate } from "react-router-dom";
 
 const ProfileComponent = () => {
   const avatar = initData.user()?.photo_url;
+  const navigate = useNavigate();
   const goToProfile = () => {
-    //
+    navigate("/profile");
   };
 
   return (

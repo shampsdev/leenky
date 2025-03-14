@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
 import { ProfileUserData, UserData } from "../types/user.interface";
 import { getMe, postMe } from "../api/api";
-import { initData, initDataRaw } from "@telegram-apps/sdk-react";
+import { backButton, initData, initDataRaw } from "@telegram-apps/sdk-react";
 import { handleImageError } from "../utils/imageErrorHandler";
 import useCurrentProfileStore, {
   useEditProfileStore,
@@ -37,13 +37,13 @@ const ProfileEdit = () => {
     return isChanged;
   };
 
-  const fetchProfileData = async () => {
+  const fetchProfileData = useCallback(async () => {
     const data = await getMe(initData.raw() ?? "");
     if (data) {
       setProfileData(data);
       currentProfileStore.updateProfileData(data);
     }
-  };
+  }, []);
 
   const MAX_INPUT_LENGTH = 40;
   const MAX_TEXTAREA_LENGTH = 230;
@@ -116,13 +116,10 @@ const ProfileEdit = () => {
 const CurrentProfilePage = () => {
   const profileStore = useCurrentProfileStore();
   const editProfileStore = useEditProfileStore();
-  profileStore.reset();
-  editProfileStore.reset();
-
-  const handleButtonClick = () => {
+  const handleButtonClick = async () => {
     if (profileStore.isChanged && profileStore.isEditing) {
       try {
-        postMe(initDataRaw() || "", editProfileStore.profileData);
+        await postMe(initDataRaw() || "", editProfileStore.profileData);
         profileStore.updateIsEditing(!profileStore.isEditing);
         editProfileStore.setProfileData;
         profileStore.isEditing = false;
@@ -136,6 +133,13 @@ const CurrentProfilePage = () => {
       profileStore.isEditing = true;
     }
   };
+
+  backButton.show();
+
+  useEffect(() => {
+    profileStore.reset();
+    editProfileStore.reset();
+  }, []);
 
   return (
     <>
