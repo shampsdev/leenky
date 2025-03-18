@@ -29,6 +29,8 @@ func ExtractUserTGData() gin.HandlerFunc {
 		}
 		c.Set("user_tg_data", &domain.UserTGData{
 			TelegramID:       parsed.User.ID,
+			FirstName:        parsed.User.FirstName,
+			LastName:         parsed.User.LastName,
 			TelegramUsername: parsed.User.Username,
 			Avatar:           parsed.User.PhotoURL,
 		})

@@ -497,6 +497,40 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users/me/preview": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "description": "Use for bio extraction",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "users"
+                ],
+                "summary": "Get me preview",
+                "responses": {
+                    "200": {
+                        "description": "User data",
+                        "schema": {
+                            "$ref": "#/definitions/domain.User"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
         }
     },
     "definitions": {
@@ -504,9 +538,6 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "avatar": {
-                    "type": "string"
-                },
-                "createdAt": {
                     "type": "string"
                 },
                 "id": {
@@ -517,9 +548,6 @@ const docTemplate = `{
                 },
                 "telegramId": {
                     "type": "integer"
-                },
-                "updatedAt": {
-                    "type": "string"
                 },
                 "users": {
                     "type": "array",
@@ -581,9 +609,6 @@ const docTemplate = `{
                 "company": {
                     "type": "string"
                 },
-                "createdAt": {
-                    "type": "string"
-                },
                 "firstName": {
                     "type": "string"
                 },
@@ -600,9 +625,6 @@ const docTemplate = `{
                     "type": "integer"
                 },
                 "telegramUsername": {
-                    "type": "string"
-                },
-                "updatedAt": {
                     "type": "string"
                 }
             }
