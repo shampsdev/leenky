@@ -14,13 +14,18 @@ import { useCallback, useEffect } from "react";
 import { getMe } from "./api/api";
 import { backButton, initData } from "@telegram-apps/sdk-react";
 import useUserStore from "./stores/user.store";
+import ProtectedRoute from "./components/protectedRoute.component";
 function App() {
   const navigate = useNavigate();
   const userStore = useUserStore();
+
   const checkAuth = useCallback(async () => {
     const userData = await getMe(initData.raw() ?? "");
+    console.log(userData);
     if (userData) {
       userStore.authenticate();
+      userStore.setIsLoading(false);
+      userStore.updateUserData(userData);
     }
   }, [userStore]);
 
@@ -37,11 +42,13 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/" Component={ChatsPage} />
-        <Route path="/profile" Component={CurrentProfilePage} />
+        <Route element={<ProtectedRoute />}>
+          <Route path="/" Component={ChatsPage} />
+          <Route path="/profile" Component={CurrentProfilePage} />
+          <Route path="/chat" Component={ChatPage} />
+          <Route path="/chat/:chatId" Component={ChatPage} />
+        </Route>
         <Route path="/about" Component={AboutPage} />
-        <Route path="/chat" Component={ChatPage} />
-        <Route path="/chat/:chatId" Component={ChatPage} />
       </Routes>
     </>
   );

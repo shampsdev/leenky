@@ -6,6 +6,9 @@ import tailwindcss from "@tailwindcss/vite";
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
-    allowedHosts: ["tunnel.shamps.dev", "tunnel2.shamps.dev"],
+    allowedHosts: ["tunnel.shamps.dev", "timur.tunnel.shamps.dev"],
+  },
+  define: {
+    global: {},
   },
 });

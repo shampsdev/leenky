@@ -1,8 +1,8 @@
 import axios from "axios";
-
+import { API_URL } from "../shared/constants";
 import { UserData, ChatData, ChatPreviewData } from "../types/user.interface";
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_BASE_URL,
+  baseURL: `${API_URL}/api/v1`,
   headers: {
     "Content-Type": "application/json",
   },
