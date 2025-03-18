@@ -1,7 +1,7 @@
 import DevImage from "../assets/dev.png";
-export const handleImageError = (event: any) => {
-  const target = event.target as HTMLImageElement;
-  if (target) {
-    target.src = DevImage;
-  }
+export const handleImageError = (
+  event: React.SyntheticEvent<HTMLImageElement, Event>
+) => {
+  const target = event.currentTarget;
+  target.src = DevImage;
 };

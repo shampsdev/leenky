@@ -1,5 +1,5 @@
 interface aboutComponentProps {
-  handleButtonClick: Function;
+  handleButtonClick: () => void;
   imageSrc: string;
   contentText: string;
   buttonText: string;

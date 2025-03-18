@@ -1,20 +1,14 @@
 import "./App.css";
-import {
-  BrowserRouter as Router,
-  Route,
-  Routes,
-  useNavigate,
-  BrowserRouter,
-} from "react-router-dom";
+import { Route, Routes, useNavigate } from "react-router-dom";
 import AboutPage from "./pages/about.page";
 import ChatPage from "./pages/chat.page";
-import CurrentProfilePage from "./pages/currentProfile.page";
 import ChatsPage from "./pages/chats.page";
 import { useCallback, useEffect } from "react";
 import { getMe } from "./api/api";
 import { backButton, initData } from "@telegram-apps/sdk-react";
 import useUserStore from "./stores/user.store";
 import ProtectedRoute from "./components/protectedRoute.component";
+import CurrentProfilePage from "./pages/currentProfile.page";
 function App() {
   const navigate = useNavigate();
   const userStore = useUserStore();

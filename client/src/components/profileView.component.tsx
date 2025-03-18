@@ -1,41 +1,18 @@
 import { initData } from "@telegram-apps/sdk-react";
-import { useState, useEffect, useCallback } from "react";
-import { getMe, getUserById } from "../api/api";
-import { UserData } from "../types/user.interface";
+import { useEffect, useCallback } from "react";
+import { getMe } from "../api/api";
 import { handleImageError } from "../utils/imageErrorHandler";
 import InfoBlockComponent from "./infoBlock.component";
 import InfoParagraphComponent from "./infoParagraph.component";
+import useUserStore from "../stores/user.store";
 
-interface ProfileViewComponentProps {
-  isCurrentUser: boolean;
-  id?: string;
-}
-const ProfileViewComponent = (props: ProfileViewComponentProps) => {
-  const [profileData, setProfileData] = useState<UserData>({
-    firstName: null,
-    lastName: null,
-    company: null,
-    role: null,
-    avatar: null,
-    telegramUsername: null,
-    bio: null,
-    id: null,
-    telegramId: null,
-  });
+const ProfileViewComponent = () => {
+  const { userData, updateUserData } = useUserStore();
 
   const fetchProfileData = useCallback(async () => {
-    if (props.isCurrentUser) {
-      const data = await getMe(initData.raw() ?? "");
-      if (data) {
-        setProfileData(data);
-      }
-    } else {
-      if (props.id !== undefined) {
-        const data = await getUserById(initData.raw() ?? "", props.id);
-        if (data) {
-          setProfileData(data);
-        }
-      }
+    const data = await getMe(initData.raw() ?? "");
+    if (data) {
+      updateUserData(data);
     }
   }, []);
 
@@ -48,16 +25,16 @@ const ProfileViewComponent = (props: ProfileViewComponentProps) => {
       <div className="flex flex-col items-center gap-[17px]">
         <img
           className="w-[115px] h-[115px] rounded-full object-cover"
-          src={profileData.avatar ?? "../"}
+          src={userData.avatar ?? "../"}
           onError={handleImageError}
         />
 
         <div className="text-center">
           <p className="font-semibold inline-flex text-[20px] gap-[10px] items-center">
-            {profileData.firstName} {profileData.lastName}
+            {userData.firstName} {userData.lastName}
           </p>
           <p className="text-hint text-[15px]">
-            {`@${profileData.telegramUsername}`}
+            {`@${userData.telegramUsername}`}
           </p>
         </div>
       </div>
@@ -65,11 +42,11 @@ const ProfileViewComponent = (props: ProfileViewComponentProps) => {
         <InfoBlockComponent>
           <InfoParagraphComponent
             title="Место работы"
-            content={profileData.company ?? ""}
+            content={userData.company ?? ""}
           />
           <InfoParagraphComponent
             title="Должность"
-            content={profileData.role ?? ""}
+            content={userData.role ?? ""}
           />
         </InfoBlockComponent>
         <div className="px-[16px] text-hint mb-[8px] mt-[15px] text-[13px]">
@@ -78,7 +55,7 @@ const ProfileViewComponent = (props: ProfileViewComponentProps) => {
         <InfoBlockComponent>
           <InfoParagraphComponent
             title="Описание"
-            content={profileData.bio ?? ""}
+            content={userData.bio ?? ""}
           />
         </InfoBlockComponent>
       </div>

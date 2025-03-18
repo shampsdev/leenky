@@ -1,7 +1,7 @@
 export type ButtonState = "active" | "disabled";
 export interface ButtonComponentProps {
   content: string;
-  handleClick: Function;
+  handleClick: () => void;
   state: "active" | "disabled";
 }
 const ButtonComponent = (props: ButtonComponentProps) => {

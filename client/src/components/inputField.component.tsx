@@ -12,7 +12,9 @@ const InputFieldComponent = (props: InputFieldComponentProps) => {
           {props.title}
         </legend>
         <input
-          onInput={(event: any) => props.onChangeFunction(event.target.value)}
+          onInput={(event: React.ChangeEvent<HTMLInputElement>) =>
+            props.onChangeFunction(event.target.value)
+          }
           type="text"
           maxLength={props.maxLength}
           className="w-full text-main outline-none pb-[12px] py-[3px] px-[16px] bg-transparent"
