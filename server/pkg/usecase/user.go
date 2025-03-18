@@ -106,7 +106,7 @@ func (u *User) CreateUser(ctx Context, editUser *domain.EditUser) (*domain.User,
 	return user, nil
 }
 
-func (u *User) GetMePreview(ctx context.Context, tgData *domain.UserTGData) (*domain.User, error) {
+func (u *User) GetMePreview(_ context.Context, tgData *domain.UserTGData) (*domain.User, error) {
 	user := &domain.User{
 		TelegramID:       tgData.TelegramID,
 		TelegramUsername: tgData.TelegramUsername,
