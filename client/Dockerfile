@@ -1,21 +1,21 @@
-FROM node:latest as build-stage
+FROM node:20.12.2-alpine AS build-stage
 
+USER root
 WORKDIR /app
 
-COPY package*.json yarn.lock ./
-
-RUN yarn install
+COPY package*.json ./
+RUN npm install
 
 COPY . .
+RUN npm run build
 
-RUN yarn build
-
-FROM nginx:stable-alpine as production-stage
+FROM nginxinc/nginx-unprivileged:alpine AS production-stage
 
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-COPY nginx.conf /etc/nginx/nginx.conf
+COPY default.conf /etc/nginx/conf.d/default.conf
 
-EXPOSE 80
+USER nginx
+EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]
