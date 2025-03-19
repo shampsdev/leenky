@@ -20,6 +20,8 @@ definitions:
         type: string
       id:
         type: string
+      isMember:
+        type: boolean
       name:
         type: string
       telegramId:
@@ -55,6 +57,23 @@ definitions:
       lastName:
         type: string
       role:
+        type: string
+      telegramId:
+        type: integer
+      telegramUsername:
+        type: string
+    type: object
+  domain.UserPreview:
+    properties:
+      avatar:
+        type: string
+      bio:
+        type: string
+      firstName:
+        type: string
+      isRegistered:
+        type: boolean
+      lastName:
         type: string
       telegramId:
         type: integer
@@ -376,7 +395,7 @@ paths:
         "200":
           description: User data
           schema:
-            $ref: '#/definitions/domain.User'
+            $ref: '#/definitions/domain.UserPreview'
         "400":
           description: Bad Request
         "500":

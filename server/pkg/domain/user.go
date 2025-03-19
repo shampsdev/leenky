@@ -13,6 +13,16 @@ type User struct {
 	Bio       string `json:"bio"`
 }
 
+type UserPreview struct {
+	TelegramID       int64  `json:"telegramId"`
+	TelegramUsername string `json:"telegramUsername"`
+	Avatar           string `json:"avatar"`
+	FirstName        string `json:"firstName"`
+	LastName         string `json:"lastName"`
+	Bio              string `json:"bio"`
+	IsRegistered     bool   `json:"isRegistered"`
+}
+
 type EditUser struct {
 	FirstName string `json:"firstName"`
 	LastName  string `json:"lastName"`
