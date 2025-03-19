@@ -168,9 +168,9 @@ export const searchInChat = async (
 export const searchChats = async (
   initData: string,
   query: string
-): Promise<ChatData[] | null> => {
+): Promise<ChatPreviewData[] | null> => {
   try {
-    const response = await api.get<ChatData[]>(`/chats/search`, {
+    const response = await api.get<ChatPreviewData[]>(`/chats/search`, {
       params: {
         q: query,
       },

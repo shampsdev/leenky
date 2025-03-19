@@ -29,48 +29,50 @@ const CurrentProfilePage = () => {
 
   return (
     <EBBComponent>
-      <div className="flex flex-col items-center gap-[17px]">
-        <img
-          className="w-[115px] h-[115px] rounded-full object-cover"
-          src={userData.avatar ?? "../"}
-          onError={handleImageError}
-        />
+      <div className="w-[95%] mx-auto py-4 px-4 overflow-y-auto h-[120vh]">
+        <div className="flex flex-col items-center gap-[17px]">
+          <img
+            className="w-[115px] h-[115px] rounded-full object-cover"
+            src={userData.avatar ?? "null"}
+            onError={handleImageError}
+          />
 
-        <div className="text-center">
-          <p className="font-semibold inline-flex text-[20px] gap-[10px] items-center">
-            {userData.firstName} {userData.lastName}
-          </p>
-          <p className="text-hint text-[15px]">
-            {`@${userData.telegramUsername}`}
-          </p>
+          <div className="text-center">
+            <p className="font-semibold inline-flex text-[20px] gap-[10px] items-center">
+              {userData.firstName} {userData.lastName}
+            </p>
+            <p className="text-hint text-[15px]">
+              {`@${userData.telegramUsername}`}
+            </p>
+          </div>
         </div>
-      </div>
-      <div className="rounded-lg mt-[15px]">
-        <InfoBlockComponent>
-          <InfoParagraphComponent
-            title="Место работы"
-            content={userData.company ?? ""}
-          />
-          <InfoParagraphComponent
-            title="Должность"
-            content={userData.role ?? ""}
-          />
-        </InfoBlockComponent>
-        <div className="px-[16px] text-hint mb-[8px] mt-[15px] text-[13px]">
-          ПОДРОБНЕЕ
+        <div className="rounded-lg mt-[15px] mx-auto">
+          <InfoBlockComponent>
+            <InfoParagraphComponent
+              title="Место работы"
+              content={userData.company ?? ""}
+            />
+            <InfoParagraphComponent
+              title="Должность"
+              content={userData.role ?? ""}
+            />
+          </InfoBlockComponent>
+          <div className="px-[16px] text-hint mb-[8px] mt-[15px] text-[13px]">
+            ПОДРОБНЕЕ
+          </div>
+          <InfoBlockComponent>
+            <InfoParagraphComponent
+              title="Описание"
+              content={userData.bio ?? ""}
+            />
+          </InfoBlockComponent>
         </div>
-        <InfoBlockComponent>
-          <InfoParagraphComponent
-            title="Описание"
-            content={userData.bio ?? ""}
-          />
-        </InfoBlockComponent>
+        <FixedBottomButtonComponent
+          content={"Редактировать"}
+          handleClick={goToEditProfilePage}
+          state={"active"}
+        />
       </div>
-      <FixedBottomButtonComponent
-        content={"Редактировать"}
-        handleClick={goToEditProfilePage}
-        state={"active"}
-      />
     </EBBComponent>
   );
 };

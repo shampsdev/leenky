@@ -4,8 +4,8 @@ import { UserData } from "../types/user.interface";
 interface UserState {
   isAuthenticated: boolean;
   isLoading: boolean;
-  userData: UserData;
-  updateUserData: (userData: UserData) => void;
+  userData: Omit<UserData, "isRegistered">;
+  updateUserData: (userData: Omit<UserData, "isRegistered">) => void;
   setIsLoading: (isLoading: boolean) => void;
   authenticate: () => void;
 }
@@ -25,7 +25,8 @@ const useUserStore = create<UserState>((set) => ({
   isLoading: true,
   isAuthenticated: false,
   authenticate: () => set(() => ({ isAuthenticated: true })),
-  updateUserData: (userData: UserData) => set({ userData }),
+  updateUserData: (userData: Omit<UserData, "isRegistered">) =>
+    set({ userData }),
   setIsLoading: (isLoading: boolean) => set(() => ({ isLoading: isLoading })),
 }));
 export default useUserStore;

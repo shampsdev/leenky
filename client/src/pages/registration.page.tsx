@@ -12,9 +12,11 @@ import {
 import EBBComponent from "../components/enableBackButtonComponent";
 import { createMe, getMePreview } from "../api/api";
 import { useNavigate } from "react-router-dom";
+import useUserStore from "../stores/user.store";
 
 const RegistrationPage = () => {
   const startParam = initDataStartParam();
+  const userStore = useUserStore();
   const navigate = useNavigate();
   const avatar = initDataUser()?.photo_url;
   const [profileData, setProfileData] = useState<
@@ -52,14 +54,27 @@ const RegistrationPage = () => {
       [field]: value,
     }));
   };
+  const checkAuth = async () => {
+    userStore.setIsLoading(true);
+    const userData = await getMePreview(initData.raw() ?? "");
+    if (userData?.isRegistered) {
+      userStore.authenticate();
+      userStore.setIsLoading(false);
+      userStore.updateUserData(userData);
+    } else {
+      userStore.setIsLoading(false);
+    }
+  };
 
   const registerUser = async () => {
     const response = await createMe(initData.raw() ?? "", profileData);
+
     if (response) {
+      checkAuth();
       navigate("/chats", { replace: true });
 
       if (startParam !== undefined && startParam.length > 0) {
-        navigate(`/chats/${startParam}`);
+        navigate(`/chat/${startParam}`);
       }
     }
   };
@@ -84,7 +99,7 @@ const RegistrationPage = () => {
       <div className="flex flex-col items-center gap-[17px]">
         <img
           className="w-[115px] h-[115px] rounded-full object-cover"
-          src={avatar ?? ""}
+          src={avatar ?? "null"}
           onError={handleImageError}
         />
       </div>

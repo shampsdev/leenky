@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import ProfileComponent from "../components/profile.component";
 import SearchBarComponent from "../components/searchBar.component";
-import { ChatData } from "../types/user.interface";
+import { ChatPreviewData } from "../types/user.interface";
 import { searchChats } from "../api/api";
 import { initData } from "@telegram-apps/sdk-react";
 import ChatPreviewComponent from "../components/chatPreview.component";
@@ -9,7 +9,7 @@ import DBBComponent from "../components/disableBackButton.component";
 import { Outlet } from "react-router-dom";
 
 const ChatsPage = () => {
-  const [chats, setChats] = useState<ChatData[]>([]);
+  const [chats, setChats] = useState<ChatPreviewData[]>([]);
   const [searchQuery, setSearchQuery] = useState<string>("");
 
   const fetchChats = useCallback(async (query: string) => {
@@ -25,10 +25,6 @@ const ChatsPage = () => {
   }, []);
 
   useEffect(() => {
-    if (searchQuery.trim() === "") {
-      setChats([]);
-      return;
-    }
     fetchChats(searchQuery);
   }, [searchQuery]);
   return (

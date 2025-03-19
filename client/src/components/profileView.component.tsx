@@ -25,7 +25,7 @@ const ProfileViewComponent = () => {
       <div className="flex flex-col items-center gap-[17px]">
         <img
           className="w-[115px] h-[115px] rounded-full object-cover"
-          src={userData.avatar ?? "../"}
+          src={userData.avatar ?? "null"}
           onError={handleImageError}
         />
 

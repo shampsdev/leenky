@@ -1,8 +1,8 @@
-import { ChatData } from "../types/user.interface";
+import { ChatPreviewData } from "../types/user.interface";
 import { handleImageError } from "../utils/imageErrorHandler";
 
 interface ChatPreviewComponentProps {
-  chatData: ChatData;
+  chatData: ChatPreviewData;
 }
 const ChatPreviewComponent = (props: ChatPreviewComponentProps) => {
   return (
@@ -15,9 +15,9 @@ const ChatPreviewComponent = (props: ChatPreviewComponentProps) => {
         />
         <div className="flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px]">
           <div className="flex flex-col gap-[2px]">
-            <p className="font-normal text-[17px]">{"название чата"}</p>
+            <p className="font-normal text-[17px]">{props.chatData.name}</p>
             <p className="text-hint font-light text-[15px]">
-              {props.chatData.users.length} участников
+              {props.chatData.usersAmount} участников
             </p>
           </div>
           <img

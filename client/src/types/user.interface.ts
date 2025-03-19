@@ -11,6 +11,7 @@ export interface ProfileUserData {
 export interface UserData extends ProfileUserData {
   id: string | null; // backend ID
   telegramId: string | null;
+  isRegistered: boolean;
 }
 
 export interface ChatData {
@@ -27,4 +28,5 @@ export interface ChatPreviewData {
   name: string | null;
   id: string | null;
   telegramId: string | null;
+  isMember: boolean | null;
 }

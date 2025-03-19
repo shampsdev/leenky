@@ -3,7 +3,7 @@ import { Navigate, Outlet } from "react-router-dom";
 const ProtectedRoute = () => {
   const { isAuthenticated, isLoading } = useUserStore();
   if (isLoading) {
-    return <div>Loading...</div>;
+    return null;
   }
   if (!isAuthenticated) {
     return <Navigate to="/about/1" />;

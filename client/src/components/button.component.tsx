@@ -22,8 +22,8 @@ const ButtonComponent = (props: ButtonComponentProps) => {
   } else if (props.state === "disabled") {
     return (
       <button
+        onClick={() => props.handleClick()}
         className={`${disabledButtonStyle} px-[30px] py-[12px] z-10 `}
-        disabled
       >
         {props.content}
       </button>

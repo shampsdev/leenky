@@ -39,7 +39,7 @@ const InvitationPage = () => {
           className="flex flex-col gap-[10px] items-center rounded-lg"
         >
           <img
-            src={chatData?.avatar ?? undefined}
+            src={chatData?.avatar ?? "null"}
             onError={handleImageError}
             className="w-[116px] h-[116px] rounded-full"
           />
