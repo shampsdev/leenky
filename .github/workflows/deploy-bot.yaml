@@ -5,7 +5,7 @@ on:
 
 jobs:
   deploy:
-    uses: shampsdev/cicd-pipelines/.github/workflows/deploy.yaml@main
+    uses: ./.github/workflows/deploy.yaml
     permissions:
       packages: write
       contents: read
