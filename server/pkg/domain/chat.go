@@ -14,4 +14,5 @@ type ChatPreview struct {
 	Name        string `json:"name"`
 	Avatar      string `json:"avatar"`
 	UsersAmount int    `json:"usersAmount"`
+	IsMember    bool   `json:"isMember"`
 }

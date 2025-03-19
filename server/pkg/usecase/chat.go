@@ -50,6 +50,18 @@ func (c *Chat) GetChatPreview(ctx context.Context, userTGID int64, chatID string
 	if err := c.ensureUserInTGChat(ctx, userTGID, cp.TelegramID); err != nil {
 		return nil, fmt.Errorf("error ensuring user in chat: %w", err)
 	}
+
+	u, err := c.userRepo.GetUserByTelegramID(ctx, userTGID)
+	if err != nil && !errors.Is(err, repo.ErrUserNotFound) {
+		return nil, fmt.Errorf("error getting user: %w", err)
+	}
+	if err == nil {
+		cp.IsMember, err = c.chatRepo.IsUserInChat(ctx, u.ID, chatID)
+		if err != nil {
+			return nil, fmt.Errorf("error checking user in chat: %w", err)
+		}
+	}
+
 	return cp, nil
 }
 

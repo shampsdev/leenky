@@ -520,7 +520,7 @@ const docTemplate = `{
                     "200": {
                         "description": "User data",
                         "schema": {
-                            "$ref": "#/definitions/domain.User"
+                            "$ref": "#/definitions/domain.UserPreview"
                         }
                     },
                     "400": {
@@ -565,6 +565,9 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "string"
+                },
+                "isMember": {
+                    "type": "boolean"
                 },
                 "name": {
                     "type": "string"
@@ -619,6 +622,32 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "role": {
+                    "type": "string"
+                },
+                "telegramId": {
+                    "type": "integer"
+                },
+                "telegramUsername": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.UserPreview": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "bio": {
+                    "type": "string"
+                },
+                "firstName": {
+                    "type": "string"
+                },
+                "isRegistered": {
+                    "type": "boolean"
+                },
+                "lastName": {
                     "type": "string"
                 },
                 "telegramId": {

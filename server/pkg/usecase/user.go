@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -106,8 +107,8 @@ func (u *User) CreateUser(ctx Context, editUser *domain.EditUser) (*domain.User,
 	return user, nil
 }
 
-func (u *User) GetMePreview(_ context.Context, tgData *domain.UserTGData) (*domain.User, error) {
-	user := &domain.User{
+func (u *User) GetMePreview(ctx context.Context, tgData *domain.UserTGData) (*domain.UserPreview, error) {
+	up := &domain.UserPreview{
 		TelegramID:       tgData.TelegramID,
 		TelegramUsername: tgData.TelegramUsername,
 		Avatar:           tgData.Avatar,
@@ -116,13 +117,21 @@ func (u *User) GetMePreview(_ context.Context, tgData *domain.UserTGData) (*doma
 		Bio:              "",
 	}
 
-	bio, err := u.determineUserBio(user.TelegramUsername)
+	bio, err := u.determineUserBio(up.TelegramUsername)
 	if err != nil {
 		return nil, fmt.Errorf("failed to determine user bio: %w", err)
 	}
-	user.Bio = bio
+	up.Bio = bio
 
-	return user, nil
+	_, err = u.userRepo.GetUserByTelegramID(ctx, up.TelegramID)
+	if err != nil && !errors.Is(err, repo.ErrUserNotFound) {
+		return nil, fmt.Errorf("failed to get user: %w", err)
+	}
+	if err == nil {
+		up.IsRegistered = true
+	}
+
+	return up, nil
 }
 
 func (u *User) determineUserBio(username string) (string, error) {

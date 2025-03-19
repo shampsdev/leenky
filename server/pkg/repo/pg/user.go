@@ -2,10 +2,13 @@ package pg
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/shampsdev/tglinked/server/pkg/domain"
+	"github.com/shampsdev/tglinked/server/pkg/repo"
 )
 
 type UserRepo struct {
@@ -119,7 +122,7 @@ func (r *UserRepo) GetUserByTelegramID(ctx context.Context, telegramID int64) (*
 		telegramID,
 	)
 	user := &domain.User{}
-	if err := row.Scan(
+	err := row.Scan(
 		&user.ID,
 		&user.TelegramID,
 		&user.TelegramUsername,
@@ -129,8 +132,12 @@ func (r *UserRepo) GetUserByTelegramID(ctx context.Context, telegramID int64) (*
 		&user.Company,
 		&user.Role,
 		&user.Bio,
-	); err != nil {
-		return nil, fmt.Errorf("failed to get user by telegram ID: %w", err)
+	)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, repo.ErrUserNotFound
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 	return user, nil
 }
