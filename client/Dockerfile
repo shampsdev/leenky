@@ -9,13 +9,10 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-FROM nginxinc/nginx-unprivileged:alpine AS production-stage
+FROM nginx:stable-alpine AS production-stage
 
 COPY --from=build-stage /app/dist /usr/share/nginx/html
 
-COPY default.conf /etc/nginx/conf.d/default.conf
-
-USER nginx
-EXPOSE 8080
+COPY nginx.conf /etc/nginx/nginx.conf
 
 CMD ["nginx", "-g", "daemon off;"]
