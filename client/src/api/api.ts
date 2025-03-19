@@ -205,3 +205,31 @@ export const leaveChat = async (
     return false;
   }
 };
+
+export const getUserBioByTelegramUsername = async (
+  telegramUsername: string
+) => {
+  try {
+    const response = await axios.get(
+      `http://localhost:8000/proxy/?url=https://t.me/${telegramUsername}`
+    );
+    return response.data;
+  } catch (error) {
+    console.error("Ошибка при получении био пользователя:", error);
+    return null;
+  }
+};
+
+export const getMePreview = async (
+  initData: string
+): Promise<UserData | null> => {
+  try {
+    const response = await api.get<UserData>(`/users/me/preview`, {
+      headers: { "X-Api-Token": initData },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Ошибка при получении профиля текущего пользователя:", error);
+    return null;
+  }
+};

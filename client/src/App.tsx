@@ -1,6 +1,6 @@
 import "./App.css";
 import { Route, Routes, useNavigate } from "react-router-dom";
-import AboutPage from "./pages/about.page";
+import { AboutFirstPage, AboutSecondPage } from "./pages/about.page";
 import ChatPage from "./pages/chat.page";
 import ChatsPage from "./pages/chats.page";
 import { useCallback, useEffect } from "react";
@@ -9,6 +9,9 @@ import { backButton, initData } from "@telegram-apps/sdk-react";
 import useUserStore from "./stores/user.store";
 import ProtectedRoute from "./components/protectedRoute.component";
 import CurrentProfilePage from "./pages/currentProfile.page";
+import EditProfilePage from "./pages/editProfile.page";
+import RegistrationPage from "./pages/registration.page";
+import InitialPage from "./pages/initial.page";
 function App() {
   const navigate = useNavigate();
   const userStore = useUserStore();
@@ -20,6 +23,8 @@ function App() {
       userStore.authenticate();
       userStore.setIsLoading(false);
       userStore.updateUserData(userData);
+    } else {
+      userStore.setIsLoading(false);
     }
   }, [userStore]);
 
@@ -37,12 +42,15 @@ function App() {
     <>
       <Routes>
         <Route element={<ProtectedRoute />}>
-          <Route path="/" Component={ChatsPage} />
+          <Route path="/chats" Component={ChatsPage} />
+          <Route path="/chats/:chatId" Component={ChatPage} />
           <Route path="/profile" Component={CurrentProfilePage} />
-          <Route path="/chat" Component={ChatPage} />
-          <Route path="/chat/:chatId" Component={ChatPage} />
+          <Route path="/profile/edit" Component={EditProfilePage} />
         </Route>
-        <Route path="/about" Component={AboutPage} />
+        <Route path="/" Component={InitialPage} />
+        <Route path="/about/1" Component={AboutFirstPage} />
+        <Route path="/about/2" Component={AboutSecondPage} />
+        <Route path="/registration" Component={RegistrationPage} />
       </Routes>
     </>
   );

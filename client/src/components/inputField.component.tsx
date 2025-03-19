@@ -16,6 +16,7 @@ const InputFieldComponent = (props: InputFieldComponentProps) => {
             props.onChangeFunction(event.target.value)
           }
           type="text"
+          value={props.value}
           maxLength={props.maxLength}
           className="w-full text-main outline-none pb-[12px] py-[3px] px-[16px] bg-transparent"
         />

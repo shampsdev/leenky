@@ -27,7 +27,6 @@ const AboutComponent = (props: aboutComponentProps) => {
             className="px-[30px] py-[12px] z-10 bg-[#20C86E] rounded-[30px] text-white font-semibold"
           >
             {props.buttonText}
-            Далее
           </button>
         </div>
       </div>

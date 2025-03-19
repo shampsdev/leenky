@@ -1,46 +1,30 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import InputFieldComponent from "../components/inputField.component";
 import TextareaFieldComponent from "../components/textareaField.component";
-import { UserData } from "../types/user.interface";
+import { UserData, ProfileUserData } from "../types/user.interface";
 import { handleImageError } from "../utils/imageErrorHandler";
+import useUserStore from "../stores/user.store";
 import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
-import {
-  initData,
-  initDataStartParam,
-  initDataUser,
-} from "@telegram-apps/sdk-react";
-import EBBComponent from "../components/enableBackButtonComponent";
-import { createMe, getMePreview } from "../api/api";
+import { postMe } from "../api/api";
+import { initData } from "@telegram-apps/sdk-react";
 import { useNavigate } from "react-router-dom";
+import EBBComponent from "../components/enableBackButtonComponent";
 
-const RegistrationPage = () => {
-  const startParam = initDataStartParam();
+const EditProfilePage = () => {
   const navigate = useNavigate();
-  const avatar = initDataUser()?.photo_url;
-  const [profileData, setProfileData] = useState<
-    Pick<UserData, "firstName" | "lastName" | "bio" | "role" | "company">
-  >({
-    firstName: initDataUser()?.first_name || "",
-    lastName: initDataUser()?.last_name || "",
-    company: "",
-    role: "",
-    bio: "",
-  });
-  const [isFilled, setIsFilled] = useState<boolean>(false);
-  const isProfileFilled = (
-    newProfileData: Pick<
-      UserData,
-      "firstName" | "lastName" | "bio" | "role" | "company"
-    >
-  ) => {
-    const isFilled =
-      profileData.firstName?.trim() != "" &&
-      profileData.lastName?.trim() !== "" &&
-      profileData.company?.trim() !== "" &&
-      profileData.role?.trim() !== "" &&
-      newProfileData.bio?.trim() !== "";
 
-    return isFilled;
+  const { userData, updateUserData } = useUserStore();
+  const [profileData, setProfileData] = useState<UserData>({ ...userData });
+  const [isChanged, setIsChanged] = useState<boolean>(false);
+  const isProfileChanged = (newProfileData: ProfileUserData) => {
+    const isChanged =
+      newProfileData.firstName !== userData.firstName ||
+      newProfileData.lastName !== userData.lastName ||
+      newProfileData.company !== userData.company ||
+      newProfileData.role !== userData.role ||
+      newProfileData.bio !== userData.bio;
+
+    return isChanged;
   };
 
   const MAX_INPUT_LENGTH = 40;
@@ -53,30 +37,19 @@ const RegistrationPage = () => {
     }));
   };
 
-  const registerUser = async () => {
-    const response = await createMe(initData.raw() ?? "", profileData);
-    if (response) {
-      navigate("/chats", { replace: true });
-
-      if (startParam !== undefined && startParam.length > 0) {
-        navigate(`/chats/${startParam}`);
-      }
+  const updateProfile = async () => {
+    const newUserData = await postMe(initData.raw() ?? "", profileData);
+    if (newUserData) {
+      updateUserData(newUserData);
+      setIsChanged(false);
+      goBack();
     }
   };
-
-  const fetchBio = useCallback(async () => {
-    const data = await getMePreview(initData.raw() ?? "");
-    if (data) {
-      setProfileData((prevState) => ({
-        ...prevState,
-        bio: data.bio,
-      }));
-    }
-  }, []);
-
+  const goBack = () => {
+    navigate(-1);
+  };
   useEffect(() => {
-    fetchBio();
-    setIsFilled(isProfileFilled(profileData));
+    setIsChanged(isProfileChanged(profileData));
   }, [profileData]);
 
   return (
@@ -84,7 +57,7 @@ const RegistrationPage = () => {
       <div className="flex flex-col items-center gap-[17px]">
         <img
           className="w-[115px] h-[115px] rounded-full object-cover"
-          src={avatar ?? ""}
+          src={profileData.avatar ?? ""}
           onError={handleImageError}
         />
       </div>
@@ -121,11 +94,17 @@ const RegistrationPage = () => {
         />
       </div>
       <FixedBottomButtonComponent
-        content={"Готово"}
-        handleClick={registerUser}
-        state={isFilled ? "active" : "disabled"}
+        content={isChanged ? "Сохранить" : "Редактировать"}
+        handleClick={() => {
+          if (isChanged) {
+            updateProfile();
+          } else {
+            goBack();
+          }
+        }}
+        state={isChanged ? "active" : "disabled"}
       />
     </EBBComponent>
   );
 };
-export default RegistrationPage;
+export default EditProfilePage;

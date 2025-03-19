@@ -3,8 +3,10 @@ import ProfileComponent from "../components/profile.component";
 import SearchBarComponent from "../components/searchBar.component";
 import { ChatData } from "../types/user.interface";
 import { searchChats } from "../api/api";
-import { backButton, initData } from "@telegram-apps/sdk-react";
+import { initData } from "@telegram-apps/sdk-react";
 import ChatPreviewComponent from "../components/chatPreview.component";
+import DBBComponent from "../components/disableBackButton.component";
+import { Outlet } from "react-router-dom";
 
 const ChatsPage = () => {
   const [chats, setChats] = useState<ChatData[]>([]);
@@ -13,6 +15,7 @@ const ChatsPage = () => {
   const fetchChats = useCallback(async (query: string) => {
     try {
       const data = await searchChats(initData.raw() ?? "", query);
+      console.log(data);
       if (data) {
         setChats(data);
       }
@@ -28,29 +31,36 @@ const ChatsPage = () => {
     }
     fetchChats(searchQuery);
   }, [searchQuery]);
-  backButton.hide();
   return (
-    <div className="max-w-[95%] max-h-[100vh] overflow-auto scroll-container mx-auto px-4">
-      <div className="flex items-center justify-between gap-[15px] py-4 pt-[25px]">
-        <div className="flex gap-[12px] items-center">
-          <h1 className="text-xl font-semibold">Чаты</h1>
-          <img className="w-[22px] h-[22px]" src="/src/assets/add_green.svg" />
+    <>
+      <DBBComponent>
+        <div className="max-w-[95%] max-h-[100vh] overflow-auto scroll-container mx-auto px-4">
+          <div className="flex items-center justify-between gap-[15px] py-4 pt-[25px]">
+            <div className="flex gap-[12px] items-center">
+              <h1 className="text-xl font-semibold">Чаты</h1>
+              <img
+                className="w-[22px] h-[22px]"
+                src="/src/assets/add_green.svg"
+              />
+            </div>
+            <ProfileComponent />
+          </div>
+
+          <SearchBarComponent
+            value={searchQuery}
+            inputHandler={setSearchQuery}
+            placeholder="Поиск"
+          />
+
+          <ul className="flex flex-col gap-0 mt-[25px]">
+            {chats.map((chat) => (
+              <ChatPreviewComponent key={chat.id} chatData={chat} />
+            ))}
+          </ul>
         </div>
-        <ProfileComponent />
-      </div>
-
-      <SearchBarComponent
-        value={searchQuery}
-        inputHandler={setSearchQuery}
-        placeholder="Поиск"
-      />
-
-      <ul className="flex flex-col gap-0 mt-[25px]">
-        {chats.map((chat) => (
-          <ChatPreviewComponent key={chat.id} chatData={chat} />
-        ))}
-      </ul>
-    </div>
+      </DBBComponent>
+      <Outlet />
+    </>
   );
 };
 

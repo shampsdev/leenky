@@ -5,9 +5,16 @@ import { handleImageError } from "../utils/imageErrorHandler";
 import InfoBlockComponent from "../components/infoBlock.component";
 import InfoParagraphComponent from "../components/infoParagraph.component";
 import useUserStore from "../stores/user.store";
+import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
+import { useNavigate } from "react-router-dom";
+import EBBComponent from "../components/enableBackButtonComponent";
 
 const CurrentProfilePage = () => {
   const { userData, updateUserData } = useUserStore();
+  const navigate = useNavigate();
+  const goToEditProfilePage = () => {
+    navigate("/profile/edit");
+  };
 
   const fetchProfileData = useCallback(async () => {
     const data = await getMe(initData.raw() ?? "");
@@ -21,7 +28,7 @@ const CurrentProfilePage = () => {
   }, []);
 
   return (
-    <>
+    <EBBComponent>
       <div className="flex flex-col items-center gap-[17px]">
         <img
           className="w-[115px] h-[115px] rounded-full object-cover"
@@ -59,7 +66,12 @@ const CurrentProfilePage = () => {
           />
         </InfoBlockComponent>
       </div>
-    </>
+      <FixedBottomButtonComponent
+        content={"Редактировать"}
+        handleClick={goToEditProfilePage}
+        state={"active"}
+      />
+    </EBBComponent>
   );
 };
 
