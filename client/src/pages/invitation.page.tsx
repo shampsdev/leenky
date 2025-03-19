@@ -4,12 +4,17 @@ import { handleImageError } from "../utils/imageErrorHandler";
 import { getChatPreview, joinMe } from "../api/api";
 import { initData, initDataStartParam } from "@telegram-apps/sdk-react";
 import EBBComponent from "../components/enableBackButtonComponent";
+import { useNavigate } from "react-router-dom";
 
 const InvitationPage = () => {
+  const navigate = useNavigate();
   const chatId = initDataStartParam() ?? "";
 
   const accept = async () => {
-    await joinMe(initData.raw() ?? "", chatId);
+    const response = await joinMe(initData.raw() ?? "", chatId);
+    if (response) {
+      navigate("/chats", { replace: true });
+    }
   };
 
   const [chatData, setChatData] = useState<ChatPreviewData>();

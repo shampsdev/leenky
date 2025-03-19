@@ -10,7 +10,7 @@ import {
   initDataUser,
 } from "@telegram-apps/sdk-react";
 import EBBComponent from "../components/enableBackButtonComponent";
-import { createMe, getMePreview } from "../api/api";
+import { createMe, getMePreview, joinMe } from "../api/api";
 import { useNavigate } from "react-router-dom";
 import useUserStore from "../stores/user.store";
 
@@ -68,13 +68,15 @@ const RegistrationPage = () => {
 
   const registerUser = async () => {
     const response = await createMe(initData.raw() ?? "", profileData);
-
     if (response) {
       checkAuth();
       navigate("/chats", { replace: true });
 
       if (startParam !== undefined && startParam.length > 0) {
-        navigate(`/chat/${startParam}`);
+        const joinResponse = await joinMe(initData.raw() ?? "", startParam);
+        if (joinResponse) {
+          navigate(`/chat/${startParam}`);
+        }
       }
     }
   };

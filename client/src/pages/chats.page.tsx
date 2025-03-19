@@ -7,10 +7,11 @@ import { initData } from "@telegram-apps/sdk-react";
 import ChatPreviewComponent from "../components/chatPreview.component";
 import DBBComponent from "../components/disableBackButton.component";
 import { Outlet } from "react-router-dom";
+import useChatsSearchStore from "../stores/chatSearch.store";
 
 const ChatsPage = () => {
   const [chats, setChats] = useState<ChatPreviewData[]>([]);
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const { searchQuery, setSearchQuery } = useChatsSearchStore();
 
   const fetchChats = useCallback(async (query: string) => {
     try {

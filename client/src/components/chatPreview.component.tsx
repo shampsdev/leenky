@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import { ChatPreviewData } from "../types/user.interface";
 import { handleImageError } from "../utils/imageErrorHandler";
 
@@ -5,8 +6,15 @@ interface ChatPreviewComponentProps {
   chatData: ChatPreviewData;
 }
 const ChatPreviewComponent = (props: ChatPreviewComponentProps) => {
+  const navigate = useNavigate();
   return (
-    <li className="chat-item rounded-[15px] relative flex w-full items-center gap-[7px] cursor-pointer overflow-hidden">
+    <li
+      className="chat-item rounded-[15px] relative flex w-full items-center gap-[7px] cursor-pointer overflow-hidden"
+      onClick={() => {
+        navigate(`/chat/${props.chatData.id}`);
+        console.log(props.chatData.id);
+      }}
+    >
       <div className="chat-content flex items-center gap-[7px] w-full transition-transform duration-300">
         <img
           src={props.chatData.avatar ?? ""}

@@ -4,11 +4,9 @@ import RequireMembershipComponent from "../components/requireMembership.componen
 
 const ChatPage = () => {
   const { chatId } = useParams();
-
   return (
     <EBBComponent>
-      <RequireMembershipComponent>
-        {chatId}
+      <RequireMembershipComponent chatID={chatId}>
         ChatPage <br />
       </RequireMembershipComponent>
     </EBBComponent>

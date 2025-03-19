@@ -5,27 +5,32 @@ import { useNavigate } from "react-router-dom";
 
 interface RequireMembershipComponentProps {
   children: React.ReactNode;
+  chatID?: string;
 }
 const RequireMembershipComponent = (props: RequireMembershipComponentProps) => {
   const navigate = useNavigate();
   const initDataRaw = initData.raw();
-  const chatID = initDataStartParam() || "";
+  let chatID = props.chatID !== undefined ? props.chatID : initDataStartParam();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isMember, setIsMember] = useState<boolean>(false);
+
   const checkMembership = async () => {
-    const data = await getChatPreview(initDataRaw ?? "", chatID);
-    if (data) {
-      setIsMember(data.isMember ?? false);
+    if (initDataStartParam() !== undefined) chatID = initDataStartParam();
+    const data = await getChatPreview(initDataRaw ?? "", chatID || "");
+    if (data !== null && data?.isMember !== null) {
+      setIsMember(data.isMember);
     }
     setIsLoading(false);
-    if (!isMember) {
-      navigate("/invite", { replace: true });
-    }
   };
 
   useEffect(() => {
     checkMembership();
-  }, [navigate]);
+    if (!isLoading) {
+      if (!isMember) {
+        navigate("/invite", { replace: true });
+      }
+    }
+  }, [isLoading, isMember]);
 
   if (isLoading) {
     return null;
