@@ -3,10 +3,9 @@ name: deploy-bot
 on: 
   workflow_dispatch:
 
-
 jobs:
   deploy:
-    uses: ./.github/workflows/deploy.yaml
+    uses: shampsdev/cicd-pipelines/.github/workflows/deploy.yaml@main
     permissions:
       packages: write
       contents: read

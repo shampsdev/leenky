@@ -2,14 +2,19 @@ name: deploy-server
 
 on: 
   workflow_dispatch:
+    inputs:
+      environment:
+        required: true
+        description: Deploy only to PROD
+        type: choice
+        options: [PROD, DEV]
 
 jobs:
   # ci:
   #   uses: ./.github/workflows/ci-server.yaml
 
   deploy:
-    uses: ./.github/workflows/deploy.yaml
-    # needs: [ci]
+    uses: shampsdev/cicd-pipelines/.github/workflows/deploy.yaml@main
     permissions:
       packages: write
       contents: read
@@ -20,5 +25,5 @@ jobs:
       dockerfile_path: 'server/Dockerfile.server'
       context_path: 'server'
       image_name: 'leenky-server'
-      environment: 'PROD'
-      secret-service-hash: 'SERVER_SERVICE_HASH'
+      environment: ${{ github.event.inputs.environment }}
+      secret-service-hash: ${{ github.event.inputs.environment == 'PROD' && 'SERVER_SERVICE_HASH' || 'SERVER_SERVICE_HASH_DEV' }}
