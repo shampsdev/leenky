@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 	"sync"
 	"time"
 
@@ -73,7 +74,7 @@ func (u *User) GetUserByTGData(ctx context.Context, tgData *domain.UserTGData) (
 		needUpdate = true
 	}
 
-	if u.hashTGAvatar(tgData.Avatar) != user.Avatar {
+	if !strings.Contains(user.Avatar, u.hashTGAvatar(tgData.Avatar)) {
 		var err error
 		tgData.Avatar, err = u.storage.SaveImageByURL(ctx, tgData.Avatar, u.hashTGAvatar(tgData.Avatar))
 		if err != nil {
