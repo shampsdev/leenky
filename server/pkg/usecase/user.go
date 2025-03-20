@@ -30,12 +30,15 @@ func NewUser(
 	storage repo.ImageStorage,
 	tgbot *bot.Bot,
 ) *User {
-	return &User{
+	u := &User{
 		userRepo: userRepo,
 		chatRepo: chatRepo,
 		storage:  storage,
 		bot:      tgbot,
 	}
+
+	go u.cacheCleaner(ctx)
+	return u
 }
 
 func (u *User) GetMe(ctx Context) (*domain.User, error) {
@@ -55,6 +58,7 @@ func (u *User) GetUserByID(ctx Context, id string) (*domain.User, error) {
 
 func (u *User) GetUserByTGData(ctx context.Context, tgData *domain.UserTGData) (*domain.User, error) {
 	if u, ok := u.tgDataCache.Load(tgData.TelegramID); ok {
+		//nolint:errcheck// because sure
 		return u.(*domain.User), nil
 	}
 
@@ -168,7 +172,7 @@ func (u *User) cacheCleaner(ctx context.Context) {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
-			u.tgDataCache.Range(func(key, value interface{}) bool {
+			u.tgDataCache.Range(func(key, _ any) bool {
 				u.tgDataCache.Delete(key)
 				return true
 			})
