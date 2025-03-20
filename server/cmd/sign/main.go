@@ -15,7 +15,6 @@ func main() {
 	cfg := config.Load(".env")
 
 	hash, err := initdata.SignQueryString(initData, cfg.TG.BotToken, authDate)
-
 	if err != nil {
 		panic(err)
 	}
