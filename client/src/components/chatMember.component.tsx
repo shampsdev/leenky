@@ -33,6 +33,11 @@ const ChatMemberComponent = (props: ChatMemverComponentProps) => {
             <p className="text-hint font-light text-[15px]">
               {props.userData.role}
             </p>
+            <p className="text-hint font-light text-[15px]">
+              {props.userData.bio && props.userData.bio.length > 30
+                ? props.userData.bio.slice(0, 30) + "..."
+                : props.userData.bio}
+            </p>
           </div>
         </div>
       </div>

@@ -20,7 +20,6 @@ function App() {
 
   const checkAuth = async () => {
     const userData = await getMePreview(initData.raw() ?? "");
-    console.log(userData);
     if (userData?.isRegistered) {
       userStore.authenticate();
       userStore.setIsLoading(false);

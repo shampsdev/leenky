@@ -56,7 +56,7 @@ const EditProfilePage = () => {
 
   return (
     <EBBComponent>
-      <div className="w-[95%] mx-auto py-4 px-4 overflow-y-auto h-[120vh]">
+      <div className="w-[95%] mx-auto py-4 px-4 overflow-y-auto h-[150vh]">
         <div className="flex flex-col items-center gap-[17px]">
           <img
             className="w-[115px] h-[115px] rounded-full object-cover"

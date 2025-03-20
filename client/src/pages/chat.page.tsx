@@ -6,7 +6,7 @@ import ChatPreviewComponent from "../components/chatPreview.component";
 import { getChat, getChatPreview, searchInChat } from "../api/api";
 import { initData } from "@telegram-apps/sdk-react";
 import { ChatData, ChatPreviewData } from "../types/user.interface";
-import { useEffect, useState } from "react";
+import { use, useEffect, useState } from "react";
 import useChatSearchStore from "../stores/chatSearch.store";
 import ChatMemberComponent from "../components/chatMember.component";
 
@@ -15,6 +15,8 @@ const ChatPage = () => {
 
   const { searchQuery, setSearchQuery, chatID, setChatID } =
     useChatSearchStore();
+
+  const [loading, isLoading] = useState<boolean>(true);
 
   const [chatData, setChatData] = useState<ChatData>({
     name: null,
@@ -38,6 +40,7 @@ const ChatPage = () => {
     if (chatData) {
       setPreviewChatData(chatData);
     }
+    isLoading(false);
   };
 
   const fetchChatData = async () => {
@@ -64,12 +67,23 @@ const ChatPage = () => {
       setSearchQuery("");
     }
     fetchChatPreview();
-    fetchChatData();
+    if (previewChatData.isMember) {
+      fetchChatData();
+    }
   }, [chatId]);
 
   useEffect(() => {
-    searchUsers();
+    if (previewChatData.isMember) {
+      searchUsers();
+    }
   }, [searchQuery]);
+
+  useEffect(() => {
+    if (previewChatData.isMember) {
+      searchUsers();
+    }
+  }, [loading]);
+
   return (
     <EBBComponent>
       <RequireMembershipComponent chatID={chatId}>
