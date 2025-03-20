@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/penglongli/gin-metrics/ginmetrics"
 	"github.com/shampsdev/tglinked/server/cmd/config"
@@ -29,6 +30,7 @@ func NewServer(cfg *config.Config, useCases usecase.Cases) *Server {
 	m := ginmetrics.GetMonitor()
 	m.SetMetricPath("/metrics")
 	m.Use(r)
+	pprof.Register(r)
 
 	s := &Server{
 		Router: r,
