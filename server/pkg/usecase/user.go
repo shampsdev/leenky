@@ -2,6 +2,7 @@ package usecase
 
 import (
 	"context"
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"net/http"
@@ -72,9 +73,9 @@ func (u *User) GetUserByTGData(ctx context.Context, tgData *domain.UserTGData) (
 		needUpdate = true
 	}
 
-	if tgData.Avatar != user.Avatar {
+	if u.hashTGAvatar(tgData.Avatar) != user.Avatar {
 		var err error
-		tgData.Avatar, err = u.storage.SaveImageByURL(ctx, tgData.Avatar)
+		tgData.Avatar, err = u.storage.SaveImageByURL(ctx, tgData.Avatar, u.hashTGAvatar(tgData.Avatar))
 		if err != nil {
 			return nil, fmt.Errorf("failed to upload user avatar: %w", err)
 		}
@@ -111,6 +112,12 @@ func (u *User) CreateUser(ctx Context, editUser *domain.EditUser) (*domain.User,
 		Company:          editUser.Company,
 		Role:             editUser.Role,
 		Bio:              editUser.Bio,
+	}
+
+	var err error
+	user.Avatar, err = u.storage.SaveImageByURL(ctx, user.Avatar, u.hashTGAvatar(user.Avatar))
+	if err != nil {
+		return nil, fmt.Errorf("failed to upload user avatar: %w", err)
 	}
 
 	id, err := u.userRepo.CreateUser(ctx, user)
@@ -178,4 +185,8 @@ func (u *User) cacheCleaner(ctx context.Context) {
 			})
 		}
 	}
+}
+
+func (u *User) hashTGAvatar(avatar string) string {
+	return fmt.Sprintf("user/%x", sha256.Sum256([]byte(avatar)))
 }
