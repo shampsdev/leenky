@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"sync"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/go-telegram/bot"
@@ -17,9 +19,12 @@ type User struct {
 	chatRepo repo.Chat
 	storage  repo.ImageStorage
 	bot      *bot.Bot
+
+	tgDataCache sync.Map
 }
 
 func NewUser(
+	ctx context.Context,
 	userRepo repo.User,
 	chatRepo repo.Chat,
 	storage repo.ImageStorage,
@@ -49,6 +54,10 @@ func (u *User) GetUserByID(ctx Context, id string) (*domain.User, error) {
 }
 
 func (u *User) GetUserByTGData(ctx context.Context, tgData *domain.UserTGData) (*domain.User, error) {
+	if u, ok := u.tgDataCache.Load(tgData.TelegramID); ok {
+		return u.(*domain.User), nil
+	}
+
 	user, err := u.userRepo.GetUserByTelegramID(ctx, tgData.TelegramID)
 	if err != nil {
 		return nil, err
@@ -75,6 +84,7 @@ func (u *User) GetUserByTGData(ctx context.Context, tgData *domain.UserTGData) (
 		}
 	}
 
+	u.tgDataCache.Store(tgData.TelegramID, user)
 	return user, nil
 }
 
@@ -149,4 +159,19 @@ func (u *User) determineUserBio(username string) (string, error) {
 
 	bio := doc.Find("div.tgme_page_description").First().Text()
 	return bio, nil
+}
+
+func (u *User) cacheCleaner(ctx context.Context) {
+	ticker := time.NewTicker(2 * time.Minute)
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			u.tgDataCache.Range(func(key, value interface{}) bool {
+				u.tgDataCache.Delete(key)
+				return true
+			})
+		}
+	}
 }

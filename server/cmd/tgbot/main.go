@@ -33,7 +33,7 @@ func main() {
 	}
 	defer pool.Close()
 
-	b, err := tg.NewBot(cfg, pool)
+	b, err := tg.NewBot(ctx, cfg, pool)
 	if err != nil {
 		log.Fatal("can't create new telegram bot")
 	}

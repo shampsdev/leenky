@@ -21,7 +21,7 @@ type Bot struct {
 	webAppUrl string
 }
 
-func NewBot(cfg *config.Config, pool *pgxpool.Pool) (*Bot, error) {
+func NewBot(ctx context.Context, cfg *config.Config, pool *pgxpool.Pool) (*Bot, error) {
 	opts := []bot.Option{}
 
 	if cfg.Debug {
@@ -31,7 +31,7 @@ func NewBot(cfg *config.Config, pool *pgxpool.Pool) (*Bot, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error creating bot: %w", err)
 	}
-	cases := usecase.Setup(cfg, pool, tgb)
+	cases := usecase.Setup(ctx, cfg, pool, tgb)
 
 	b := &Bot{
 		Bot:   tgb,
