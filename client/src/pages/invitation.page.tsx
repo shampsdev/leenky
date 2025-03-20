@@ -14,6 +14,7 @@ const InvitationPage = () => {
     const response = await joinMe(initData.raw() ?? "", chatId);
     if (response) {
       navigate("/chats", { replace: true });
+      navigate(`/chat/${chatId}`);
     }
   };
 

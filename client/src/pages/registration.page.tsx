@@ -98,50 +98,54 @@ const RegistrationPage = () => {
 
   return (
     <EBBComponent>
-      <div className="flex flex-col items-center gap-[17px]">
-        <img
-          className="w-[115px] h-[115px] rounded-full object-cover"
-          src={avatar ?? "null"}
-          onError={handleImageError}
+      <div className="w-[95%] mx-auto py-4 px-4 overflow-y-auto h-[120vh]">
+        <div className="flex flex-col items-center gap-[17px]">
+          <img
+            className="w-[115px] h-[115px] rounded-full object-cover"
+            src={avatar ?? "null"}
+            onError={handleImageError}
+          />
+        </div>
+        <div className="w-full flex flex-col mt-[25px] gap-[12px] caret-[#20C86E]">
+          <InputFieldComponent
+            title="Имя"
+            onChangeFunction={(value) => handleInputChange("firstName", value)}
+            value={profileData.firstName ?? ""}
+            maxLength={MAX_INPUT_LENGTH}
+          />
+          <InputFieldComponent
+            title="Фамилия"
+            onChangeFunction={(value) => handleInputChange("lastName", value)}
+            value={profileData.lastName ?? ""}
+            maxLength={MAX_INPUT_LENGTH}
+          />
+          <InputFieldComponent
+            title="Место работы"
+            onChangeFunction={(value) => handleInputChange("company", value)}
+            value={profileData.company ?? ""}
+            maxLength={MAX_INPUT_LENGTH}
+          />
+          <InputFieldComponent
+            title="Должность"
+            onChangeFunction={(value) => handleInputChange("role", value)}
+            value={profileData.role ?? ""}
+            maxLength={MAX_INPUT_LENGTH}
+          />
+          <TextareaFieldComponent
+            onChangeFunction={(value) => handleInputChange("bio", value)}
+            title="Описание"
+            value={profileData.bio ?? ""}
+            maxLength={MAX_TEXTAREA_LENGTH}
+          />
+        </div>
+        <FixedBottomButtonComponent
+          content={"Готово"}
+          handleClick={() => {
+            if (isFilled) registerUser();
+          }}
+          state={isFilled ? "active" : "disabled"}
         />
       </div>
-      <div className="w-full flex flex-col mt-[25px] gap-[12px] caret-[#20C86E]">
-        <InputFieldComponent
-          title="Имя"
-          onChangeFunction={(value) => handleInputChange("firstName", value)}
-          value={profileData.firstName ?? ""}
-          maxLength={MAX_INPUT_LENGTH}
-        />
-        <InputFieldComponent
-          title="Фамилия"
-          onChangeFunction={(value) => handleInputChange("lastName", value)}
-          value={profileData.lastName ?? ""}
-          maxLength={MAX_INPUT_LENGTH}
-        />
-        <InputFieldComponent
-          title="Место работы"
-          onChangeFunction={(value) => handleInputChange("company", value)}
-          value={profileData.company ?? "null"}
-          maxLength={MAX_INPUT_LENGTH}
-        />
-        <InputFieldComponent
-          title="Должность"
-          onChangeFunction={(value) => handleInputChange("role", value)}
-          value={profileData.role ?? ""}
-          maxLength={MAX_INPUT_LENGTH}
-        />
-        <TextareaFieldComponent
-          onChangeFunction={(value) => handleInputChange("bio", value)}
-          title="Описание"
-          value={profileData.bio ?? ""}
-          maxLength={MAX_TEXTAREA_LENGTH}
-        />
-      </div>
-      <FixedBottomButtonComponent
-        content={"Готово"}
-        handleClick={registerUser}
-        state={isFilled ? "active" : "disabled"}
-      />
     </EBBComponent>
   );
 };

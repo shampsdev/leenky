@@ -7,7 +7,7 @@ import { initData } from "@telegram-apps/sdk-react";
 import ChatPreviewComponent from "../components/chatPreview.component";
 import DBBComponent from "../components/disableBackButton.component";
 import { Outlet } from "react-router-dom";
-import useChatsSearchStore from "../stores/chatSearch.store";
+import useChatsSearchStore from "../stores/chatsSearch.store";
 
 const ChatsPage = () => {
   const [chats, setChats] = useState<ChatPreviewData[]>([]);

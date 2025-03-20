@@ -1,13 +1,93 @@
 import { useParams } from "react-router-dom";
 import EBBComponent from "../components/enableBackButtonComponent";
 import RequireMembershipComponent from "../components/requireMembership.component";
+import SearchBarComponent from "../components/searchBar.component";
+import ChatPreviewComponent from "../components/chatPreview.component";
+import { getChat, getChatPreview, searchInChat } from "../api/api";
+import { initData } from "@telegram-apps/sdk-react";
+import { ChatData, ChatPreviewData } from "../types/user.interface";
+import { useEffect, useState } from "react";
+import ProfileComponent from "../components/profile.component";
+import useChatSearchStore from "../stores/chatSearch.store";
+import ChatMemberComponent from "../components/chatMember.component";
 
 const ChatPage = () => {
   const { chatId } = useParams();
+
+  const { searchQuery, setSearchQuery, chatID, setChatID } =
+    useChatSearchStore();
+
+  const [chatData, setChatData] = useState<ChatData>({
+    name: null,
+    id: chatId ?? "",
+    avatar: null,
+    telegramId: "",
+    users: [],
+  });
+
+  const [previewChatData, setPreviewChatData] = useState<ChatPreviewData>({
+    avatar: null,
+    usersAmount: null,
+    name: null,
+    id: chatId ?? "",
+    telegramId: "",
+    isMember: null,
+  });
+
+  const fetchChatPreview = async () => {
+    const chatData = await getChatPreview(initData.raw() ?? "", chatId ?? "");
+    if (chatData) {
+      setPreviewChatData(chatData);
+    }
+  };
+
+  const fetchChatData = async () => {
+    const chatData = await getChat(initData.raw() ?? "", chatId ?? "");
+    if (chatData) {
+      setChatData(chatData);
+    }
+  };
+
+  const searchUsers = async () => {
+    const searchResponse = await searchInChat(
+      initData.raw() ?? "",
+      chatId ?? "",
+      searchQuery
+    );
+    if (searchResponse) {
+      setChatData({ ...chatData, users: searchResponse });
+    }
+  };
+
+  useEffect(() => {
+    if (chatId !== chatID) {
+      setChatID(chatId ?? "");
+      setSearchQuery("");
+    }
+    fetchChatPreview();
+    fetchChatData();
+  }, [chatId]);
+
+  useEffect(() => {
+    searchUsers();
+  }, [searchQuery]);
   return (
     <EBBComponent>
       <RequireMembershipComponent chatID={chatId}>
-        ChatPage <br />
+        <div className="max-w-[95%] max-h-[100vh] overflow-auto scroll-container mx-auto px-4">
+          <ChatPreviewComponent chatData={previewChatData} />
+          <SearchBarComponent
+            value={searchQuery}
+            inputHandler={setSearchQuery}
+            placeholder="Поиск"
+          />
+
+          <ul className="flex flex-col gap-0 mt-[25px]">
+            {chatData.users.map((user) => (
+              <ChatMemberComponent key={user.id} userData={user} />
+            ))}
+          </ul>
+        </div>
       </RequireMembershipComponent>
     </EBBComponent>
   );
