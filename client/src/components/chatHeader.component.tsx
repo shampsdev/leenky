@@ -1,4 +1,5 @@
 import { handleImageError } from "../utils/imageErrorHandler";
+import DevImage from "../assets/dev.png";
 
 interface chatHeaderComponentProps {
   avatar: string;
@@ -10,7 +11,7 @@ const ChatHeaderComponent = (props: chatHeaderComponentProps) => {
     <header className="flex items-center space-x-4 py-4">
       <li className="flex w-full flex-row items-center gap-[7px] cursor-pointer">
         <img
-          src={props.avatar}
+          src={props.avatar || DevImage}
           onError={handleImageError}
           className="w-[68px] h-[68px] rounded-full aspect-square object-cover"
         />

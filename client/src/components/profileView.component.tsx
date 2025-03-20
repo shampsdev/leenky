@@ -5,7 +5,7 @@ import { handleImageError } from "../utils/imageErrorHandler";
 import InfoBlockComponent from "./infoBlock.component";
 import InfoParagraphComponent from "./infoParagraph.component";
 import useUserStore from "../stores/user.store";
-
+import DevImage from "../assets/dev.png";
 const ProfileViewComponent = () => {
   const { userData, updateUserData } = useUserStore();
 
@@ -25,7 +25,7 @@ const ProfileViewComponent = () => {
       <div className="flex flex-col items-center gap-[17px]">
         <img
           className="w-[115px] h-[115px] rounded-full object-cover"
-          src={userData.avatar ?? "null"}
+          src={userData.avatar || DevImage}
           onError={handleImageError}
         />
 

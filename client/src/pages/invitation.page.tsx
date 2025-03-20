@@ -5,7 +5,7 @@ import { getChatPreview, joinMe } from "../api/api";
 import { initData, initDataStartParam } from "@telegram-apps/sdk-react";
 import EBBComponent from "../components/enableBackButtonComponent";
 import { useNavigate } from "react-router-dom";
-
+import DevImage from "../assets/dev.png";
 const InvitationPage = () => {
   const navigate = useNavigate();
   const chatId = initDataStartParam() ?? "";
@@ -45,7 +45,7 @@ const InvitationPage = () => {
           className="flex flex-col gap-[10px] items-center rounded-lg"
         >
           <img
-            src={chatData?.avatar ?? "null"}
+            src={chatData?.avatar || DevImage}
             onError={handleImageError}
             className="w-[116px] h-[116px] rounded-full"
           />

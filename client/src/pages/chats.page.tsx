@@ -3,7 +3,7 @@ import ProfileComponent from "../components/profile.component";
 import SearchBarComponent from "../components/searchBar.component";
 import { ChatPreviewData } from "../types/user.interface";
 import { searchChats } from "../api/api";
-import { initData } from "@telegram-apps/sdk-react";
+import { initData, openTelegramLink } from "@telegram-apps/sdk-react";
 import ChatPreviewComponent from "../components/chatPreview.component";
 import DBBComponent from "../components/disableBackButton.component";
 import { Outlet } from "react-router-dom";
@@ -38,6 +38,9 @@ const ChatsPage = () => {
               <img
                 className="w-[22px] h-[22px]"
                 src="/src/assets/add_green.svg"
+                onClick={() => {
+                  openTelegramLink("https://t.me/leenky_bot?startgroup=");
+                }}
               />
             </div>
             <ProfileComponent />

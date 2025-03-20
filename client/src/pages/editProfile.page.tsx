@@ -9,7 +9,7 @@ import { postMe } from "../api/api";
 import { initData } from "@telegram-apps/sdk-react";
 import { useNavigate } from "react-router-dom";
 import EBBComponent from "../components/enableBackButtonComponent";
-
+import DevImage from "../assets/dev.png";
 const EditProfilePage = () => {
   const navigate = useNavigate();
 
@@ -60,7 +60,7 @@ const EditProfilePage = () => {
         <div className="flex flex-col items-center gap-[17px]">
           <img
             className="w-[115px] h-[115px] rounded-full object-cover"
-            src={profileData.avatar ?? "null"}
+            src={profileData.avatar || DevImage}
             onError={handleImageError}
           />
         </div>

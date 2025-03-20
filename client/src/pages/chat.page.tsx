@@ -7,7 +7,6 @@ import { getChat, getChatPreview, searchInChat } from "../api/api";
 import { initData } from "@telegram-apps/sdk-react";
 import { ChatData, ChatPreviewData } from "../types/user.interface";
 import { useEffect, useState } from "react";
-import ProfileComponent from "../components/profile.component";
 import useChatSearchStore from "../stores/chatSearch.store";
 import ChatMemberComponent from "../components/chatMember.component";
 
@@ -75,11 +74,15 @@ const ChatPage = () => {
     <EBBComponent>
       <RequireMembershipComponent chatID={chatId}>
         <div className="max-w-[95%] max-h-[100vh] overflow-auto scroll-container mx-auto px-4">
-          <ChatPreviewComponent chatData={previewChatData} />
+          <ChatPreviewComponent
+            chatData={previewChatData}
+            view={true}
+            className="mb-[20px]"
+          />
           <SearchBarComponent
             value={searchQuery}
             inputHandler={setSearchQuery}
-            placeholder="Поиск"
+            placeholder="Поиск участников"
           />
 
           <ul className="flex flex-col gap-0 mt-[25px]">

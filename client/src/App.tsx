@@ -13,6 +13,7 @@ import EditProfilePage from "./pages/editProfile.page";
 import RegistrationPage from "./pages/registration.page";
 import InitialPage from "./pages/initial.page";
 import InvitationPage from "./pages/invitation.page";
+import ProfilePage from "./pages/profile.page";
 function App() {
   const navigate = useNavigate();
   const userStore = useUserStore();
@@ -45,6 +46,7 @@ function App() {
         <Route element={<ProtectedRoute />}>
           <Route path="/chats" Component={ChatsPage} />
           <Route path="/chat/:chatId" Component={ChatPage} />
+          <Route path="/profile/:userId" Component={ProfilePage} />
           <Route path="/profile" Component={CurrentProfilePage} />
           <Route path="/profile/edit" Component={EditProfilePage} />
           <Route path="/invite" Component={InvitationPage} />

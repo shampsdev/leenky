@@ -1,6 +1,6 @@
 export type ButtonState = "active" | "disabled";
 export interface ButtonComponentProps {
-  content: string;
+  content: React.ReactNode;
   handleClick: () => void;
   state: "active" | "disabled";
 }
@@ -13,7 +13,7 @@ const ButtonComponent = (props: ButtonComponentProps) => {
   if (props.state === "active") {
     return (
       <button
-        className={`${activeButtonStyle} px-[30px] py-[12px] z-10 `}
+        className={`flex items-center gap-[7px] ${activeButtonStyle} px-[30px] py-[12px] z-10 `}
         onClick={() => props.handleClick()}
       >
         {props.content}

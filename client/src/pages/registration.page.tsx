@@ -13,6 +13,7 @@ import EBBComponent from "../components/enableBackButtonComponent";
 import { createMe, getMePreview, joinMe } from "../api/api";
 import { useNavigate } from "react-router-dom";
 import useUserStore from "../stores/user.store";
+import DevImage from "../assets/dev.png";
 
 const RegistrationPage = () => {
   const startParam = initDataStartParam();
@@ -102,7 +103,7 @@ const RegistrationPage = () => {
         <div className="flex flex-col items-center gap-[17px]">
           <img
             className="w-[115px] h-[115px] rounded-full object-cover"
-            src={avatar ?? "null"}
+            src={avatar || DevImage}
             onError={handleImageError}
           />
         </div>

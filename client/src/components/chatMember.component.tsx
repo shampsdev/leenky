@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { UserData } from "../types/user.interface";
 import { handleImageError } from "../utils/imageErrorHandler";
 
+import DevImage from "../assets/dev.png";
 interface ChatMemverComponentProps {
   userData: UserData;
 }
@@ -16,7 +17,7 @@ const ChatMemberComponent = (props: ChatMemverComponentProps) => {
     >
       <div className="chat-content flex items-center gap-[7px] w-full transition-transform duration-300">
         <img
-          src={props.userData.avatar ?? ""}
+          src={props.userData.avatar || DevImage}
           onError={handleImageError}
           className="w-[60px] h-[60px] rounded-full aspect-square object-cover"
         />
@@ -33,10 +34,6 @@ const ChatMemberComponent = (props: ChatMemverComponentProps) => {
               {props.userData.role}
             </p>
           </div>
-          <img
-            src="/src/assets/navigation.svg"
-            className="text-gray-400 pr-[5px] text-xl"
-          />
         </div>
       </div>
     </li>
