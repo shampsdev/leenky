@@ -9,6 +9,7 @@ import { ChatData, ChatPreviewData } from "../types/user.interface";
 import { use, useEffect, useState } from "react";
 import useChatSearchStore from "../stores/chatSearch.store";
 import ChatMemberComponent from "../components/chatMember.component";
+import ChatMemberCardComponent from "../components/chatMember.card.component";
 
 const ChatPage = () => {
   const { chatId } = useParams();
@@ -99,9 +100,9 @@ const ChatPage = () => {
             placeholder="Поиск участников"
           />
 
-          <ul className="flex flex-col gap-0 mt-[25px]">
+          <ul className="flex flex-col gap-[10px] mt-[25px]">
             {chatData.users.map((user) => (
-              <ChatMemberComponent key={user.id} userData={user} />
+              <ChatMemberCardComponent key={user.id} userData={user} />
             ))}
           </ul>
         </div>

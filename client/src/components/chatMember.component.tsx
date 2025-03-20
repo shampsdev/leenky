@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
 import { UserData } from "../types/user.interface";
 import { handleImageError } from "../utils/imageErrorHandler";
-
+import NavArrow from "../assets/navigation.svg";
 import DevImage from "../assets/dev.png";
-interface ChatMemverComponentProps {
+export interface ChatMemverComponentProps {
   userData: UserData;
 }
 const ChatMemberComponent = (props: ChatMemverComponentProps) => {
@@ -39,6 +39,7 @@ const ChatMemberComponent = (props: ChatMemverComponentProps) => {
                 : props.userData.bio}
             </p>
           </div>
+          <img src={NavArrow} />
         </div>
       </div>
     </li>
