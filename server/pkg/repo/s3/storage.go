@@ -58,17 +58,17 @@ func (s *Storage) SaveImageByURL(_ context.Context, imageURL string, key string)
 	return fileURL, nil
 }
 
-func (s *Storage) SaveImageByBytes(_ context.Context, imageData []byte, key string) (string, error) {
-	uniqueImageID := uuid.New()
+func (s *Storage) SaveImageByBytes(_ context.Context, imageData []byte, uid string) (string, error) {
+	if uid == "" {
+		uid = uuid.New().String()
+	}
 	mimeType := http.DetectContentType(imageData)
 	fileExtension, _ := mime.ExtensionsByType(mimeType)
 	if len(fileExtension) == 0 {
 		fileExtension = []string{".jpeg"}
 	}
 
-	if key == "" {
-		key = fmt.Sprintf("%s/%s%s", s.folder, uniqueImageID, fileExtension[0])
-	}
+	key := fmt.Sprintf("%s/%s%s", s.folder, uid, fileExtension[0])
 
 	_, err := s.s3Client.PutObject(&s3.PutObjectInput{
 		Bucket:      &s.cfg.Bucket,
