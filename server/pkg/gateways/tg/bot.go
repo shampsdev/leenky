@@ -51,12 +51,7 @@ func NewBot(ctx context.Context, cfg *config.Config, pool *pgxpool.Pool) (*Bot, 
 
 func (b *Bot) Run(ctx context.Context) {
 	_, err := b.SetMyCommands(ctx, &bot.SetMyCommandsParams{
-		Commands: []models.BotCommand{
-			{
-				Command:     "register",
-				Description: "Register chat",
-			},
-		},
+		Commands: []models.BotCommand{},
 	})
 	if err != nil {
 		panic(fmt.Errorf("error setting bot commands: %w", err))
@@ -86,6 +81,25 @@ func (b *Bot) Run(ctx context.Context) {
 }
 
 func (b *Bot) handleCommandRegister(ctx context.Context, _ *bot.Bot, update *models.Update) {
+	chatMember, err := b.GetChatMember(ctx, &bot.GetChatMemberParams{
+		ChatID: update.Message.Chat.ID,
+		UserID: update.Message.From.ID,
+	})
+	if err != nil {
+		b.log.Errorf("error getting chat member: %v", err)
+		return
+	}
+	if chatMember.Administrator == nil && chatMember.Owner == nil {
+		_, err := b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID: update.Message.Chat.ID,
+			Text:   "Команда /register доступна только администраторам 🤨",
+		})
+		if err != nil {
+			b.log.Errorf("error sending message: %v", err)
+		}
+		return
+	}
+
 	msg := update.Message
 	if msg.Chat.Type != models.ChatTypeGroup && msg.Chat.Type != models.ChatTypeSupergroup {
 		_, err := b.SendMessage(ctx, &bot.SendMessageParams{
@@ -109,7 +123,7 @@ func (b *Bot) handleCommandRegister(ctx context.Context, _ *bot.Bot, update *mod
 		}
 		return
 	}
-	err := b.registerChat(ctx, msg.Chat.ID)
+	err = b.registerChat(ctx, msg.Chat.ID)
 	if err != nil {
 		b.log.Errorf("error registering chat: %v", err)
 	}
