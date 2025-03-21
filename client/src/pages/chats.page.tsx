@@ -2,18 +2,19 @@ import { useEffect, useState, useCallback } from "react";
 import ProfileComponent from "../components/profile.component";
 import SearchBarComponent from "../components/searchBar.component";
 import { ChatPreviewData } from "../types/user.interface";
-import { leaveChat, searchChats } from "../api/api";
+import { getMe, leaveChat, searchChats } from "../api/api";
 import { initData, openTelegramLink, popup } from "@telegram-apps/sdk-react";
 import ChatPreviewComponent from "../components/chatPreview.component";
 import DBBComponent from "../components/disableBackButton.component";
 import { Outlet } from "react-router-dom";
 import useChatsSearchStore from "../stores/chatsSearch.store";
 import { BOT_USERNAME } from "../shared/constants";
+import useUserStore from "../stores/user.store";
 
 const ChatsPage = () => {
   const [chats, setChats] = useState<ChatPreviewData[]>([]);
   const { searchQuery, setSearchQuery } = useChatsSearchStore();
-
+  const userStore = useUserStore();
   const deleteHandler = async (chatPreviewData: ChatPreviewData) => {
     popup
       .open({
@@ -49,6 +50,17 @@ const ChatsPage = () => {
       console.error("Ошибка загрузки чатов:", error);
     }
   };
+
+  const fetchUserData = useCallback(async () => {
+    const userData = await getMe(initData.raw() ?? "");
+    if (userData) {
+      userStore.updateUserData(userData);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
 
   useEffect(() => {
     fetchChats(searchQuery);

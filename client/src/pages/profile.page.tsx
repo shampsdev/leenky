@@ -1,6 +1,6 @@
 import { initData, openTelegramLink } from "@telegram-apps/sdk-react";
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { Navigate, useNavigate, useParams } from "react-router-dom";
 import { getUserById } from "../api/api";
 import EBBComponent from "../components/enableBackButtonComponent";
 import InfoBlockComponent from "../components/infoBlock.component";
@@ -13,7 +13,6 @@ import TGWhite from "../assets/tg_white.svg";
 const ProfilePage = () => {
   const { userId } = useParams();
   const [userData, setUserData] = useState<UserData>();
-
   const fetchProfileData = async () => {
     const data = await getUserById(initData.raw() ?? "", userId ?? "");
     if (data) {

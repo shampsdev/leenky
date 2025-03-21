@@ -14,7 +14,7 @@ const InitialPage = () => {
     } else {
       navigate("/chats", { replace: true });
     }
-  });
+  }, []);
   return null;
 };
 

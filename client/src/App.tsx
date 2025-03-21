@@ -1,9 +1,9 @@
 import "./App.css";
-import { Route, Routes, useNavigate } from "react-router-dom";
+import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { AboutFirstPage, AboutSecondPage } from "./pages/about.page";
 import ChatPage from "./pages/chat.page";
 import ChatsPage from "./pages/chats.page";
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { getMePreview } from "./api/api";
 import { backButton, initData } from "@telegram-apps/sdk-react";
 import useUserStore from "./stores/user.store";
@@ -14,9 +14,19 @@ import RegistrationPage from "./pages/registration.page";
 import InitialPage from "./pages/initial.page";
 import InvitationPage from "./pages/invitation.page";
 import ProfilePage from "./pages/profile.page";
+import { AnimatePresence, motion } from "framer-motion";
+
+const pageVariants = {
+  initial: { opacity: 0, y: 20 },
+  animate: { opacity: 1, y: 0, transition: { duration: 0.3 } },
+  exit: { opacity: 0, y: -20, transition: { duration: 0.2 } },
+};
+
 function App() {
   const navigate = useNavigate();
+  const location = useLocation();
   const userStore = useUserStore();
+  const prevPathRef = useRef<string | null>(null); // запоминаем предыдущий путь
 
   const checkAuth = async () => {
     const userData = await getMePreview(initData.raw() ?? "");
@@ -39,22 +49,36 @@ function App() {
     checkAuth();
     setBackButtonHandler();
   }, []);
+
   return (
     <div className="bg-main w-[100vw] h-[100vh] overflow-y-auto">
-      <Routes>
-        <Route element={<ProtectedRoute />}>
-          <Route path="/chats" Component={ChatsPage} />
-          <Route path="/chat/:chatId" Component={ChatPage} />
-          <Route path="/profile/:userId" Component={ProfilePage} />
-          <Route path="/profile" Component={CurrentProfilePage} />
-          <Route path="/profile/edit" Component={EditProfilePage} />
-          <Route path="/invite" Component={InvitationPage} />
-        </Route>
-        <Route path="/" Component={InitialPage} />
-        <Route path="/about/1" Component={AboutFirstPage} />
-        <Route path="/about/2" Component={AboutSecondPage} />
-        <Route path="/registration" Component={RegistrationPage} />
-      </Routes>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={location.pathname}
+          {...{
+            initial: "initial",
+            animate: "animate",
+            exit: "exit",
+            variants: pageVariants,
+          }}
+          style={{ height: "100%" }}
+        >
+          <Routes location={location}>
+            <Route element={<ProtectedRoute />}>
+              <Route path="/chats" element={<ChatsPage />} />
+              <Route path="/chat/:chatId" element={<ChatPage />} />
+              <Route path="/profile/:userId" element={<ProfilePage />} />
+              <Route path="/profile" element={<CurrentProfilePage />} />
+              <Route path="/profile/edit" element={<EditProfilePage />} />
+              <Route path="/invite" element={<InvitationPage />} />
+            </Route>
+            <Route path="/" element={<InitialPage />} />
+            <Route path="/about/1" element={<AboutFirstPage />} />
+            <Route path="/about/2" element={<AboutSecondPage />} />
+            <Route path="/registration" element={<RegistrationPage />} />
+          </Routes>
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

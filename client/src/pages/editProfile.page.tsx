@@ -38,7 +38,9 @@ const EditProfilePage = () => {
       [field]: value,
     }));
   };
-
+  const goBack = () => {
+    navigate(-1);
+  };
   const updateProfile = async () => {
     const newUserData = await postMe(initData.raw() ?? "", profileData);
     if (newUserData) {
@@ -47,9 +49,7 @@ const EditProfilePage = () => {
       goBack();
     }
   };
-  const goBack = () => {
-    navigate(-1);
-  };
+
   useEffect(() => {
     setIsChanged(isProfileChanged(profileData));
   }, [profileData]);
@@ -102,7 +102,6 @@ const EditProfilePage = () => {
             if (isChanged) {
               updateProfile();
             } else {
-              console.log("aboba");
               goBack();
             }
           }}
