@@ -1,26 +1,12 @@
-import { defineStore } from 'pinia';
-import type { ChatData, UserData } from '@/types/user.interface';
-import type { ProfileUserData } from '@/types/user.interface';
-import { getMe, postMe } from '@/api/api';
+import { create } from "zustand";
 
-export const useChatsSearchStore = defineStore('chatsSearch', {
-  state: () => ({
-    searchQuery: '',
-    chatsData: [] as ChatData[],
-  }),
+interface ChatsSearchState {
+  searchQuery: string;
+  setSearchQuery: (query: string) => void;
+}
 
-  actions: {
-    setQuery(query: string) {
-      this.searchQuery = query;
-    },
-    setChats(newChats: ChatData[]) {
-      this.chatsData = newChats;
-    },
-    resetQuery() {
-      this.searchQuery = '';
-    },
-    resetChatsData() {
-      this.chatsData = [] as ChatData[];
-    },
-  },
-});
+const useChatsSearchStore = create<ChatsSearchState>((set) => ({
+  searchQuery: "",
+  setSearchQuery: (query: string) => set(() => ({ searchQuery: query })),
+}));
+export default useChatsSearchStore;
