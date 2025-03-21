@@ -26,7 +26,6 @@ function App() {
   const navigate = useNavigate();
   const location = useLocation();
   const userStore = useUserStore();
-  const prevPathRef = useRef<string | null>(null); // запоминаем предыдущий путь
 
   const checkAuth = async () => {
     const userData = await getMePreview(initData.raw() ?? "");

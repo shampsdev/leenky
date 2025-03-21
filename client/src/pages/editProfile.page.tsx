@@ -17,7 +17,9 @@ const EditProfilePage = () => {
   const [profileData, setProfileData] = useState<
     Omit<UserData, "isRegistered">
   >({ ...userData });
+
   const [isChanged, setIsChanged] = useState<boolean>(false);
+  const [isFilled, setIsFilled] = useState<boolean>(true);
   const isProfileChanged = (newProfileData: ProfileUserData) => {
     const isChanged =
       newProfileData.firstName !== userData.firstName ||
@@ -27,6 +29,22 @@ const EditProfilePage = () => {
       newProfileData.bio !== userData.bio;
 
     return isChanged;
+  };
+
+  const isProfileFilled = (
+    newProfileData: Pick<
+      UserData,
+      "firstName" | "lastName" | "bio" | "role" | "company"
+    >
+  ) => {
+    const isFilled =
+      profileData.firstName?.trim() != "" &&
+      profileData.lastName?.trim() !== "" &&
+      profileData.company?.trim() !== "" &&
+      profileData.role?.trim() !== "" &&
+      newProfileData.bio?.trim() !== "";
+
+    return isFilled;
   };
 
   const MAX_INPUT_LENGTH = 40;
@@ -52,6 +70,7 @@ const EditProfilePage = () => {
 
   useEffect(() => {
     setIsChanged(isProfileChanged(profileData));
+    setIsFilled(isProfileFilled(profileData));
   }, [profileData]);
 
   return (
@@ -97,15 +116,17 @@ const EditProfilePage = () => {
           />
         </div>
         <FixedBottomButtonComponent
-          content={isChanged ? "Сохранить" : "Редактировать"}
+          content={isChanged && isFilled ? "Сохранить" : "Редактировать"}
           handleClick={() => {
-            if (isChanged) {
-              updateProfile();
-            } else {
-              goBack();
+            if (isFilled) {
+              if (isChanged) {
+                updateProfile();
+              } else {
+                goBack();
+              }
             }
           }}
-          state={isChanged ? "active" : "disabled"}
+          state={isChanged && isFilled ? "active" : "disabled"}
         />
       </div>
     </EBBComponent>

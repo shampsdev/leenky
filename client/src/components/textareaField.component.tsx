@@ -1,6 +1,7 @@
 import { InputFieldComponentProps } from "./inputField.component";
 
 const TextareaFieldComponent = (props: InputFieldComponentProps) => {
+  const isEmpty = props.value.trim() === "";
   const limitNewlines = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
     const value = event.currentTarget.value;
     const newlines = (value.match(/\n/g) || []).length;
@@ -12,7 +13,13 @@ const TextareaFieldComponent = (props: InputFieldComponentProps) => {
 
   return (
     <section>
-      <fieldset className="border-2 rounded-xl p-3 relative border-gray-300 focus-within:border-[#20C86E] focus-within:text-[#20C86E] text-gray-400">
+      <fieldset
+        className={
+          isEmpty
+            ? "border-2 rounded-xl p-3 relative  border-red-500 text-red-500"
+            : "border-2 rounded-xl p-3 relative border-gray-300 focus-within:border-[#20C86E] focus-within:text-[#20C86E] text-gray-400"
+        }
+      >
         <legend className="px-2 text-sm">{props.title}</legend>
         <textarea
           value={props.value}
