@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"crypto/sha256"
 	"errors"
 	"fmt"
 	"net/http"
@@ -14,6 +13,7 @@ import (
 	"github.com/go-telegram/bot"
 	"github.com/shampsdev/tglinked/server/pkg/domain"
 	"github.com/shampsdev/tglinked/server/pkg/repo"
+	"github.com/shampsdev/tglinked/server/pkg/usecase/names"
 )
 
 type User struct {
@@ -74,9 +74,10 @@ func (u *User) GetUserByTGData(ctx context.Context, tgData *domain.UserTGData) (
 		needUpdate = true
 	}
 
-	if !strings.Contains(user.Avatar, u.hashTGAvatar(tgData.Avatar)) {
+	// if avatar changed
+	if !strings.Contains(user.Avatar, names.ForUserAvatar(user.TelegramID, tgData.Avatar)) {
 		var err error
-		tgData.Avatar, err = u.storage.SaveImageByURL(ctx, tgData.Avatar, u.hashTGAvatar(tgData.Avatar))
+		tgData.Avatar, err = u.storage.SaveImageByURL(ctx, tgData.Avatar, names.ForUserAvatar(user.TelegramID, tgData.Avatar))
 		if err != nil {
 			return nil, fmt.Errorf("failed to upload user avatar: %w", err)
 		}
@@ -116,7 +117,7 @@ func (u *User) CreateUser(ctx Context, editUser *domain.EditUser) (*domain.User,
 	}
 
 	var err error
-	user.Avatar, err = u.storage.SaveImageByURL(ctx, user.Avatar, u.hashTGAvatar(user.Avatar))
+	user.Avatar, err = u.storage.SaveImageByURL(ctx, user.Avatar, names.ForUserAvatar(user.TelegramID, user.Avatar))
 	if err != nil {
 		return nil, fmt.Errorf("failed to upload user avatar: %w", err)
 	}
@@ -186,8 +187,4 @@ func (u *User) cacheCleaner(ctx context.Context) {
 			})
 		}
 	}
-}
-
-func (u *User) hashTGAvatar(avatar string) string {
-	return fmt.Sprintf("user/%x", sha256.Sum256([]byte(avatar)))
 }

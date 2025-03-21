@@ -35,11 +35,12 @@ type Config struct {
 }
 
 type S3Config struct {
-	AccessKeyID string `envconfig:"S3_ACCESS_KEY_ID"`
-	SecretKey   string `envconfig:"S3_SECRET_KEY"`
-	Region      string `envconfig:"S3_REGION"`
-	Bucket      string `envconfig:"S3_BUCKET"`
-	EndpointUrl string `envconfig:"S3_ENDPOINT_URL"`
+	AccessKeyID   string `envconfig:"S3_ACCESS_KEY_ID"`
+	SecretKey     string `envconfig:"S3_SECRET_KEY"`
+	Region        string `envconfig:"S3_REGION"`
+	Bucket        string `envconfig:"S3_BUCKET"`
+	EndpointUrl   string `envconfig:"S3_ENDPOINT_URL"`
+	RootDirectory string `envconfig:"S3_ROOT_DIRECTORY"`
 }
 
 func Load(envFile string) *Config {
