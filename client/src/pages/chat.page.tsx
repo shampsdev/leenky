@@ -6,9 +6,8 @@ import ChatPreviewComponent from "../components/chatPreview.component";
 import { getChat, getChatPreview, searchInChat } from "../api/api";
 import { initData } from "@telegram-apps/sdk-react";
 import { ChatData, ChatPreviewData } from "../types/user.interface";
-import { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useChatSearchStore from "../stores/chatSearch.store";
-import ChatMemberComponent from "../components/chatMember.component";
 import ChatMemberCardComponent from "../components/chatMember.card.component";
 
 const ChatPage = () => {

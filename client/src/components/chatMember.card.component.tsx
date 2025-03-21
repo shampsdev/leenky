@@ -2,10 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { ChatMemverComponentProps } from "./chatMember.component";
 import { handleImageError } from "../utils/imageErrorHandler";
 import DevImage from "../assets/dev.png";
-import NavArrow from "../assets/navigation.svg";
 import InfoBlockComponent from "./infoBlock.component";
-import ButtonComponent from "./button.component";
-import TGWhite from "../assets/tg_white.svg";
 import useUserStore from "../stores/user.store";
 // const ChatMemberCardComponent = (props: ChatMemverComponentProps) => {
 //   const navigate = useNavigate();

@@ -1,6 +1,6 @@
 import { initData, openTelegramLink } from "@telegram-apps/sdk-react";
 import { useState, useEffect } from "react";
-import { Navigate, useNavigate, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { getUserById } from "../api/api";
 import EBBComponent from "../components/enableBackButtonComponent";
 import InfoBlockComponent from "../components/infoBlock.component";

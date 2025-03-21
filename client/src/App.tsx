@@ -3,7 +3,7 @@ import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
 import { AboutFirstPage, AboutSecondPage } from "./pages/about.page";
 import ChatPage from "./pages/chat.page";
 import ChatsPage from "./pages/chats.page";
-import { useCallback, useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect } from "react";
 import { getMePreview } from "./api/api";
 import { backButton, initData } from "@telegram-apps/sdk-react";
 import useUserStore from "./stores/user.store";
