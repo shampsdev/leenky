@@ -10,8 +10,9 @@ import { Outlet } from "react-router-dom";
 import useChatsSearchStore from "../stores/chatsSearch.store";
 import { BOT_USERNAME } from "../shared/constants";
 import useUserStore from "../stores/user.store";
-
+import NotFound from "../assets/notFound.svg";
 const ChatsPage = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [chats, setChats] = useState<ChatPreviewData[]>([]);
   const { searchQuery, setSearchQuery } = useChatsSearchStore();
   const userStore = useUserStore();
@@ -49,6 +50,7 @@ const ChatsPage = () => {
     } catch (error) {
       console.error("Ошибка загрузки чатов:", error);
     }
+    setIsLoading(false);
   };
 
   const fetchUserData = useCallback(async () => {
@@ -89,15 +91,35 @@ const ChatsPage = () => {
             placeholder="Поиск"
           />
 
-          <ul className="flex flex-col gap-0 mt-[25px]">
-            {chats.map((chat) => (
-              <ChatPreviewComponent
-                key={chat.id}
-                chatData={chat}
-                deleteHandler={() => deleteHandler(chat)}
-              />
-            ))}
-          </ul>
+          {chats.length > 0 && (
+            <ul className="flex flex-col gap-0 mt-[25px]">
+              {chats.map((chat) => (
+                <ChatPreviewComponent
+                  key={chat.id}
+                  chatData={chat}
+                  deleteHandler={() => deleteHandler(chat)}
+                />
+              ))}
+            </ul>
+          )}
+          {chats.length === 0 && !isLoading && (
+            <div
+              v-if="!filteredChats.length && !isLoading"
+              className="flex w-full flex-col items-center text-center mt-[120px] gap-[20px]"
+            >
+              <img src={NotFound} />
+
+              <div className="flex flex-col items-center text-center gap-[8px]">
+                <h1 className="font-semibold text-[20px]">
+                  Тут пока ничего нет
+                </h1>
+                <p className="text-hint text-[17px]">
+                  Но вы можете исправить это! Добавьте чаты, чтобы видеть
+                  информацию о других участниках
+                </p>
+              </div>
+            </div>
+          )}
         </div>
       </DBBComponent>
       <Outlet />
