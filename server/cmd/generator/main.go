@@ -43,7 +43,8 @@ func main() {
 	}
 	defer pool.Close()
 
-	storage, err := s3.NewStorage(cfg.S3, "tglinked/cats")
+	cfg.S3.RootDirectory = "leenky/cats"
+	storage, err := s3.NewStorage(cfg.S3)
 	if err != nil {
 		log.Fatal("can't create new storage")
 	}

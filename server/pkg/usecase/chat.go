@@ -8,6 +8,7 @@ import (
 	"github.com/go-telegram/bot"
 	"github.com/shampsdev/tglinked/server/pkg/domain"
 	"github.com/shampsdev/tglinked/server/pkg/repo"
+	"github.com/shampsdev/tglinked/server/pkg/usecase/names"
 )
 
 type Chat struct {
@@ -157,7 +158,7 @@ func (c *Chat) getChatFromTelegram(ctx context.Context, chatID int64) (*domain.C
 	}
 	avatar := ""
 	if tgchat.Photo != nil {
-		avatar, err = c.downloadTGFileByID(ctx, c.bot, c.storage, tgchat.Photo.SmallFileID)
+		avatar, err = c.downloadChatAvatar(ctx, c.bot, c.storage, tgchat.Photo.SmallFileID, chatID)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to download user avatar: %w", err)
@@ -215,7 +216,7 @@ func (c *Chat) DetachUserFromChat(ctx context.Context, chatTGID, userTGID int64)
 	return c.chatRepo.DetachUserFromChat(ctx, chatID, userID)
 }
 
-func (c *Chat) downloadTGFileByID(ctx context.Context, b *bot.Bot, s repo.ImageStorage, fileID string) (string, error) {
+func (c *Chat) downloadChatAvatar(ctx context.Context, b *bot.Bot, s repo.ImageStorage, fileID string, tgID int64) (string, error) {
 	file, err := b.GetFile(ctx, &bot.GetFileParams{
 		FileID: fileID,
 	})
@@ -223,7 +224,11 @@ func (c *Chat) downloadTGFileByID(ctx context.Context, b *bot.Bot, s repo.ImageS
 		return "", fmt.Errorf("error getting file: %w", err)
 	}
 
-	url, err := s.SaveImageByURL(ctx, b.FileDownloadLink(file), fmt.Sprintf("chat/%s", fileID))
+	url, err := s.SaveImageByURL(
+		ctx,
+		b.FileDownloadLink(file),
+		names.ForChatAvatar(tgID, fileID),
+	)
 	if err != nil {
 		return "", fmt.Errorf("failed to save photo: %w", err)
 	}

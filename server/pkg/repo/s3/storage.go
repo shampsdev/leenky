@@ -21,10 +21,10 @@ type Storage struct {
 	cfg      config.S3Config
 	session  *session.Session
 	s3Client *s3.S3
-	folder   string
+	rootDir  string
 }
 
-func NewStorage(cfg config.S3Config, folder string) (*Storage, error) {
+func NewStorage(cfg config.S3Config) (*Storage, error) {
 	sess, err := session.NewSession(&aws.Config{
 		Region:      &cfg.Region,
 		Endpoint:    &cfg.EndpointUrl,
@@ -40,7 +40,7 @@ func NewStorage(cfg config.S3Config, folder string) (*Storage, error) {
 		cfg:      cfg,
 		session:  sess,
 		s3Client: s3Client,
-		folder:   folder,
+		rootDir:  cfg.RootDirectory,
 	}, nil
 }
 
@@ -68,7 +68,7 @@ func (s *Storage) SaveImageByBytes(_ context.Context, imageData []byte, uid stri
 		fileExtension = []string{".jpeg"}
 	}
 
-	key := fmt.Sprintf("%s/%s%s", s.folder, uid, fileExtension[0])
+	key := fmt.Sprintf("%s/%s%s", s.rootDir, uid, fileExtension[0])
 
 	_, err := s.s3Client.PutObject(&s3.PutObjectInput{
 		Bucket:      &s.cfg.Bucket,
