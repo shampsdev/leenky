@@ -59,7 +59,7 @@ type CatImageResponse struct {
 }
 
 type ImageStorage interface {
-	SaveImageByBytes(ctx context.Context, image []byte) (string, error)
+	SaveImageByBytes(ctx context.Context, image []byte, key string) (string, error)
 }
 
 func updateAvatars(ctx context.Context, pool *pgxpool.Pool, storage ImageStorage) error {
@@ -139,7 +139,7 @@ func getRandomCatImageURL(ctx context.Context, storage ImageStorage) (string, er
 		return "", fmt.Errorf("failed to encode image: %w", err)
 	}
 
-	url, err := storage.SaveImageByBytes(ctx, buf.Bytes())
+	url, err := storage.SaveImageByBytes(ctx, buf.Bytes(), "")
 	if err != nil {
 		return "", fmt.Errorf("failed to save image: %w", err)
 	}

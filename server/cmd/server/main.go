@@ -48,7 +48,7 @@ func main() {
 		log.Fatal("can't create new telegram bot")
 	}
 
-	s := rest.NewServer(cfg, usecase.Setup(cfg, pool, tgbot))
+	s := rest.NewServer(cfg, usecase.Setup(ctx, cfg, pool, tgbot))
 	if err := s.Run(ctx); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.WithError(err).Error("error during server shutdown")
 	}

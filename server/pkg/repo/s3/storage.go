@@ -44,13 +44,13 @@ func NewStorage(cfg config.S3Config, folder string) (*Storage, error) {
 	}, nil
 }
 
-func (s *Storage) SaveImageByURL(_ context.Context, imageURL string) (string, error) {
+func (s *Storage) SaveImageByURL(_ context.Context, imageURL, key string) (string, error) {
 	imageData, err := downloadFromURL(imageURL)
 	if err != nil {
 		return "", fmt.Errorf("failed to download image: %w", err)
 	}
 
-	fileURL, err := s.SaveImageByBytes(context.Background(), imageData)
+	fileURL, err := s.SaveImageByBytes(context.Background(), imageData, key)
 	if err != nil {
 		return "", fmt.Errorf("failed to save image: %w", err)
 	}
@@ -58,15 +58,17 @@ func (s *Storage) SaveImageByURL(_ context.Context, imageURL string) (string, er
 	return fileURL, nil
 }
 
-func (s *Storage) SaveImageByBytes(_ context.Context, imageData []byte) (string, error) {
-	uniqueImageID := uuid.New()
+func (s *Storage) SaveImageByBytes(_ context.Context, imageData []byte, uid string) (string, error) {
+	if uid == "" {
+		uid = uuid.New().String()
+	}
 	mimeType := http.DetectContentType(imageData)
 	fileExtension, _ := mime.ExtensionsByType(mimeType)
 	if len(fileExtension) == 0 {
 		fileExtension = []string{".jpeg"}
 	}
 
-	key := fmt.Sprintf("%s/%s%s", s.folder, uniqueImageID, fileExtension[0])
+	key := fmt.Sprintf("%s/%s%s", s.folder, uid, fileExtension[0])
 
 	_, err := s.s3Client.PutObject(&s3.PutObjectInput{
 		Bucket:      &s.cfg.Bucket,

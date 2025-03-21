@@ -2,9 +2,13 @@ package usecase
 
 import (
 	"context"
+	"crypto/sha256"
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
+	"sync"
+	"time"
 
 	"github.com/PuerkitoBio/goquery"
 	"github.com/go-telegram/bot"
@@ -17,20 +21,26 @@ type User struct {
 	chatRepo repo.Chat
 	storage  repo.ImageStorage
 	bot      *bot.Bot
+
+	tgDataCache sync.Map
 }
 
 func NewUser(
+	ctx context.Context,
 	userRepo repo.User,
 	chatRepo repo.Chat,
 	storage repo.ImageStorage,
 	tgbot *bot.Bot,
 ) *User {
-	return &User{
+	u := &User{
 		userRepo: userRepo,
 		chatRepo: chatRepo,
 		storage:  storage,
 		bot:      tgbot,
 	}
+
+	go u.cacheCleaner(ctx)
+	return u
 }
 
 func (u *User) GetMe(ctx Context) (*domain.User, error) {
@@ -49,6 +59,11 @@ func (u *User) GetUserByID(ctx Context, id string) (*domain.User, error) {
 }
 
 func (u *User) GetUserByTGData(ctx context.Context, tgData *domain.UserTGData) (*domain.User, error) {
+	if u, ok := u.tgDataCache.Load(tgData.TelegramID); ok {
+		//nolint:errcheck// because sure
+		return u.(*domain.User), nil
+	}
+
 	user, err := u.userRepo.GetUserByTelegramID(ctx, tgData.TelegramID)
 	if err != nil {
 		return nil, err
@@ -59,9 +74,9 @@ func (u *User) GetUserByTGData(ctx context.Context, tgData *domain.UserTGData) (
 		needUpdate = true
 	}
 
-	if tgData.Avatar != user.Avatar {
+	if !strings.Contains(user.Avatar, u.hashTGAvatar(tgData.Avatar)) {
 		var err error
-		tgData.Avatar, err = u.storage.SaveImageByURL(ctx, tgData.Avatar)
+		tgData.Avatar, err = u.storage.SaveImageByURL(ctx, tgData.Avatar, u.hashTGAvatar(tgData.Avatar))
 		if err != nil {
 			return nil, fmt.Errorf("failed to upload user avatar: %w", err)
 		}
@@ -75,6 +90,7 @@ func (u *User) GetUserByTGData(ctx context.Context, tgData *domain.UserTGData) (
 		}
 	}
 
+	u.tgDataCache.Store(tgData.TelegramID, user)
 	return user, nil
 }
 
@@ -97,6 +113,12 @@ func (u *User) CreateUser(ctx Context, editUser *domain.EditUser) (*domain.User,
 		Company:          editUser.Company,
 		Role:             editUser.Role,
 		Bio:              editUser.Bio,
+	}
+
+	var err error
+	user.Avatar, err = u.storage.SaveImageByURL(ctx, user.Avatar, u.hashTGAvatar(user.Avatar))
+	if err != nil {
+		return nil, fmt.Errorf("failed to upload user avatar: %w", err)
 	}
 
 	id, err := u.userRepo.CreateUser(ctx, user)
@@ -149,4 +171,23 @@ func (u *User) determineUserBio(username string) (string, error) {
 
 	bio := doc.Find("div.tgme_page_description").First().Text()
 	return bio, nil
+}
+
+func (u *User) cacheCleaner(ctx context.Context) {
+	ticker := time.NewTicker(2 * time.Minute)
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case <-ticker.C:
+			u.tgDataCache.Range(func(key, _ any) bool {
+				u.tgDataCache.Delete(key)
+				return true
+			})
+		}
+	}
+}
+
+func (u *User) hashTGAvatar(avatar string) string {
+	return fmt.Sprintf("user/%x", sha256.Sum256([]byte(avatar)))
 }

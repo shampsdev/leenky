@@ -157,7 +157,7 @@ func (c *Chat) getChatFromTelegram(ctx context.Context, chatID int64) (*domain.C
 	}
 	avatar := ""
 	if tgchat.Photo != nil {
-		avatar, err = downloadTGFileByID(ctx, c.bot, c.storage, tgchat.Photo.SmallFileID)
+		avatar, err = c.downloadTGFileByID(ctx, c.bot, c.storage, tgchat.Photo.SmallFileID)
 	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to download user avatar: %w", err)
@@ -215,7 +215,7 @@ func (c *Chat) DetachUserFromChat(ctx context.Context, chatTGID, userTGID int64)
 	return c.chatRepo.DetachUserFromChat(ctx, chatID, userID)
 }
 
-func downloadTGFileByID(ctx context.Context, b *bot.Bot, s repo.ImageStorage, fileID string) (string, error) {
+func (c *Chat) downloadTGFileByID(ctx context.Context, b *bot.Bot, s repo.ImageStorage, fileID string) (string, error) {
 	file, err := b.GetFile(ctx, &bot.GetFileParams{
 		FileID: fileID,
 	})
@@ -223,7 +223,7 @@ func downloadTGFileByID(ctx context.Context, b *bot.Bot, s repo.ImageStorage, fi
 		return "", fmt.Errorf("error getting file: %w", err)
 	}
 
-	url, err := s.SaveImageByURL(ctx, b.FileDownloadLink(file))
+	url, err := s.SaveImageByURL(ctx, b.FileDownloadLink(file), fmt.Sprintf("chat/%s", fileID))
 	if err != nil {
 		return "", fmt.Errorf("failed to save photo: %w", err)
 	}
