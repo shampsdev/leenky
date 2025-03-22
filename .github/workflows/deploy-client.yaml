@@ -2,6 +2,12 @@ name: deploy-client
 
 on: 
   workflow_dispatch:
+    inputs:
+      environment:
+        required: true
+        description: Deploy to PROD/DEV
+        type: choice
+        options: [PROD, DEV]
 
 jobs:
   deploy:
@@ -15,6 +21,6 @@ jobs:
     with:
       dockerfile_path: 'client/Dockerfile'
       context_path: 'client'
-      image_name: 'tglinked-client'
-      environment: 'PROD'
-      secret-service-hash: 'CLIENT_SERVICE_HASH'
+      image_name: 'leenky-client'
+      environment: ${{ github.event.inputs.environment }}
+      secret-service-hash: ${{ github.event.inputs.environment == 'PROD' && 'CLIENT_SERVICE_HASH' || 'CLIENT_SERVICE_HASH_DEV' }}
