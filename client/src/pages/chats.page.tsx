@@ -42,7 +42,6 @@ const ChatsPage = () => {
   const fetchChats = async (query: string) => {
     try {
       const data = await searchChats(initData.raw() ?? "", query);
-      console.log(data);
       if (data) {
         setChats(data);
       } else {

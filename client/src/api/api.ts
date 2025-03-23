@@ -92,7 +92,6 @@ export const postMe = async (
     const response = await api.put<UserData>(`/users/me`, newData, {
       headers: { "X-Api-Token": initData },
     });
-    console.log(initData);
     return response.data;
   } catch (error) {
     console.error("Ошибка при изменении профиля", error);
