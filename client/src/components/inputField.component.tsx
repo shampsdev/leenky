@@ -16,7 +16,7 @@ const InputFieldComponent = (props: InputFieldComponentProps) => {
         className={`border-2 rounded-xl px-3 relative transition-all duration-100 
           ${
             isEmpty
-              ? "border-red-500 text-red-500"
+              ? "border-[#E53935] text-[#E53935]"
               : "border-gray-300 text-gray-400 focus-within:border-[#20C86E] focus-within:text-[#20C86E]"
           } 
           `}

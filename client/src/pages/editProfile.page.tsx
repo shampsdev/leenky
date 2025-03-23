@@ -73,6 +73,10 @@ const EditProfilePage = () => {
     setIsFilled(isProfileFilled(profileData));
   }, [profileData]);
 
+  useEffect(() => {
+    setProfileData(userData);
+  }, []);
+
   return (
     <EBBComponent>
       <div className="w-[95%] mx-auto py-4 px-4 overflow-y-auto h-[150vh]">

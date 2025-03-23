@@ -16,11 +16,13 @@ const TextareaFieldComponent = (props: InputFieldComponentProps) => {
       <fieldset
         className={
           isEmpty
-            ? "border-2 rounded-xl p-3 relative  border-red-500 text-red-500"
+            ? "border-2 rounded-xl p-3 relative  border-[#E53935] text-[#E53935]"
             : "border-2 rounded-xl p-3 relative border-gray-300 focus-within:border-[#20C86E] focus-within:text-[#20C86E] text-gray-400"
         }
       >
-        <legend className="px-2 text-sm">{props.title}</legend>
+        <legend className="px-2 text-[15px] font-semibold transition-all duration-100">
+          {props.title}
+        </legend>
         <textarea
           value={props.value}
           onChange={(event) => props.onChangeFunction(event.target.value)}

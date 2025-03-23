@@ -1,4 +1,4 @@
 window.api = {
   BOT_USERNAME: "vaniog_tglink_bot",
-  API_URL: "https://dev.leenky.shamps.dev",
+  API_URL: "https://dev.leenky.ru",
 };
