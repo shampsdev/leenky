@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"errors"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -12,7 +13,7 @@ import (
 	"github.com/shampsdev/tglinked/server/cmd/config"
 	"github.com/shampsdev/tglinked/server/pkg/gateways/rest"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
-	log "github.com/sirupsen/logrus"
+	"github.com/shampsdev/tglinked/server/pkg/utils/slogx"
 )
 
 // @title           TGLinked server
@@ -22,34 +23,33 @@ import (
 // @in header
 // @name X-API-Token
 func main() {
-	log.SetFormatter(&log.TextFormatter{
-		ForceColors:     true,
-		FullTimestamp:   true,
-		TimestampFormat: "2006-01-02 15:04:05",
-	})
-	log.SetLevel(log.DebugLevel)
-
-	log.Info("Hello from tglinked server!")
-
 	cfg := config.Load(".env")
 	cfg.Print()
+
+	log := cfg.Logger()
+	slog.SetDefault(log)
+	log.Info("Hello from tglinked server!")
+
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
+	ctx = slogx.NewCtx(ctx, log)
 
 	pgConfig := cfg.PGXConfig()
 	pool, err := pgxpool.NewWithConfig(ctx, pgConfig)
 	if err != nil {
-		log.Fatal("can't create new database pool")
+		log.Error("can't create new database pool")
+		os.Exit(1)
 	}
 	defer pool.Close()
 
 	tgbot, err := bot.New(cfg.TG.BotToken)
 	if err != nil {
-		log.Fatal("can't create new telegram bot")
+		log.Error("can't create new telegram bot")
+		os.Exit(1)
 	}
 
-	s := rest.NewServer(cfg, usecase.Setup(ctx, cfg, pool, tgbot))
+	s := rest.NewServer(ctx, cfg, usecase.Setup(ctx, cfg, pool, tgbot))
 	if err := s.Run(ctx); err != nil && !errors.Is(err, http.ErrServerClosed) {
-		log.WithError(err).Error("error during server shutdown")
+		slogx.WithErr(log, err).Error("error during server shutdown")
 	}
 }

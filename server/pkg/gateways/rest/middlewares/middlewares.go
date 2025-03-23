@@ -1,8 +1,11 @@
 package middlewares
 
 import (
+	"context"
+	"log/slog"
+
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
+	"github.com/shampsdev/tglinked/server/pkg/utils/slogx"
 )
 
 func AllowOrigin() gin.HandlerFunc {
@@ -24,10 +27,16 @@ func AllowOrigin() gin.HandlerFunc {
 	}
 }
 
-func Logger() gin.HandlerFunc {
+func Logger(ctx context.Context) gin.HandlerFunc {
+	log := slogx.FromCtx(ctx)
 	return func(c *gin.Context) {
-		log.WithFields(log.Fields{
-			"clientIP": c.ClientIP(),
-		}).Infof("[%s] %s %d", c.Request.Method, c.Request.RequestURI, c.Writer.Status())
+		slogx.InjectGin(c, log)
+		log.Info("Received request",
+			slog.String("method", c.Request.Method),
+			slog.String("path", c.Request.URL.Path),
+			slog.String("query", c.Request.URL.RawQuery),
+			slog.String("remote_addr", c.Request.RemoteAddr),
+			slog.String("user_agent", c.Request.UserAgent()),
+		)
 	}
 }

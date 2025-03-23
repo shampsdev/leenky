@@ -23,7 +23,7 @@ type Server struct {
 	Router     *gin.Engine
 }
 
-func NewServer(cfg *config.Config, useCases usecase.Cases) *Server {
+func NewServer(ctx context.Context, cfg *config.Config, useCases usecase.Cases) *Server {
 	r := gin.New()
 	r.Use(gin.Recovery())
 
@@ -41,7 +41,7 @@ func NewServer(cfg *config.Config, useCases usecase.Cases) *Server {
 	}
 
 	middlewares.BotToken = cfg.TG.BotToken
-	setupRouter(cfg, s.Router, useCases)
+	setupRouter(ctx, cfg, s.Router, useCases)
 
 	return s
 }

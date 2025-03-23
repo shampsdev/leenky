@@ -3,12 +3,15 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-
-	log "github.com/sirupsen/logrus"
+	"log/slog"
+	"os"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/lmittmann/tint"
+	"github.com/shampsdev/tglinked/server/pkg/utils/slogx"
 )
 
 type Config struct {
@@ -31,7 +34,8 @@ type Config struct {
 	Storage struct {
 		ImagesPath string `envconfig:"STORAGE_IMAGES_PATH" default:"images"`
 	}
-	S3 S3Config
+	Env string `envconfig:"ENVIRONMENT" default:"local"`
+	S3  S3Config
 }
 
 type S3Config struct {
@@ -46,25 +50,25 @@ type S3Config struct {
 func Load(envFile string) *Config {
 	err := godotenv.Load(envFile)
 	if err != nil {
-		log.Info("no .env file, parsed exported variables")
+		slog.Info("no .env file, parsed exported variables")
 	}
 	c := &Config{}
 	err = envconfig.Process("", c)
 	if err != nil {
-		log.Fatalf("can't parse config: %s", err)
+		slogx.Fatal(slog.Default(), "can't parse config", slogx.ErrAttr(err))
 	}
 	return c
 }
 
 func (c *Config) Print() {
 	if c.Debug {
-		log.Info("Launched in debug mode")
+		slog.Info("Launched in debug mode")
 		data, _ := json.MarshalIndent(c, "", "\t")
 		fmt.Println("=== CONFIG ===")
 		fmt.Println(string(data))
 		fmt.Println("==============")
 	} else {
-		log.Info("Launched in production mode")
+		slog.Info("Launched in production mode")
 	}
 }
 
@@ -79,10 +83,27 @@ func (c *Config) DBUrl() string {
 	)
 }
 
-func (c Config) PGXConfig() *pgxpool.Config {
+func (c *Config) PGXConfig() *pgxpool.Config {
 	pgxConfig, err := pgxpool.ParseConfig(c.DBUrl())
 	if err != nil {
-		log.Fatalf("can't parse pgxpool config: %s", err)
+		slogx.WithErr(slog.Default(), err).Error("can't parse pgx config")
+		panic(err)
 	}
 	return pgxConfig
+}
+
+func (c *Config) Logger() *slog.Logger {
+	if c.Env == "local" {
+		return slog.New(tint.NewHandler(os.Stdout, &tint.Options{
+			Level:      slog.LevelDebug,
+			TimeFormat: time.TimeOnly,
+		}))
+	}
+	if c.Env == "production" {
+		return slog.New(slog.NewTextHandler(os.Stdout, &slog.HandlerOptions{
+			Level: slog.LevelDebug,
+		}))
+	}
+
+	panic(fmt.Sprintf("unknown env: %s", c.Env))
 }
