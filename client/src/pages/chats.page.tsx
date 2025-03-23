@@ -11,6 +11,7 @@ import useChatsSearchStore from "../stores/chatsSearch.store";
 import { BOT_USERNAME } from "../shared/constants";
 import useUserStore from "../stores/user.store";
 import NotFound from "../assets/notFound.svg";
+import AddButton from "../assets/add_green.svg";
 const ChatsPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [chats, setChats] = useState<ChatPreviewData[]>([]);
@@ -76,7 +77,7 @@ const ChatsPage = () => {
               <h1 className="text-xl font-semibold">Чаты</h1>
               <img
                 className="w-[22px] h-[22px]"
-                src="/src/assets/add_green.svg"
+                src={AddButton}
                 onClick={() => {
                   openTelegramLink(`https://t.me/${BOT_USERNAME}?startgroup=`);
                 }}
