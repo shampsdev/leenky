@@ -54,11 +54,13 @@ const ChatPreviewComponent = (props: ChatPreviewComponentProps) => {
               navigate(`/chat/${props.chatData.id}`);
             }}
           />
-          <div className="flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px]">
+          <div
+            className={`flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px] ${
+              props.underline ? "border-b-[#D9D9D9] border-b-[1px]" : ""
+            }`}
+          >
             <div
-              className={`flex flex-col gap-[2px] ${
-                props.underline ? "border-b-[#D9D9D9] border-b-[1px]" : ""
-              }`}
+              className={`flex flex-col gap-[2px]`}
               onClick={() => {
                 navigate(`/chat/${props.chatData.id}`);
               }}
@@ -75,10 +77,9 @@ const ChatPreviewComponent = (props: ChatPreviewComponentProps) => {
                   props.deleteHandler();
                 }
               }}
-            >
-              <img src={TrashBin} alt="" className="w-[25px] h-[27px]" />
-            </div>
+            ></div>
           </div>
+          <img src={TrashBin} alt="" className="w-[25px] h-[27px]" />
         </div>
       </li>
     );

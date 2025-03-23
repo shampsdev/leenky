@@ -95,7 +95,7 @@ const ChatsPage = () => {
           {chats.length > 0 && (
             <ul className="flex flex-col gap-0 mt-[25px]">
               {chats.map((chat, index) =>
-                index === chats.length - 1 ? (
+                index !== chats.length - 1 ? (
                   <ChatPreviewComponent
                     key={chat.id}
                     chatData={chat}
@@ -113,10 +113,7 @@ const ChatsPage = () => {
             </ul>
           )}
           {chats.length === 0 && !isLoading && (
-            <div
-              v-if="!filteredChats.length && !isLoading"
-              className="flex w-full flex-col items-center text-center mt-[120px] gap-[20px]"
-            >
+            <div className="flex w-full flex-col items-center text-center mt-[120px] gap-[20px]">
               <img src={NotFound} />
 
               <div className="flex flex-col items-center text-center gap-[8px]">

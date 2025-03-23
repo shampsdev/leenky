@@ -1,11 +1,11 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import InputFieldComponent from "../components/inputField.component";
 import TextareaFieldComponent from "../components/textareaField.component";
 import { UserData, ProfileUserData } from "../types/user.interface";
 import { handleImageError } from "../utils/imageErrorHandler";
 import useUserStore from "../stores/user.store";
 import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
-import { postMe } from "../api/api";
+import { getMe, postMe } from "../api/api";
 import { initData } from "@telegram-apps/sdk-react";
 import { useNavigate } from "react-router-dom";
 import EBBComponent from "../components/enableBackButtonComponent";
@@ -74,7 +74,14 @@ const EditProfilePage = () => {
   }, [profileData]);
 
   useEffect(() => {
-    setProfileData(userData);
+    const fetchProfileData = async () => {
+      const data = await getMe(initData.raw() ?? "");
+      if (data) {
+        updateUserData(data);
+        setProfileData(data);
+      }
+    };
+    fetchProfileData();
   }, []);
 
   return (
