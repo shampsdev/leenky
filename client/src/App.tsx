@@ -62,20 +62,22 @@ function App() {
           }}
           style={{ height: "100%" }}
         >
-          <Routes location={location}>
-            <Route element={<ProtectedRoute />}>
-              <Route path="/chats" element={<ChatsPage />} />
-              <Route path="/chat/:chatId" element={<ChatPage />} />
-              <Route path="/profile/:userId" element={<ProfilePage />} />
-              <Route path="/profile" element={<CurrentProfilePage />} />
-              <Route path="/profile/edit" element={<EditProfilePage />} />
-              <Route path="/invite" element={<InvitationPage />} />
-            </Route>
-            <Route path="/" element={<InitialPage />} />
-            <Route path="/about/1" element={<AboutFirstPage />} />
-            <Route path="/about/2" element={<AboutSecondPage />} />
-            <Route path="/registration" element={<RegistrationPage />} />
-          </Routes>
+          <div className="pt-[25px]">
+            <Routes location={location}>
+              <Route element={<ProtectedRoute />}>
+                <Route path="/chats" element={<ChatsPage />} />
+                <Route path="/chat/:chatId" element={<ChatPage />} />
+                <Route path="/profile/:userId" element={<ProfilePage />} />
+                <Route path="/profile" element={<CurrentProfilePage />} />
+                <Route path="/profile/edit" element={<EditProfilePage />} />
+                <Route path="/invite" element={<InvitationPage />} />
+              </Route>
+              <Route path="/" element={<InitialPage />} />
+              <Route path="/about/1" element={<AboutFirstPage />} />
+              <Route path="/about/2" element={<AboutSecondPage />} />
+              <Route path="/registration" element={<RegistrationPage />} />
+            </Routes>
+          </div>
         </motion.div>
       </AnimatePresence>
     </div>
