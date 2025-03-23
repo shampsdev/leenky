@@ -34,8 +34,11 @@ type Config struct {
 	Storage struct {
 		ImagesPath string `envconfig:"STORAGE_IMAGES_PATH" default:"images"`
 	}
-	Env string `envconfig:"ENVIRONMENT" default:"local"`
-	S3  S3Config
+	Log struct {
+		Handler string `envconfig:"LOG_HANDLER" default:"tint"`
+	}
+
+	S3 S3Config
 }
 
 type S3Config struct {
@@ -93,17 +96,17 @@ func (c *Config) PGXConfig() *pgxpool.Config {
 }
 
 func (c *Config) Logger() *slog.Logger {
-	if c.Env == "local" {
+	if c.Log.Handler == "tint" {
 		return slog.New(tint.NewHandler(os.Stdout, &tint.Options{
 			Level:      slog.LevelDebug,
 			TimeFormat: time.TimeOnly,
 		}))
 	}
-	if c.Env == "production" {
+	if c.Log.Handler == "json" {
 		return slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
 			Level: slog.LevelDebug,
 		}))
 	}
 
-	panic(fmt.Sprintf("unknown env: %s", c.Env))
+	panic(fmt.Sprintf("unknown log handler: %s", c.Log.Handler))
 }
