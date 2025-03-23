@@ -23,12 +23,13 @@ import (
 
 // Это просто генератор картинок котиков для пользователей
 func main() {
-	log := config.Logger()
+	cfg := config.Load(".env")
+	cfg.Print()
+
+	log := cfg.Logger()
 	slog.SetDefault(log)
 	log.Info("Hello from tglinked generator!")
 
-	cfg := config.Load(".env")
-	cfg.Print()
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 

@@ -8,9 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-var loggerKey = "logger"
+var loggerKey = "slogx_logger"
 
 func NewCtx(ctx context.Context, logger *slog.Logger) context.Context {
+	//nolint:all// because fuck gin
 	return context.WithValue(ctx, loggerKey, logger)
 }
 
