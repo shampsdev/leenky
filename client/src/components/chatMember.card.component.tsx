@@ -23,7 +23,7 @@ const ChatMemberCardComponent = (props: ChatMemverComponentProps) => {
         className=" relative rounded-[18px] flex flex-col w-full items-center cursor-pointer overflow-hidden"
         onClick={goToProfile}
       >
-        <div className="bg-form flex flex-col px-[10px] rounded-[12px] divide-y divide-[#D9D9D9] items-center  w-full py-[15px] ">
+        <div className="bg-form flex flex-col px-[10px] rounded-[12px] divide-y divide-[#D9D9D9]   w-full py-[15px] ">
           <div className="flex w-full gap-[10px]  items-center justify-between flex-row pb-[10px]">
             <img
               src={props.userData.avatar || DevImage}
