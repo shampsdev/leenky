@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import InputFieldComponent from "../components/inputField.component";
 import TextareaFieldComponent from "../components/textareaField.component";
 import { UserData, ProfileUserData } from "../types/user.interface";
