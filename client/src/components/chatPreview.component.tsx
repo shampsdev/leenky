@@ -2,11 +2,12 @@ import { useNavigate } from "react-router-dom";
 import { ChatPreviewData } from "../types/user.interface";
 import { handleImageError } from "../utils/imageErrorHandler";
 import DevImage from "../assets/dev.png";
-import TrashBin from "../assets/bin.svg";
+import TrashBin from "../assets/trash_bin.svg";
 interface ChatPreviewComponentProps {
   chatData: ChatPreviewData;
   view?: boolean;
   className?: string;
+  underline?: boolean;
   deleteHandler?: () => void;
 }
 const ChatPreviewComponent = (props: ChatPreviewComponentProps) => {
@@ -26,7 +27,11 @@ const ChatPreviewComponent = (props: ChatPreviewComponentProps) => {
             onError={handleImageError}
             className="w-[60px] h-[60px] rounded-full aspect-square object-cover"
           />
-          <div className="flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px]">
+          <div
+            className={
+              "flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px]"
+            }
+          >
             <div className="flex flex-col gap-[2px]">
               <p className="font-normal text-[17px]">{props.chatData.name}</p>
               <p className="text-hint font-light text-[15px]">
@@ -51,7 +56,9 @@ const ChatPreviewComponent = (props: ChatPreviewComponentProps) => {
           />
           <div className="flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px]">
             <div
-              className="flex flex-col gap-[2px]"
+              className={`flex flex-col gap-[2px] ${
+                props.underline ? "border-b-[#D9D9D9] border-b-[1px]" : ""
+              }`}
               onClick={() => {
                 navigate(`/chat/${props.chatData.id}`);
               }}
@@ -70,7 +77,6 @@ const ChatPreviewComponent = (props: ChatPreviewComponentProps) => {
               }}
             >
               <img src={TrashBin} alt="" className="w-[25px] h-[27px]" />
-              <p>Удалить</p>
             </div>
           </div>
         </div>

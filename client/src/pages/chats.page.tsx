@@ -20,7 +20,8 @@ const ChatsPage = () => {
   const deleteHandler = async (chatPreviewData: ChatPreviewData) => {
     popup
       .open({
-        message: "Вы уверены, что хотите покинуть чат?",
+        message:
+          "Вы уверены, что хотите удалить свой профиль Leenky из этого чата?",
         buttons: [
           { id: "Ok", type: "ok" },
           { id: "Cancel", type: "cancel" },
@@ -93,13 +94,22 @@ const ChatsPage = () => {
 
           {chats.length > 0 && (
             <ul className="flex flex-col gap-0 mt-[25px]">
-              {chats.map((chat) => (
-                <ChatPreviewComponent
-                  key={chat.id}
-                  chatData={chat}
-                  deleteHandler={() => deleteHandler(chat)}
-                />
-              ))}
+              {chats.map((chat, index) =>
+                index === chats.length - 1 ? (
+                  <ChatPreviewComponent
+                    key={chat.id}
+                    chatData={chat}
+                    deleteHandler={() => deleteHandler(chat)}
+                    underline
+                  />
+                ) : (
+                  <ChatPreviewComponent
+                    key={chat.id}
+                    chatData={chat}
+                    deleteHandler={() => deleteHandler(chat)}
+                  />
+                )
+              )}
             </ul>
           )}
           {chats.length === 0 && !isLoading && (
