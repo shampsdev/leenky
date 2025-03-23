@@ -70,16 +70,16 @@ const ChatPreviewComponent = (props: ChatPreviewComponentProps) => {
                 {props.chatData.usersAmount} участников
               </p>
             </div>
-            <div
-              className="flex flex-col items-center"
-              onClick={() => {
-                if (props.deleteHandler) {
-                  props.deleteHandler();
-                }
-              }}
-            ></div>
           </div>
-          <img src={TrashBin} alt="" className="w-[25px] h-[27px]" />
+          <img
+            src={TrashBin}
+            onClick={() => {
+              if (props.deleteHandler) {
+                props.deleteHandler();
+              }
+            }}
+            className="w-[25px] h-[27px]"
+          />
         </div>
       </li>
     );
