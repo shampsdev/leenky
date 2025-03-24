@@ -86,8 +86,8 @@ const EditProfilePage = () => {
 
   return (
     <EBBComponent>
-      <div className="w-[95%] mx-auto py-4 px-4 overflow-y-auto h-[150vh]">
-        <div className="flex flex-col items-center gap-[17px]">
+      <div className="w-[95%] mx-auto px-4 overflow-y-auto h-[150vh]">
+        <div className="flex flex-col mt-[25px] items-center gap-[17px]">
           <img
             className="w-[115px] h-[115px] rounded-full object-cover"
             src={profileData.avatar || DevImage}

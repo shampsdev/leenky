@@ -4,12 +4,14 @@ interface SearchBarProps {
   value: string;
   inputHandler: (value: string) => void;
   placeholder: string;
+  className?: string;
 }
 
 const SearchBarComponent = ({
   value,
   inputHandler,
   placeholder,
+  className,
 }: SearchBarProps) => {
   const closeKeyboard = (event: React.KeyboardEvent<HTMLInputElement>) => {
     if (event.key === "Enter") {
@@ -18,7 +20,9 @@ const SearchBarComponent = ({
   };
 
   return (
-    <div className="relative flex items-center gap-[8px] bg-[#EEEEEF] rounded-lg px-3 py-2 mb-4">
+    <div
+      className={`relative flex items-center gap-[8px] bg-[#EEEEEF] rounded-lg px-3 py-2 ${className}`}
+    >
       <button>
         <img src={SearchIcon} alt="search" className="w-5 h-5" />
       </button>

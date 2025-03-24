@@ -71,8 +71,8 @@ const ChatsPage = () => {
   return (
     <>
       <DBBComponent>
-        <div className="max-w-[95%] max-h-[100vh] overflow-auto scroll-container mx-auto px-4">
-          <div className="flex items-center justify-between gap-[15px] py-4 pt-[25px]">
+        <div className="max-w-[95%]  max-h-[100vh] overflow-auto scroll-container mx-auto px-4">
+          <div className="flex items-center mt-[25px] justify-between gap-[15px]  ">
             <div className="flex gap-[12px] items-center">
               <h1 className="text-xl font-semibold">Чаты</h1>
               <img
@@ -90,6 +90,7 @@ const ChatsPage = () => {
             value={searchQuery}
             inputHandler={setSearchQuery}
             placeholder="Поиск"
+            className="mt-[15px]"
           />
 
           {chats.length > 0 && (

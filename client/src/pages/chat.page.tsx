@@ -87,19 +87,20 @@ const ChatPage = () => {
   return (
     <EBBComponent>
       <RequireMembershipComponent chatID={chatId}>
-        <div className="max-w-[95%] max-h-[100vh] overflow-auto scroll-container mx-auto px-4">
+        <div className="max-w-[95%]  max-h-[100vh] overflow-auto scroll-container mx-auto px-4">
           <ChatPreviewComponent
             chatData={previewChatData}
             view={true}
-            className="mb-[20px]"
+            className=" mt-[25px]"
           />
           <SearchBarComponent
             value={searchQuery}
             inputHandler={setSearchQuery}
             placeholder="Поиск участников"
+            className="mt-[20px]"
           />
 
-          <ul className="flex flex-col gap-[10px] mt-[25px]">
+          <ul className="flex flex-col gap-[12px] mt-[25px]">
             {chatData.users.map((user) => (
               <ChatMemberCardComponent key={user.id} userData={user} />
             ))}

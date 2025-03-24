@@ -78,7 +78,7 @@ const ChatPreviewComponent = (props: ChatPreviewComponentProps) => {
                 props.deleteHandler();
               }
             }}
-            className="w-[25px] h-[27px]"
+            className=""
           />
         </div>
       </li>
