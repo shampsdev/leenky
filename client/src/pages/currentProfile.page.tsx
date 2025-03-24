@@ -9,9 +9,12 @@ import FixedBottomButtonComponent from "../components/fixedBottomButton.componen
 import { useNavigate } from "react-router-dom";
 import EBBComponent from "../components/enableBackButtonComponent";
 import DevImage from "../assets/dev.png";
+import ButtonComponent from "../components/button.component";
+
 const CurrentProfilePage = () => {
   const { userData, updateUserData } = useUserStore();
   const navigate = useNavigate();
+
   const goToEditProfilePage = () => {
     navigate("/profile/edit");
   };
@@ -29,49 +32,52 @@ const CurrentProfilePage = () => {
 
   return (
     <EBBComponent>
-      <div className="w-[95%] mx-auto px-4 overflow-y-auto h-[120vh]">
-        <div className="flex flex-col mt-[25px] items-center gap-[17px]">
-          <img
-            className="w-[115px] h-[115px] rounded-full object-cover"
-            src={userData.avatar || DevImage}
-            onError={handleImageError}
-          />
+      <div className="flex flex-col h-screen">
+        <div className="flex-1 overflow-y-auto w-[95%] mx-auto px-4">
+          <div className="flex flex-col mt-6 items-center gap-4">
+            <img
+              className="w-[115px] h-[115px] rounded-full object-cover"
+              src={userData.avatar || DevImage}
+              onError={handleImageError}
+            />
+            <div className="text-center">
+              <p className="font-semibold inline-flex text-lg gap-2 items-center">
+                {userData.firstName} {userData.lastName}
+              </p>
+              <p className="text-hint text-sm">
+                {`@${userData.telegramUsername}`}
+              </p>
+            </div>
+          </div>
 
-          <div className="text-center">
-            <p className="font-semibold inline-flex text-[20px] gap-[10px] items-center">
-              {userData.firstName} {userData.lastName}
-            </p>
-            <p className="text-hint text-[15px]">
-              {`@${userData.telegramUsername}`}
-            </p>
+          <div className="rounded-lg mt-4 mx-auto">
+            <InfoBlockComponent>
+              <InfoParagraphComponent
+                title="Место работы"
+                content={userData.company ?? ""}
+              />
+              <InfoParagraphComponent
+                title="Должность"
+                content={userData.role ?? ""}
+              />
+            </InfoBlockComponent>
+            <div className="px-4 text-hint mb-2 mt-4 text-sm">ПОДРОБНЕЕ</div>
+            <InfoBlockComponent>
+              <InfoParagraphComponent
+                title="Описание"
+                content={userData.bio ?? ""}
+              />
+            </InfoBlockComponent>
           </div>
         </div>
-        <div className="rounded-lg mt-[15px] mx-auto">
-          <InfoBlockComponent>
-            <InfoParagraphComponent
-              title="Место работы"
-              content={userData.company ?? ""}
-            />
-            <InfoParagraphComponent
-              title="Должность"
-              content={userData.role ?? ""}
-            />
-          </InfoBlockComponent>
-          <div className="px-[16px] text-hint mb-[8px] mt-[15px] text-[13px]">
-            ПОДРОБНЕЕ
-          </div>
-          <InfoBlockComponent>
-            <InfoParagraphComponent
-              title="Описание"
-              content={userData.bio ?? ""}
-            />
-          </InfoBlockComponent>
+
+        <div className="pt-[20px] pb-[39px] flex justify-center">
+          <ButtonComponent
+            content="Редактировать"
+            handleClick={goToEditProfilePage}
+            state="active"
+          />
         </div>
-        <FixedBottomButtonComponent
-          content={"Редактировать"}
-          handleClick={goToEditProfilePage}
-          state={"active"}
-        />
       </div>
     </EBBComponent>
   );
