@@ -9,7 +9,15 @@ import { ChatData, ChatPreviewData } from "../types/user.interface";
 import { useEffect, useState } from "react";
 import useChatSearchStore from "../stores/chatSearch.store";
 import ChatMemberCardComponent from "../components/chatMember.card.component";
+import { motion } from "motion/react";
 
+const containerVariants = {
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
 const ChatPage = () => {
   const { chatId } = useParams();
 
@@ -100,11 +108,20 @@ const ChatPage = () => {
             className="mt-[20px]"
           />
 
-          <ul className="flex flex-col gap-[12px] mt-[25px]">
-            {chatData.users.map((user) => (
-              <ChatMemberCardComponent key={user.id} userData={user} />
+          <motion.ul
+            className="flex flex-col gap-[12px] mt-[25px]"
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+          >
+            {chatData.users.map((user, index) => (
+              <ChatMemberCardComponent
+                index={index}
+                key={user.id}
+                userData={user}
+              />
             ))}
-          </ul>
+          </motion.ul>
         </div>
       </RequireMembershipComponent>
     </EBBComponent>

@@ -159,6 +159,7 @@ const EditProfilePage = () => {
               value={profileData.bio ?? ""}
               maxLength={MAX_TEXTAREA_LENGTH}
             />
+            <div className="pt-[40px] pb-[39px]"></div>
           </div>
         </div>
       </div>
