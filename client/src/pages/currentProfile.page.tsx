@@ -5,7 +5,6 @@ import { handleImageError } from "../utils/imageErrorHandler";
 import InfoBlockComponent from "../components/infoBlock.component";
 import InfoParagraphComponent from "../components/infoParagraph.component";
 import useUserStore from "../stores/user.store";
-import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
 import { useNavigate } from "react-router-dom";
 import EBBComponent from "../components/enableBackButtonComponent";
 import DevImage from "../assets/dev.png";

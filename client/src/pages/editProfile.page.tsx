@@ -4,7 +4,6 @@ import TextareaFieldComponent from "../components/textareaField.component";
 import { UserData, ProfileUserData } from "../types/user.interface";
 import { handleImageError } from "../utils/imageErrorHandler";
 import useUserStore from "../stores/user.store";
-import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
 import { getMe, postMe } from "../api/api";
 import { initData } from "@telegram-apps/sdk-react";
 import { useNavigate } from "react-router-dom";
@@ -15,7 +14,7 @@ const EditProfilePage = () => {
   const navigate = useNavigate();
 
   const [keyboardOpen, setKeyboardOpen] = useState(false);
-  const [initialHeight, setInitialHeight] = useState(window.innerHeight);
+  const [initialHeight] = useState(window.innerHeight);
 
   const { userData, updateUserData } = useUserStore();
   const [profileData, setProfileData] = useState<
