@@ -16,6 +16,9 @@ import useUserStore from "../stores/user.store";
 import DevImage from "../assets/dev.png";
 
 const RegistrationPage = () => {
+  const [keyboardOpen, setKeyboardOpen] = useState(false);
+  const [initialHeight] = useState(window.innerHeight);
+
   const startParam = initDataStartParam();
   const userStore = useUserStore();
   const navigate = useNavigate();
@@ -41,7 +44,7 @@ const RegistrationPage = () => {
       profileData.lastName?.trim() !== "" &&
       profileData.company?.trim() !== "" &&
       profileData.role?.trim() !== "" &&
-      newProfileData.bio?.trim() !== "";
+      profileData.bio?.trim() !== "";
 
     return isFilled;
   };
@@ -91,15 +94,46 @@ const RegistrationPage = () => {
       }));
     }
   }, []);
-
   useEffect(() => {
     fetchBio();
+  }, []);
+  useEffect(() => {
     setIsFilled(isProfileFilled(profileData));
   }, [profileData]);
 
+  useEffect(() => {
+    const handleResize = () => {
+      const threshold = 150;
+      if (initialHeight - window.innerHeight > threshold) {
+        setKeyboardOpen(true);
+      } else {
+        setKeyboardOpen(false);
+      }
+    };
+
+    window.addEventListener("resize", handleResize);
+
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", handleResize);
+    }
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      if (window.visualViewport) {
+        window.visualViewport.removeEventListener("resize", handleResize);
+      }
+    };
+  }, [initialHeight]);
+
   return (
     <EBBComponent>
-      <div className="w-[95%] mx-auto py-4 px-4 overflow-y-auto h-[120vh]">
+      <div
+        className={
+          keyboardOpen
+            ? "w-[95%] mx-auto py-4 px-4 overflow-y-auto h-[160vh]"
+            : "w-[95%] mx-auto py-4 px-4 overflow-y-auto"
+        }
+      >
         <div className="flex flex-col items-center gap-[17px]">
           <img
             className="w-[115px] h-[115px] rounded-full object-cover"

@@ -10,6 +10,7 @@ import { useNavigate } from "react-router-dom";
 import EBBComponent from "../components/enableBackButtonComponent";
 import DevImage from "../assets/dev.png";
 import ButtonComponent from "../components/button.component";
+import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
 const EditProfilePage = () => {
   const navigate = useNavigate();
 
@@ -161,41 +162,40 @@ const EditProfilePage = () => {
             />
           </div>
         </div>
-        {keyboardOpen && (
-          <div className="fixed bottom-0 flex justify-center w-full pb-[10px]">
-            <ButtonComponent
-              content={isChanged && isFilled ? "Сохранить" : "Редактировать"}
-              handleClick={() => {
-                if (isFilled) {
-                  if (isChanged) {
-                    updateProfile();
-                  } else {
-                    goBack();
-                  }
-                }
-              }}
-              state={isChanged && isFilled ? "active" : "disabled"}
-            />
-          </div>
-        )}
-        {!keyboardOpen && (
-          <div className="pt-[20px] pb-[39px] flex justify-center">
-            <ButtonComponent
-              content={isChanged && isFilled ? "Сохранить" : "Редактировать"}
-              handleClick={() => {
-                if (isFilled) {
-                  if (isChanged) {
-                    updateProfile();
-                  } else {
-                    goBack();
-                  }
-                }
-              }}
-              state={isChanged && isFilled ? "active" : "disabled"}
-            />
-          </div>
-        )}
       </div>
+
+      {keyboardOpen && (
+        <div className="fixed bottom-0 flex justify-center w-full pb-[10px]">
+          <FixedBottomButtonComponent
+            content={isChanged && isFilled ? "Сохранить" : "Редактировать"}
+            handleClick={() => {
+              if (isFilled) {
+                if (isChanged) {
+                  updateProfile();
+                } else {
+                  goBack();
+                }
+              }
+            }}
+            state={isChanged && isFilled ? "active" : "disabled"}
+          />
+        </div>
+      )}
+      {!keyboardOpen && (
+        <FixedBottomButtonComponent
+          content={isChanged && isFilled ? "Сохранить" : "Редактировать"}
+          handleClick={() => {
+            if (isFilled) {
+              if (isChanged) {
+                updateProfile();
+              } else {
+                goBack();
+              }
+            }
+          }}
+          state={isChanged && isFilled ? "active" : "disabled"}
+        />
+      )}
     </EBBComponent>
   );
 };

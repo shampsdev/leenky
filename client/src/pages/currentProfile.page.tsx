@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import EBBComponent from "../components/enableBackButtonComponent";
 import DevImage from "../assets/dev.png";
 import ButtonComponent from "../components/button.component";
+import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
 
 const CurrentProfilePage = () => {
   const { userData, updateUserData } = useUserStore();
@@ -70,13 +71,11 @@ const CurrentProfilePage = () => {
           </div>
         </div>
 
-        <div className="pt-[20px] pb-[39px] flex justify-center">
-          <ButtonComponent
-            content="Редактировать"
-            handleClick={goToEditProfilePage}
-            state="active"
-          />
-        </div>
+        <FixedBottomButtonComponent
+          content="Редактировать"
+          handleClick={goToEditProfilePage}
+          state="active"
+        />
       </div>
     </EBBComponent>
   );
