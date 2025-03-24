@@ -33,12 +33,7 @@ const RegistrationPage = () => {
     bio: "",
   });
   const [isFilled, setIsFilled] = useState<boolean>(false);
-  const isProfileFilled = (
-    newProfileData: Pick<
-      UserData,
-      "firstName" | "lastName" | "bio" | "role" | "company"
-    >
-  ) => {
+  const isProfileFilled = () => {
     const isFilled =
       profileData.firstName?.trim() != "" &&
       profileData.lastName?.trim() !== "" &&
@@ -98,7 +93,7 @@ const RegistrationPage = () => {
     fetchBio();
   }, []);
   useEffect(() => {
-    setIsFilled(isProfileFilled(profileData));
+    setIsFilled(isProfileFilled());
   }, [profileData]);
 
   useEffect(() => {

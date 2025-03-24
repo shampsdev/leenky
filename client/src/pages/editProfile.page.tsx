@@ -9,7 +9,6 @@ import { initData } from "@telegram-apps/sdk-react";
 import { useNavigate } from "react-router-dom";
 import EBBComponent from "../components/enableBackButtonComponent";
 import DevImage from "../assets/dev.png";
-import ButtonComponent from "../components/button.component";
 import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
 const EditProfilePage = () => {
   const navigate = useNavigate();
