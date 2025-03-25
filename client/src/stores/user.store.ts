@@ -1,7 +1,17 @@
-import { defineStore } from "pinia";
-import type { UserData } from "@/types/user.interface";
-export const useUserStore = defineStore("user", {
-  state: (): UserData => ({
+import { create } from "zustand";
+import { UserData } from "../types/user.interface";
+
+interface UserState {
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  userData: Omit<UserData, "isRegistered">;
+  updateUserData: (userData: Omit<UserData, "isRegistered">) => void;
+  setIsLoading: (isLoading: boolean) => void;
+  authenticate: () => void;
+}
+
+const useUserStore = create<UserState>((set) => ({
+  userData: {
     firstName: null,
     lastName: null,
     company: null,
@@ -11,19 +21,12 @@ export const useUserStore = defineStore("user", {
     bio: null,
     id: null,
     telegramId: null,
-  }),
-
-  actions: {
-    logIn(user: UserData) {
-      this.firstName = user.firstName || "";
-      this.lastName = user.lastName || "";
-      this.company = user.company || "";
-      this.role = user.role || "";
-      this.avatar = user.avatar || "";
-      this.telegramUsername = user.telegramUsername || "";
-      this.bio = user.bio || "";
-      this.id = user.id || "";
-      this.telegramId = user.telegramId || "";
-    },
   },
-});
+  isLoading: true,
+  isAuthenticated: false,
+  authenticate: () => set(() => ({ isAuthenticated: true })),
+  updateUserData: (userData: Omit<UserData, "isRegistered">) =>
+    set({ userData }),
+  setIsLoading: (isLoading: boolean) => set(() => ({ isLoading: isLoading })),
+}));
+export default useUserStore;

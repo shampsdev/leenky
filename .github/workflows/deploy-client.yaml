@@ -24,4 +24,3 @@ jobs:
       image_name: 'leenky-client'
       environment: ${{ github.event.inputs.environment }}
       secret-service-hash: ${{ github.event.inputs.environment == 'PROD' && 'CLIENT_SERVICE_HASH' || 'CLIENT_SERVICE_HASH_DEV' }}
-
