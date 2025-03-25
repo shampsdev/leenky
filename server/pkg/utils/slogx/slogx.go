@@ -16,7 +16,10 @@ func NewCtx(ctx context.Context, logger *slog.Logger) context.Context {
 }
 
 func FromCtx(ctx context.Context) *slog.Logger {
-	logger, _ := ctx.Value(loggerKey).(*slog.Logger)
+	logger, ok := ctx.Value(loggerKey).(*slog.Logger)
+	if !ok {
+		return slog.Default()
+	}
 	return logger
 }
 
