@@ -24,7 +24,7 @@ const ChatPage = () => {
   const { searchQuery, setSearchQuery, chatID, setChatID } =
     useChatSearchStore();
 
-  const [loading, isLoading] = useState<boolean>(false);
+  const [loading, isLoading] = useState<boolean>(true);
 
   const [chatData, setChatData] = useState<ChatData>({
     name: null,
@@ -82,6 +82,7 @@ const ChatPage = () => {
     if (previewChatData.isMember) {
       fetchChatData();
     }
+    searchUsers();
   }, [chatId]);
 
   useEffect(() => {
