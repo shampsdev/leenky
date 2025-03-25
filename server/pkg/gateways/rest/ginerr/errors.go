@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	"github.com/gin-gonic/gin"
-	log "github.com/sirupsen/logrus"
+	"github.com/shampsdev/tglinked/server/pkg/utils/slogx"
 )
 
 func AbortIfErr(c *gin.Context, err error, code int, reason string) bool {
@@ -12,7 +12,7 @@ func AbortIfErr(c *gin.Context, err error, code int, reason string) bool {
 		return false
 	}
 	err = fmt.Errorf("%s: %w", reason, err)
-	log.WithError(err).Error("error")
+	slogx.FromCtxWithErr(c, err).Error("Aborting handler")
 	c.AbortWithStatusJSON(code, gin.H{"error": err.Error()})
 	return true
 }

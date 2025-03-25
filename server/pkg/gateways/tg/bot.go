@@ -3,19 +3,20 @@ package tg
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/shampsdev/tglinked/server/cmd/config"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
-	log "github.com/sirupsen/logrus"
+	"github.com/shampsdev/tglinked/server/pkg/utils/slogx"
 )
 
 type Bot struct {
 	*bot.Bot
 	cases usecase.Cases
-	log   *log.Logger
+	log   *slog.Logger
 
 	botUrl    string
 	webAppUrl string
@@ -36,7 +37,7 @@ func NewBot(ctx context.Context, cfg *config.Config, pool *pgxpool.Pool) (*Bot, 
 	b := &Bot{
 		Bot:   tgb,
 		cases: cases,
-		log:   log.New(),
+		log:   slogx.FromCtx(ctx),
 	}
 
 	me, err := b.GetMe(context.Background())
@@ -85,8 +86,10 @@ func (b *Bot) handleCommandRegister(ctx context.Context, _ *bot.Bot, update *mod
 		ChatID: update.Message.Chat.ID,
 		UserID: update.Message.From.ID,
 	})
+	log := b.log.With("chat_id", update.Message.Chat.ID, "user_id", update.Message.From.ID)
+
 	if err != nil {
-		b.log.Errorf("error getting chat member: %v", err)
+		slogx.WithErr(log, err).Error("error getting chat member")
 		return
 	}
 	if chatMember.Administrator == nil && chatMember.Owner == nil {
@@ -95,7 +98,7 @@ func (b *Bot) handleCommandRegister(ctx context.Context, _ *bot.Bot, update *mod
 			Text:   "Команда /register доступна только администраторам 🤨",
 		})
 		if err != nil {
-			b.log.Errorf("error sending message: %v", err)
+			slogx.WithErr(log, err).Error("error sending message")
 		}
 		return
 	}
@@ -119,13 +122,13 @@ func (b *Bot) handleCommandRegister(ctx context.Context, _ *bot.Bot, update *mod
 			},
 		})
 		if err != nil {
-			b.log.Errorf("error sending message: %v", err)
+			slogx.WithErr(log, err).Error("error sending message")
 		}
 		return
 	}
 	err = b.registerChat(ctx, msg.Chat.ID)
 	if err != nil {
-		b.log.Errorf("error registering chat: %v", err)
+		slogx.WithErr(log, err).Error("error registering chat")
 	}
 }
 
@@ -156,7 +159,7 @@ func (b *Bot) handleCommandStart(ctx context.Context, _ *bot.Bot, update *models
 		},
 	})
 	if err != nil {
-		b.log.Errorf("error sending message: %v", err)
+		slogx.FromCtxWithErr(ctx, err).Error("error sending message")
 	}
 }
 
@@ -165,12 +168,12 @@ func (b *Bot) handleMyChatMember(ctx context.Context, _ *bot.Bot, update *models
 	if mcm.NewChatMember.Type == models.ChatMemberTypeBanned || mcm.NewChatMember.Type == models.ChatMemberTypeLeft {
 		err := b.cases.Chat.ForgetChatByTGID(ctx, mcm.Chat.ID)
 		if err != nil {
-			b.log.Errorf("error forgetting chat: %v", err)
+			slogx.FromCtxWithErr(ctx, err).Error("error forgetting chat")
 		}
 	} else {
 		err := b.registerChat(ctx, mcm.Chat.ID)
 		if err != nil {
-			b.log.Errorf("error registering chat: %v", err)
+			slogx.FromCtxWithErr(ctx, err).Error("error registering chat")
 		}
 	}
 }
@@ -180,17 +183,17 @@ func (b *Bot) handleChatMember(ctx context.Context, _ *bot.Bot, update *models.U
 	if cm.NewChatMember.Type == models.ChatMemberTypeBanned {
 		err := b.cases.Chat.DetachUserFromChat(ctx, cm.Chat.ID, cm.NewChatMember.Banned.User.ID)
 		if err != nil {
-			b.log.Errorf("error detaching user from chat: %v", err)
+			slogx.FromCtxWithErr(ctx, err).Error("error detaching user from chat")
 		}
 	} else if cm.NewChatMember.Type == models.ChatMemberTypeLeft {
 		err := b.cases.Chat.DetachUserFromChat(ctx, cm.Chat.ID, cm.NewChatMember.Left.User.ID)
 		if err != nil {
-			b.log.Errorf("error detaching user from chat: %v", err)
+			slogx.FromCtxWithErr(ctx, err).Error("error detaching user from chat")
 		}
 	} else {
 		_, err := b.cases.Chat.CreateOrUpdateChat(ctx, cm.Chat.ID)
 		if err != nil {
-			b.log.Errorf("error registering chat: %v", err)
+			slogx.FromCtxWithErr(ctx, err).Error("error registering chat")
 		}
 	}
 }
@@ -198,14 +201,14 @@ func (b *Bot) handleChatMember(ctx context.Context, _ *bot.Bot, update *models.U
 func (b *Bot) handleLeftChatMember(ctx context.Context, _ *bot.Bot, update *models.Update) {
 	err := b.cases.Chat.DetachUserFromChat(ctx, update.Message.Chat.ID, update.Message.From.ID)
 	if err != nil {
-		b.log.Errorf("error detaching user from chat: %v", err)
+		slogx.FromCtxWithErr(ctx, err).Error("error detaching user from chat")
 	}
 }
 
 func (b *Bot) handleChatChanged(ctx context.Context, _ *bot.Bot, update *models.Update) {
 	_, err := b.cases.Chat.CreateOrUpdateChat(ctx, update.Message.Chat.ID)
 	if err != nil {
-		b.log.Errorf("error registering chat: %v", err)
+		slogx.FromCtxWithErr(ctx, err).Error("error registering chat")
 	}
 
 	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
@@ -213,7 +216,7 @@ func (b *Bot) handleChatChanged(ctx context.Context, _ *bot.Bot, update *models.
 		Text:   "О, у вас тут перемены? Запомнил 😉",
 	})
 	if err != nil {
-		b.log.Errorf("error sending message: %v", err)
+		slogx.FromCtxWithErr(ctx, err).Error("error sending message")
 	}
 }
 

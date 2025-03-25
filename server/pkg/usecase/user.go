@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"github.com/PuerkitoBio/goquery"
@@ -14,6 +15,7 @@ import (
 	"github.com/shampsdev/tglinked/server/pkg/domain"
 	"github.com/shampsdev/tglinked/server/pkg/repo"
 	"github.com/shampsdev/tglinked/server/pkg/usecase/names"
+	"github.com/shampsdev/tglinked/server/pkg/utils/slogx"
 )
 
 type User struct {
@@ -175,16 +177,21 @@ func (u *User) determineUserBio(username string) (string, error) {
 }
 
 func (u *User) cacheCleaner(ctx context.Context) {
+	log := slogx.FromCtx(ctx)
+	log.Info("userTGData cache cleaner started")
 	ticker := time.NewTicker(2 * time.Minute)
 	for {
 		select {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
+			deleted := atomic.Int64{}
 			u.tgDataCache.Range(func(key, _ any) bool {
 				u.tgDataCache.Delete(key)
+				deleted.Add(1)
 				return true
 			})
+			log.Info("userTGData cache cleaned", "deleted", deleted.Load())
 		}
 	}
 }

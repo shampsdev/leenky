@@ -5,6 +5,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log/slog"
 	"mime"
 	"net/http"
 
@@ -14,7 +15,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/google/uuid"
 	"github.com/shampsdev/tglinked/server/cmd/config"
-	log "github.com/sirupsen/logrus"
+	"github.com/shampsdev/tglinked/server/pkg/utils/slogx"
 )
 
 type Storage struct {
@@ -44,13 +45,13 @@ func NewStorage(cfg config.S3Config) (*Storage, error) {
 	}, nil
 }
 
-func (s *Storage) SaveImageByURL(_ context.Context, imageURL, key string) (string, error) {
+func (s *Storage) SaveImageByURL(ctx context.Context, imageURL, key string) (string, error) {
 	imageData, err := downloadFromURL(imageURL)
 	if err != nil {
 		return "", fmt.Errorf("failed to download image: %w", err)
 	}
 
-	fileURL, err := s.SaveImageByBytes(context.Background(), imageData, key)
+	fileURL, err := s.SaveImageByBytes(ctx, imageData, key)
 	if err != nil {
 		return "", fmt.Errorf("failed to save image: %w", err)
 	}
@@ -58,7 +59,7 @@ func (s *Storage) SaveImageByURL(_ context.Context, imageURL, key string) (strin
 	return fileURL, nil
 }
 
-func (s *Storage) SaveImageByBytes(_ context.Context, imageData []byte, uid string) (string, error) {
+func (s *Storage) SaveImageByBytes(ctx context.Context, imageData []byte, uid string) (string, error) {
 	if uid == "" {
 		uid = uuid.New().String()
 	}
@@ -81,7 +82,7 @@ func (s *Storage) SaveImageByBytes(_ context.Context, imageData []byte, uid stri
 	}
 
 	fileURL := fmt.Sprintf("%s/%s/%s", s.cfg.EndpointUrl, s.cfg.Bucket, key)
-	log.Infof("Image uploaded successfully: %s", fileURL)
+	slogx.Info(ctx, "Succesfully upload image", slog.String("file_url", fileURL))
 
 	return fileURL, nil
 }

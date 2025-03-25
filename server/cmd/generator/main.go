@@ -8,6 +8,7 @@ import (
 	"image"
 	"image/jpeg"
 	"io"
+	"log/slog"
 	"net/http"
 	"os"
 	"os/signal"
@@ -17,41 +18,37 @@ import (
 	"github.com/nfnt/resize"
 	"github.com/shampsdev/tglinked/server/cmd/config"
 	"github.com/shampsdev/tglinked/server/pkg/repo/s3"
-	log "github.com/sirupsen/logrus"
+	"github.com/shampsdev/tglinked/server/pkg/utils/slogx"
 )
 
 // Это просто генератор картинок котиков для пользователей
 func main() {
-	log.SetFormatter(&log.TextFormatter{
-		ForceColors:     true,
-		FullTimestamp:   true,
-		TimestampFormat: "2006-01-02 15:04:05",
-	})
-	log.SetLevel(log.DebugLevel)
-
-	log.Info("Hello from tglinked generator!")
-
 	cfg := config.Load(".env")
 	cfg.Print()
+
+	log := cfg.Logger()
+	slog.SetDefault(log)
+	log.Info("Hello from tglinked generator!")
+
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
 	pgConfig := cfg.PGXConfig()
 	pool, err := pgxpool.NewWithConfig(ctx, pgConfig)
 	if err != nil {
-		log.Fatal("can't create new database pool")
+		slogx.Fatal(log, "can't create new database pool")
 	}
 	defer pool.Close()
 
 	cfg.S3.RootDirectory = "leenky/cats"
 	storage, err := s3.NewStorage(cfg.S3)
 	if err != nil {
-		log.Fatal("can't create new storage")
+		slogx.Fatal(log, "can't create new storage")
 	}
 
 	err = updateAvatars(ctx, pool, storage)
 	if err != nil {
-		log.Fatalf("can't update avatars: %v", err)
+		slogx.Fatal(log, "can't update avatars: %v", err)
 	}
 }
 
@@ -82,13 +79,13 @@ func updateAvatars(ctx context.Context, pool *pgxpool.Pool, storage ImageStorage
 
 		catImageURL, err := getRandomCatImageURL(ctx, storage)
 		if err != nil {
-			log.Printf("failed to get random cat image: %v", err)
+			slogx.FromCtxWithErr(ctx, err).Error("failed to get random cat image")
 			continue
 		}
 
 		_, err = pool.Exec(ctx, `UPDATE "chat" SET avatar=$1 WHERE id=$2`, catImageURL, userID)
 		if err != nil {
-			log.Printf("failed to update user %s: %v", userID, err)
+			slogx.FromCtxWithErr(ctx, err).Error("failed to update user avatar")
 			continue
 		}
 	}
