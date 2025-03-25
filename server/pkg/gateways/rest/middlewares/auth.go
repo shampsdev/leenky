@@ -14,10 +14,10 @@ import (
 
 var BotToken string
 
-func AuthTelegramID() gin.HandlerFunc {
+func ExtractUserTGData() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		initData := c.GetHeader("X-API-Token")
-		expIn := 1 * time.Hour
+		expIn := 2 * time.Hour
 		err := initdata.Validate(initData, BotToken, expIn)
 		if ginerr.AbortIfErr(c, err, http.StatusUnauthorized, "failed to validate initdata") {
 			return
@@ -27,8 +27,10 @@ func AuthTelegramID() gin.HandlerFunc {
 		if ginerr.AbortIfErr(c, err, http.StatusUnauthorized, "failed to parse initdata") {
 			return
 		}
-		c.Set("user", &domain.User{
+		c.Set("user_tg_data", &domain.UserTGData{
 			TelegramID:       parsed.User.ID,
+			FirstName:        parsed.User.FirstName,
+			LastName:         parsed.User.LastName,
 			TelegramUsername: parsed.User.Username,
 			Avatar:           parsed.User.PhotoURL,
 		})
@@ -39,9 +41,9 @@ func AuthTelegramID() gin.HandlerFunc {
 
 func AuthUser(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tgID := MustGetUser(c).TelegramID
-		user, err := userCase.GetUserByTelegramID(c, tgID)
-		if ginerr.AbortIfErr(c, err, http.StatusUnauthorized, fmt.Sprintf("user with tg_id %d not found", tgID)) {
+		tgUser := MustGetUserTGData(c)
+		user, err := userCase.GetUserByTGData(c, tgUser)
+		if ginerr.AbortIfErr(c, err, http.StatusUnauthorized, fmt.Sprintf("user with tg_id %d not found", tgUser.TelegramID)) {
 			return
 		}
 		c.Set("user", user)
@@ -51,8 +53,7 @@ func AuthUser(userCase *usecase.User) gin.HandlerFunc {
 }
 
 func SetupAuth(r *gin.RouterGroup, userCase *usecase.User) {
-	r.Use(AuthTelegramID())
-	r.Use(AuthUser(userCase))
+	r.Use(ExtractUserTGData(), AuthUser(userCase))
 }
 
 func MustGetUser(c *gin.Context) *domain.User {
@@ -63,10 +64,10 @@ func MustGetUser(c *gin.Context) *domain.User {
 	return user
 }
 
-func MustGetChatInstance(c *gin.Context) int64 {
-	chatInstance, ok := c.MustGet("chat_instance").(int64)
+func MustGetUserTGData(c *gin.Context) *domain.UserTGData {
+	user, ok := c.MustGet("user_tg_data").(*domain.UserTGData)
 	if !ok {
-		panic("chat instance not found")
+		panic("user not found")
 	}
-	return chatInstance
+	return user
 }

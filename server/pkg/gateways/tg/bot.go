@@ -3,24 +3,26 @@ package tg
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/shampsdev/tglinked/server/cmd/config"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
-	log "github.com/sirupsen/logrus"
+	"github.com/shampsdev/tglinked/server/pkg/utils/slogx"
 )
 
 type Bot struct {
 	*bot.Bot
 	cases usecase.Cases
-	log   *log.Logger
+	log   *slog.Logger
 
+	botUrl    string
 	webAppUrl string
 }
 
-func NewBot(cfg *config.Config, pool *pgxpool.Pool) (*Bot, error) {
+func NewBot(ctx context.Context, cfg *config.Config, pool *pgxpool.Pool) (*Bot, error) {
 	opts := []bot.Option{}
 
 	if cfg.Debug {
@@ -30,12 +32,12 @@ func NewBot(cfg *config.Config, pool *pgxpool.Pool) (*Bot, error) {
 	if err != nil {
 		return nil, fmt.Errorf("error creating bot: %w", err)
 	}
-	cases := usecase.Setup(cfg, pool, tgb)
+	cases := usecase.Setup(ctx, cfg, pool, tgb)
 
 	b := &Bot{
 		Bot:   tgb,
 		cases: cases,
-		log:   log.New(),
+		log:   slogx.FromCtx(ctx),
 	}
 
 	me, err := b.GetMe(context.Background())
@@ -43,18 +45,14 @@ func NewBot(cfg *config.Config, pool *pgxpool.Pool) (*Bot, error) {
 		return nil, fmt.Errorf("error getting bot info: %w", err)
 	}
 	b.webAppUrl = fmt.Sprintf("https://t.me/%s/%s", me.Username, cfg.TG.WebAppName)
+	b.botUrl = fmt.Sprintf("https://t.me/%s", me.Username)
 
 	return b, nil
 }
 
 func (b *Bot) Run(ctx context.Context) {
 	_, err := b.SetMyCommands(ctx, &bot.SetMyCommandsParams{
-		Commands: []models.BotCommand{
-			{
-				Command:     "register",
-				Description: "Register chat",
-			},
-		},
+		Commands: []models.BotCommand{},
 	})
 	if err != nil {
 		panic(fmt.Errorf("error setting bot commands: %w", err))
@@ -65,22 +63,160 @@ func (b *Bot) Run(ctx context.Context) {
 	}, b.handleMyChatMember)
 
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/register", bot.MatchTypePrefix, b.handleCommandRegister)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, b.handleCommandStart)
+
+	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
+		return update.Message != nil &&
+			(len(update.Message.NewChatPhoto) != 0 || update.Message.NewChatTitle != "" || update.Message.DeleteChatPhoto)
+	}, b.handleChatChanged)
+
+	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
+		return update.ChatMember != nil
+	}, b.handleChatMember)
+
+	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
+		return update.Message != nil && update.Message.LeftChatMember != nil
+	}, b.handleLeftChatMember)
 
 	b.Start(ctx)
 }
 
 func (b *Bot) handleCommandRegister(ctx context.Context, _ *bot.Bot, update *models.Update) {
-	err := b.registerChat(ctx, update.Message.Chat.ID)
+	chatMember, err := b.GetChatMember(ctx, &bot.GetChatMemberParams{
+		ChatID: update.Message.Chat.ID,
+		UserID: update.Message.From.ID,
+	})
+	log := b.log.With("chat_id", update.Message.Chat.ID, "user_id", update.Message.From.ID)
+
 	if err != nil {
-		b.log.Errorf("error registering chat: %v", err)
+		slogx.WithErr(log, err).Error("error getting chat member")
+		return
+	}
+	if chatMember.Administrator == nil && chatMember.Owner == nil {
+		_, err := b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID: update.Message.Chat.ID,
+			Text:   "Команда /register доступна только администраторам 🤨",
+		})
+		if err != nil {
+			slogx.WithErr(log, err).Error("error sending message")
+		}
+		return
+	}
+
+	msg := update.Message
+	if msg.Chat.Type != models.ChatTypeGroup && msg.Chat.Type != models.ChatTypeSupergroup {
+		_, err := b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID:    update.Message.Chat.ID,
+			Text:      "Команда `/register` доступна только в чатах, поскорее добавь меня туда 👁️🫦👁️",
+			ParseMode: models.ParseModeMarkdown,
+
+			ReplyMarkup: &models.InlineKeyboardMarkup{
+				InlineKeyboard: [][]models.InlineKeyboardButton{
+					{
+						{
+							Text: "⭐️ Добавить в чат",
+							URL:  fmt.Sprintf("%s?startgroup=", b.botUrl),
+						},
+					},
+				},
+			},
+		})
+		if err != nil {
+			slogx.WithErr(log, err).Error("error sending message")
+		}
+		return
+	}
+	err = b.registerChat(ctx, msg.Chat.ID)
+	if err != nil {
+		slogx.WithErr(log, err).Error("error registering chat")
+	}
+}
+
+func (b *Bot) handleCommandStart(ctx context.Context, _ *bot.Bot, update *models.Update) {
+	_, err := b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text: `*Как начать пользоваться Leenky?*
+
+1\. Откройте приложение
+2\. Заполните свой профиль 
+3\. Добавьте бота в чат
+
+Используйте дополнительные *команды* для управления ботом в чате\. Для этого напишите "/" в нужный чат и выберите команду из открывшегося списка\.`,
+		ParseMode: models.ParseModeMarkdown,
+		ReplyMarkup: &models.InlineKeyboardMarkup{
+			InlineKeyboard: [][]models.InlineKeyboardButton{
+				{
+					{
+						Text: "⭐️ Открыть",
+						URL:  b.webAppUrl,
+					},
+					{
+						Text: "⭐️ Добавить в чат",
+						URL:  fmt.Sprintf("%s?startgroup=", b.botUrl),
+					},
+				},
+			},
+		},
+	})
+	if err != nil {
+		slogx.FromCtxWithErr(ctx, err).Error("error sending message")
 	}
 }
 
 func (b *Bot) handleMyChatMember(ctx context.Context, _ *bot.Bot, update *models.Update) {
 	mcm := update.MyChatMember
-	err := b.registerChat(ctx, mcm.Chat.ID)
+	if mcm.NewChatMember.Type == models.ChatMemberTypeBanned || mcm.NewChatMember.Type == models.ChatMemberTypeLeft {
+		err := b.cases.Chat.ForgetChatByTGID(ctx, mcm.Chat.ID)
+		if err != nil {
+			slogx.FromCtxWithErr(ctx, err).Error("error forgetting chat")
+		}
+	} else {
+		err := b.registerChat(ctx, mcm.Chat.ID)
+		if err != nil {
+			slogx.FromCtxWithErr(ctx, err).Error("error registering chat")
+		}
+	}
+}
+
+func (b *Bot) handleChatMember(ctx context.Context, _ *bot.Bot, update *models.Update) {
+	cm := update.ChatMember
+	if cm.NewChatMember.Type == models.ChatMemberTypeBanned {
+		err := b.cases.Chat.DetachUserFromChat(ctx, cm.Chat.ID, cm.NewChatMember.Banned.User.ID)
+		if err != nil {
+			slogx.FromCtxWithErr(ctx, err).Error("error detaching user from chat")
+		}
+	} else if cm.NewChatMember.Type == models.ChatMemberTypeLeft {
+		err := b.cases.Chat.DetachUserFromChat(ctx, cm.Chat.ID, cm.NewChatMember.Left.User.ID)
+		if err != nil {
+			slogx.FromCtxWithErr(ctx, err).Error("error detaching user from chat")
+		}
+	} else {
+		_, err := b.cases.Chat.CreateOrUpdateChat(ctx, cm.Chat.ID)
+		if err != nil {
+			slogx.FromCtxWithErr(ctx, err).Error("error registering chat")
+		}
+	}
+}
+
+func (b *Bot) handleLeftChatMember(ctx context.Context, _ *bot.Bot, update *models.Update) {
+	err := b.cases.Chat.DetachUserFromChat(ctx, update.Message.Chat.ID, update.Message.From.ID)
 	if err != nil {
-		b.log.Errorf("error registering chat: %v", err)
+		slogx.FromCtxWithErr(ctx, err).Error("error detaching user from chat")
+	}
+}
+
+func (b *Bot) handleChatChanged(ctx context.Context, _ *bot.Bot, update *models.Update) {
+	_, err := b.cases.Chat.CreateOrUpdateChat(ctx, update.Message.Chat.ID)
+	if err != nil {
+		slogx.FromCtxWithErr(ctx, err).Error("error registering chat")
+	}
+
+	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text:   "О, у вас тут перемены? Запомнил 😉",
+	})
+	if err != nil {
+		slogx.FromCtxWithErr(ctx, err).Error("error sending message")
 	}
 }
 
@@ -90,12 +226,22 @@ func (b *Bot) registerChat(ctx context.Context, chatID int64) error {
 		return fmt.Errorf("error registering chat: %w", err)
 	}
 
-	msg, err := b.SendMessage(ctx, &bot.SendMessageParams{
+	msg, err := b.SendPhoto(ctx, &bot.SendPhotoParams{
 		ChatID: chat.TelegramID,
-		Text:   fmt.Sprintf("Hello, members of chat %s!\nChat is now connected to net\nPress join to confirm membership", chat.Name),
+		Photo: &models.InputFileString{
+			Data: "https://s3.ru1.storage.beget.cloud/f5732312921d-shampsdev/tglinked/assets/joinchat.jpg",
+		},
+		Caption: `*Привет, это Leenky — ваша сеть полезных контактов\!* 👋
+
+Я помогу вам лучше узнать людей в этом чате\! Расскажите о себе и расширьте круг полезных знакомств\.
+
+Чтобы узнать больше об участниках чата, откройте приложение по кнопке ниже\.
+
+*Не забудьте закрепить это сообщение* 📌`,
+		ParseMode: models.ParseModeMarkdown,
 		ReplyMarkup: models.InlineKeyboardMarkup{
 			InlineKeyboard: [][]models.InlineKeyboardButton{{{
-				Text: "Join",
+				Text: "Открыть",
 				URL:  b.urlForChat(chat.ID),
 			}}},
 		},

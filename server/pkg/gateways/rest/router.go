@@ -1,6 +1,7 @@
 package rest
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 
@@ -15,10 +16,10 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-func setupRouter(cfg *config.Config, r *gin.Engine, useCases usecase.Cases) {
+func setupRouter(ctx context.Context, cfg *config.Config, r *gin.Engine, useCases usecase.Cases) {
 	r.HandleMethodNotAllowed = true
 	r.Use(middlewares.AllowOrigin())
-	r.Use(middlewares.Logger())
+	r.Use(middlewares.Logger(ctx))
 
 	v1 := r.Group("/api/v1")
 	docs.SwaggerInfo.BasePath = "/api/v1"

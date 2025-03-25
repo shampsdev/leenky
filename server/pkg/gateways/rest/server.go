@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gin-contrib/pprof"
 	"github.com/gin-gonic/gin"
 	"github.com/penglongli/gin-metrics/ginmetrics"
 	"github.com/shampsdev/tglinked/server/cmd/config"
@@ -22,13 +23,14 @@ type Server struct {
 	Router     *gin.Engine
 }
 
-func NewServer(cfg *config.Config, useCases usecase.Cases) *Server {
+func NewServer(ctx context.Context, cfg *config.Config, useCases usecase.Cases) *Server {
 	r := gin.New()
 	r.Use(gin.Recovery())
 
 	m := ginmetrics.GetMonitor()
 	m.SetMetricPath("/metrics")
 	m.Use(r)
+	pprof.Register(r)
 
 	s := &Server{
 		Router: r,
@@ -39,7 +41,7 @@ func NewServer(cfg *config.Config, useCases usecase.Cases) *Server {
 	}
 
 	middlewares.BotToken = cfg.TG.BotToken
-	setupRouter(cfg, s.Router, useCases)
+	setupRouter(ctx, cfg, s.Router, useCases)
 
 	return s
 }

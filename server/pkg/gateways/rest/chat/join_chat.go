@@ -20,7 +20,7 @@ import (
 // @Failure 400 "Bad Request"
 // @Failure 500 "Internal Server Error"
 // @Security ApiKeyAuth
-// @Router /chats/{id}/join [post]
+// @Router /chats/id/{id}/join [post]
 func JoinChat(chatCase *usecase.Chat) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)

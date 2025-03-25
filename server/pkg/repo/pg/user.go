@@ -2,10 +2,13 @@ package pg
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/shampsdev/tglinked/server/pkg/domain"
+	"github.com/shampsdev/tglinked/server/pkg/repo"
 )
 
 type UserRepo struct {
@@ -33,10 +36,35 @@ func (r *UserRepo) UpdateUser(ctx context.Context, id string, user *domain.EditU
 	newUser := &domain.User{}
 	err := r.db.QueryRow(ctx, `
 		UPDATE "user" 
-		SET "first_name" = $1, "last_name" = $2, "company" = $3, "role" = $4, "bio" = $5
+		SET "first_name" = $1, "last_name" = $2, "company" = $3, "role" = $4, "bio" = $5, "updated_at" = NOW()
 		WHERE "id" = $6 
 		RETURNING "id", "telegram_id", "telegram_username", "avatar", "first_name", "last_name", "company", "role", "bio"`,
 		user.FirstName, user.LastName, user.Company, user.Role, user.Bio, id,
+	).Scan(
+		&newUser.ID,
+		&newUser.TelegramID,
+		&newUser.TelegramUsername,
+		&newUser.Avatar,
+		&newUser.FirstName,
+		&newUser.LastName,
+		&newUser.Company,
+		&newUser.Role,
+		&newUser.Bio,
+	)
+	if err != nil {
+		return nil, fmt.Errorf("failed to update user: %w", err)
+	}
+	return newUser, nil
+}
+
+func (r *UserRepo) UpdateUserTGData(ctx context.Context, id string, user *domain.UserTGData) (*domain.User, error) {
+	newUser := &domain.User{}
+	err := r.db.QueryRow(ctx, `
+		UPDATE "user" 
+		SET "telegram_id" = $1, "telegram_username" = $2, "avatar" = $3, "updated_at" = NOW()
+		WHERE "id" = $4 
+		RETURNING "id", "telegram_id", "telegram_username", "avatar", "first_name", "last_name", "company", "role", "bio"`,
+		user.TelegramID, user.TelegramUsername, user.Avatar, id,
 	).Scan(
 		&newUser.ID,
 		&newUser.TelegramID,
@@ -94,7 +122,7 @@ func (r *UserRepo) GetUserByTelegramID(ctx context.Context, telegramID int64) (*
 		telegramID,
 	)
 	user := &domain.User{}
-	if err := row.Scan(
+	err := row.Scan(
 		&user.ID,
 		&user.TelegramID,
 		&user.TelegramUsername,
@@ -104,8 +132,26 @@ func (r *UserRepo) GetUserByTelegramID(ctx context.Context, telegramID int64) (*
 		&user.Company,
 		&user.Role,
 		&user.Bio,
-	); err != nil {
-		return nil, fmt.Errorf("failed to get user by telegram ID: %w", err)
+	)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return nil, repo.ErrUserNotFound
+	}
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
 	return user, nil
+}
+
+func (r *UserRepo) GetUserIDByTelegramID(ctx context.Context, telegramID int64) (string, error) {
+	var id string
+	err := r.db.QueryRow(ctx, `
+		SELECT "id" 
+		FROM "user" 
+		WHERE "telegram_id" = $1`,
+		telegramID,
+	).Scan(&id)
+	if err != nil {
+		return "", fmt.Errorf("failed to get user ID by telegram ID: %w", err)
+	}
+	return id, nil
 }

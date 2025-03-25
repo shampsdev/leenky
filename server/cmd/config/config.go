@@ -3,12 +3,15 @@ package config
 import (
 	"encoding/json"
 	"fmt"
-
-	log "github.com/sirupsen/logrus"
+	"log/slog"
+	"os"
+	"time"
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/joho/godotenv"
 	"github.com/kelseyhightower/envconfig"
+	"github.com/lmittmann/tint"
+	"github.com/shampsdev/tglinked/server/pkg/utils/slogx"
 )
 
 type Config struct {
@@ -31,39 +34,44 @@ type Config struct {
 	Storage struct {
 		ImagesPath string `envconfig:"STORAGE_IMAGES_PATH" default:"images"`
 	}
+	Log struct {
+		Handler string `envconfig:"LOG_HANDLER" default:"tint"`
+	}
+
 	S3 S3Config
 }
 
 type S3Config struct {
-	AccessKeyID string `envconfig:"S3_ACCESS_KEY_ID"`
-	SecretKey   string `envconfig:"S3_SECRET_KEY"`
-	Region      string `envconfig:"S3_REGION"`
-	Bucket      string `envconfig:"S3_BUCKET"`
-	EndpointUrl string `envconfig:"S3_ENDPOINT_URL"`
+	AccessKeyID   string `envconfig:"S3_ACCESS_KEY_ID"`
+	SecretKey     string `envconfig:"S3_SECRET_KEY"`
+	Region        string `envconfig:"S3_REGION"`
+	Bucket        string `envconfig:"S3_BUCKET"`
+	EndpointUrl   string `envconfig:"S3_ENDPOINT_URL"`
+	RootDirectory string `envconfig:"S3_ROOT_DIRECTORY"`
 }
 
 func Load(envFile string) *Config {
 	err := godotenv.Load(envFile)
 	if err != nil {
-		log.Info("no .env file, parsed exported variables")
+		slog.Info("no .env file, parsed exported variables")
 	}
 	c := &Config{}
 	err = envconfig.Process("", c)
 	if err != nil {
-		log.Fatalf("can't parse config: %s", err)
+		slogx.Fatal(slog.Default(), "can't parse config", slogx.ErrAttr(err))
 	}
 	return c
 }
 
 func (c *Config) Print() {
 	if c.Debug {
-		log.Info("Launched in debug mode")
+		slog.Info("Launched in debug mode")
 		data, _ := json.MarshalIndent(c, "", "\t")
 		fmt.Println("=== CONFIG ===")
 		fmt.Println(string(data))
 		fmt.Println("==============")
 	} else {
-		log.Info("Launched in production mode")
+		slog.Info("Launched in production mode")
 	}
 }
 
@@ -78,10 +86,27 @@ func (c *Config) DBUrl() string {
 	)
 }
 
-func (c Config) PGXConfig() *pgxpool.Config {
+func (c *Config) PGXConfig() *pgxpool.Config {
 	pgxConfig, err := pgxpool.ParseConfig(c.DBUrl())
 	if err != nil {
-		log.Fatalf("can't parse pgxpool config: %s", err)
+		slogx.WithErr(slog.Default(), err).Error("can't parse pgx config")
+		panic(err)
 	}
 	return pgxConfig
+}
+
+func (c *Config) Logger() *slog.Logger {
+	if c.Log.Handler == "tint" {
+		return slog.New(tint.NewHandler(os.Stdout, &tint.Options{
+			Level:      slog.LevelDebug,
+			TimeFormat: time.TimeOnly,
+		}))
+	}
+	if c.Log.Handler == "json" {
+		return slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{
+			Level: slog.LevelDebug,
+		}))
+	}
+
+	panic(fmt.Sprintf("unknown log handler: %s", c.Log.Handler))
 }

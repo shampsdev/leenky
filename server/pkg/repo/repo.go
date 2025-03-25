@@ -9,7 +9,10 @@ import (
 type Chat interface {
 	CreateChat(ctx context.Context, chat *domain.Chat) (string, error)
 	UpdateChat(ctx context.Context, chat *domain.Chat) (*domain.Chat, error)
+	DeleteChat(ctx context.Context, id string) error
 	GetChatByID(ctx context.Context, id string) (*domain.Chat, error)
+	GetChatIDByTelegramID(ctx context.Context, telegramID int64) (string, error)
+	GetChatTelegramIDByID(ctx context.Context, id string) (int64, error)
 	GetChatPreviewByID(ctx context.Context, id string) (*domain.ChatPreview, error)
 	GetChatByTelegramID(ctx context.Context, telegramID int64) (*domain.Chat, error)
 	GetChatPreviewsWithUser(ctx context.Context, userID string) ([]*domain.ChatPreview, error)
@@ -24,11 +27,13 @@ type Chat interface {
 type User interface {
 	CreateUser(ctx context.Context, user *domain.User) (string, error)
 	UpdateUser(ctx context.Context, id string, user *domain.EditUser) (*domain.User, error)
+	UpdateUserTGData(ctx context.Context, id string, user *domain.UserTGData) (*domain.User, error)
 	DeleteUser(ctx context.Context, id string) error
 	GetUserByID(ctx context.Context, id string) (*domain.User, error)
 	GetUserByTelegramID(ctx context.Context, telegramID int64) (*domain.User, error)
+	GetUserIDByTelegramID(ctx context.Context, telegramID int64) (string, error)
 }
 
 type ImageStorage interface {
-	SavePhoto(ctx context.Context, url string) (string, error)
+	SaveImageByURL(ctx context.Context, url, key string) (string, error)
 }

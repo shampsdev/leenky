@@ -50,13 +50,21 @@ func (r *ChatRepo) generateID() string {
 
 func (r *ChatRepo) UpdateChat(ctx context.Context, chat *domain.Chat) (*domain.Chat, error) {
 	_, err := r.db.Exec(ctx, `
-		UPDATE "chat" SET "name" = $1, "avatar" = $2, "telegram_id" = $3 WHERE "id" = $4`,
+		UPDATE "chat" SET "name" = $1, "avatar" = $2, "telegram_id" = $3, "updated_at" = NOW() WHERE "id" = $4`,
 		chat.Name, chat.Avatar, chat.TelegramID, chat.ID,
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to update chat: %w", err)
 	}
 	return chat, nil
+}
+
+func (r *ChatRepo) DeleteChat(ctx context.Context, id string) error {
+	_, err := r.db.Exec(ctx, `DELETE FROM "chat" WHERE "id" = $1`, id)
+	if err != nil {
+		return fmt.Errorf("failed to delete chat: %w", err)
+	}
+	return nil
 }
 
 func (r *ChatRepo) IsChatExists(ctx context.Context, id string) (bool, error) {
@@ -75,6 +83,30 @@ func (r *ChatRepo) GetChatByID(ctx context.Context, id string) (*domain.Chat, er
 		return nil, fmt.Errorf("failed to get chat by ID: %w", err)
 	}
 	return chat, nil
+}
+
+func (r *ChatRepo) GetChatIDByTelegramID(ctx context.Context, telegramID int64) (string, error) {
+	var id string
+	err := r.db.QueryRow(ctx, `SELECT "id" FROM "chat" WHERE "telegram_id" = $1`, telegramID).Scan(&id)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return "", repo.ErrChatNotFound
+	}
+	if err != nil {
+		return "", fmt.Errorf("failed to get chat ID by telegram ID: %w", err)
+	}
+	return id, nil
+}
+
+func (r *ChatRepo) GetChatTelegramIDByID(ctx context.Context, id string) (int64, error) {
+	var telegramID int64
+	err := r.db.QueryRow(ctx, `SELECT "telegram_id" FROM "chat" WHERE "id" = $1`, id).Scan(&telegramID)
+	if errors.Is(err, pgx.ErrNoRows) {
+		return 0, repo.ErrChatNotFound
+	}
+	if err != nil {
+		return 0, fmt.Errorf("failed to get chat telegram ID by ID: %w", err)
+	}
+	return telegramID, nil
 }
 
 func (r *ChatRepo) GetChatPreviewByID(ctx context.Context, id string) (*domain.ChatPreview, error) {
