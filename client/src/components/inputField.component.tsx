@@ -5,6 +5,8 @@ export interface InputFieldComponentProps {
   title: string;
   value: string;
   maxLength: number;
+  onFocus?: () => void;
+  onBlur?: () => void;
 }
 
 const InputFieldComponent = (props: InputFieldComponentProps) => {
@@ -25,6 +27,8 @@ const InputFieldComponent = (props: InputFieldComponentProps) => {
           {props.title}
         </legend>
         <input
+          onBlur={props.onBlur}
+          onFocus={props.onFocus}
           onInput={(event: React.ChangeEvent<HTMLInputElement>) =>
             props.onChangeFunction(event.target.value)
           }

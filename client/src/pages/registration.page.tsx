@@ -8,16 +8,17 @@ import {
   initData,
   initDataStartParam,
   initDataUser,
+  retrieveLaunchParams,
 } from "@telegram-apps/sdk-react";
 import EBBComponent from "../components/enableBackButtonComponent";
 import { createMe, getMePreview, joinMe } from "../api/api";
 import { useNavigate } from "react-router-dom";
 import useUserStore from "../stores/user.store";
 import DevImage from "../assets/dev.png";
+import ButtonComponent from "../components/button.component";
 
 const RegistrationPage = () => {
-  const [keyboardOpen, setKeyboardOpen] = useState(false);
-  const [initialHeight] = useState(window.innerHeight);
+  const launchParams = retrieveLaunchParams();
 
   const startParam = initDataStartParam();
   const userStore = useUserStore();
@@ -96,37 +97,32 @@ const RegistrationPage = () => {
     setIsFilled(isProfileFilled());
   }, [profileData]);
 
-  useEffect(() => {
-    const handleResize = () => {
-      const threshold = 150;
-      if (initialHeight - window.innerHeight > threshold) {
-        setKeyboardOpen(true);
-      } else {
-        setKeyboardOpen(false);
+  const [iosKeyboardOpen, setIosKeyboardOpen] = useState<boolean>(false);
+  const [focusedFieldsCount, setFocusedFiledsCount] = useState<number>(0);
+  const onFocusHandler = () => {
+    setFocusedFiledsCount(focusedFieldsCount + 1);
+  };
+  const onBlurHandler = () => {
+    setFocusedFiledsCount(focusedFieldsCount - 1);
+  };
+  const handleFieldsCount = () => {
+    if (launchParams.tgWebAppPlatform === "ios") {
+      if (focusedFieldsCount > 0) {
+        setIosKeyboardOpen(true);
       }
-    };
-
-    window.addEventListener("resize", handleResize);
-
-    if (window.visualViewport) {
-      window.visualViewport.addEventListener("resize", handleResize);
+      if (focusedFieldsCount === 0) {
+        setIosKeyboardOpen(false);
+      }
     }
-
-    return () => {
-      window.removeEventListener("resize", handleResize);
-      if (window.visualViewport) {
-        window.visualViewport.removeEventListener("resize", handleResize);
-      }
-    };
-  }, [initialHeight]);
-
+  };
+  useEffect(handleFieldsCount, [focusedFieldsCount]);
   return (
     <EBBComponent>
       <div
         className={
-          keyboardOpen
-            ? "w-[95%] mx-auto py-4 px-4 overflow-y-auto h-[160vh]"
-            : "w-[95%] mx-auto py-4 px-4 overflow-y-auto"
+          iosKeyboardOpen
+            ? "w-[95%] mx-auto py-4 px-4  h-[140vh]"
+            : "w-[95%] mx-auto py-4 px-4 "
         }
       >
         <div className="flex flex-col items-center gap-[17px]">
@@ -138,44 +134,79 @@ const RegistrationPage = () => {
         </div>
         <div className="w-full flex flex-col mt-[25px] gap-[12px] caret-[#20C86E]">
           <InputFieldComponent
+            onBlur={onBlurHandler}
+            onFocus={onFocusHandler}
             title="Имя"
             onChangeFunction={(value) => handleInputChange("firstName", value)}
             value={profileData.firstName ?? ""}
             maxLength={MAX_INPUT_LENGTH}
           />
           <InputFieldComponent
+            onBlur={onBlurHandler}
+            onFocus={onFocusHandler}
             title="Фамилия"
             onChangeFunction={(value) => handleInputChange("lastName", value)}
             value={profileData.lastName ?? ""}
             maxLength={MAX_INPUT_LENGTH}
           />
           <InputFieldComponent
+            onBlur={onBlurHandler}
+            onFocus={onFocusHandler}
             title="Место работы"
             onChangeFunction={(value) => handleInputChange("company", value)}
             value={profileData.company ?? ""}
             maxLength={MAX_INPUT_LENGTH}
           />
           <InputFieldComponent
+            onBlur={onBlurHandler}
+            onFocus={onFocusHandler}
             title="Должность"
             onChangeFunction={(value) => handleInputChange("role", value)}
             value={profileData.role ?? ""}
             maxLength={MAX_INPUT_LENGTH}
           />
           <TextareaFieldComponent
+            onBlur={onBlurHandler}
+            onFocus={onFocusHandler}
             onChangeFunction={(value) => handleInputChange("bio", value)}
             title="Описание"
             value={profileData.bio ?? ""}
             maxLength={MAX_TEXTAREA_LENGTH}
           />
         </div>
-        <FixedBottomButtonComponent
-          content={"Готово"}
-          handleClick={() => {
-            if (isFilled) registerUser();
-          }}
-          state={isFilled ? "active" : "disabled"}
-        />
+
+        {launchParams.tgWebAppPlatform !== "ios" && (
+          <div className="pt-[40px] pb-[39px]"></div>
+        )}
+        {launchParams.tgWebAppPlatform === "ios" && (
+          <div
+            onClick={() => {
+              if (isFilled) registerUser();
+            }}
+            className="flex w-full justify-center pt-[20px]"
+          >
+            <ButtonComponent
+              content={"Готово"}
+              handleClick={() => {
+                if (isFilled) registerUser();
+              }}
+              state={isFilled ? "active" : "disabled"}
+            />
+          </div>
+        )}
       </div>
+
+      {launchParams.tgWebAppPlatform !== "ios" && (
+        <div className="absolute bottom-0 flex justify-center w-full pb-[10px]">
+          <FixedBottomButtonComponent
+            content={"Готово"}
+            handleClick={() => {
+              if (isFilled) registerUser();
+            }}
+            state={isFilled ? "active" : "disabled"}
+          />
+        </div>
+      )}
     </EBBComponent>
   );
 };

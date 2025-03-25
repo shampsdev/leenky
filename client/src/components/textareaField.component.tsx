@@ -24,6 +24,8 @@ const TextareaFieldComponent = (props: InputFieldComponentProps) => {
           {props.title}
         </legend>
         <textarea
+          onBlur={props.onBlur}
+          onFocus={props.onFocus}
           value={props.value}
           onChange={(event) => props.onChangeFunction(event.target.value)}
           onKeyDown={limitNewlines}
