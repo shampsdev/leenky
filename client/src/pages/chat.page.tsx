@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import useChatSearchStore from "../stores/chatSearch.store";
 import ChatMemberCardComponent from "../components/chatMember.card.component";
 import { motion } from "motion/react";
-
+import NotFound from "../assets/notFound.svg";
 const containerVariants = {
   visible: {
     transition: {
@@ -24,7 +24,7 @@ const ChatPage = () => {
   const { searchQuery, setSearchQuery, chatID, setChatID } =
     useChatSearchStore();
 
-  const [loading, isLoading] = useState<boolean>(true);
+  const [loading, isLoading] = useState<boolean>(false);
 
   const [chatData, setChatData] = useState<ChatData>({
     name: null,
@@ -59,6 +59,7 @@ const ChatPage = () => {
   };
 
   const searchUsers = async () => {
+    isLoading(true);
     const searchResponse = await searchInChat(
       initData.raw() ?? "",
       chatId ?? "",
@@ -66,7 +67,10 @@ const ChatPage = () => {
     );
     if (searchResponse) {
       setChatData({ ...chatData, users: searchResponse });
+    } else {
+      setChatData({ ...chatData, users: [] });
     }
+    isLoading(false);
   };
 
   useEffect(() => {
@@ -100,6 +104,7 @@ const ChatPage = () => {
             chatData={previewChatData}
             view={true}
             className=" mt-[25px]"
+            index={0}
           />
           <SearchBarComponent
             value={searchQuery}
@@ -122,6 +127,15 @@ const ChatPage = () => {
               />
             ))}
           </motion.ul>
+          {chatData.users.length === 0 && !loading && (
+            <div className="flex w-full flex-col items-center text-center mt-[120px] gap-[20px]">
+              <img src={NotFound} />
+
+              <div className="flex flex-col items-center text-center gap-[8px]">
+                <h1 className="font-semibold text-[20px]">Ничего не найдено</h1>
+              </div>
+            </div>
+          )}
         </div>
       </RequireMembershipComponent>
     </EBBComponent>

@@ -1,3 +1,4 @@
+import { motion } from "framer-motion";
 import SearchIcon from "../assets/search_transparent.svg";
 
 interface SearchBarProps {
@@ -7,6 +8,14 @@ interface SearchBarProps {
   className?: string;
 }
 
+const searchBarVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: "easeOut" },
+  },
+};
 const SearchBarComponent = ({
   value,
   inputHandler,
@@ -20,8 +29,11 @@ const SearchBarComponent = ({
   };
 
   return (
-    <div
+    <motion.div
       className={`relative flex items-center gap-[8px] bg-[#EEEEEF] rounded-lg px-3 py-2 ${className}`}
+      variants={searchBarVariants}
+      initial="hidden"
+      animate="visible"
     >
       <button>
         <img src={SearchIcon} alt="search" className="w-5 h-5" />
@@ -34,7 +46,7 @@ const SearchBarComponent = ({
         placeholder={placeholder}
         className="flex-1 outline-none placeholder-[#838388] text-main"
       />
-    </div>
+    </motion.div>
   );
 };
 

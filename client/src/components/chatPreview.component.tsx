@@ -3,6 +3,7 @@ import { ChatPreviewData } from "../types/user.interface";
 import { handleImageError } from "../utils/imageErrorHandler";
 import DevImage from "../assets/dev.png";
 import TrashBin from "../assets/trash_bin.svg";
+import { motion } from "motion/react";
 interface ChatPreviewComponentProps {
   chatData: ChatPreviewData;
   view?: boolean;
@@ -10,11 +11,30 @@ interface ChatPreviewComponentProps {
   underline?: boolean;
   deleteHandler?: () => void;
 }
-const ChatPreviewComponent = (props: ChatPreviewComponentProps) => {
+
+const chatPreviewVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: (index: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: {
+      delay: index * 0.1,
+      duration: 0.4,
+      ease: "easeOut",
+    },
+  }),
+};
+const ChatPreviewComponent = (
+  props: ChatPreviewComponentProps & { index: number }
+) => {
   const navigate = useNavigate();
   if (props.view) {
     return (
-      <li
+      <motion.li
+        variants={chatPreviewVariants}
+        initial="hidden"
+        animate="visible"
+        custom={props.index}
         className={
           "chat-item rounded-[15px] relative flex w-full items-center gap-[7px]  overflow-hidden" +
           " " +
@@ -40,11 +60,17 @@ const ChatPreviewComponent = (props: ChatPreviewComponentProps) => {
             </div>
           </div>
         </div>
-      </li>
+      </motion.li>
     );
   } else {
     return (
-      <li className="chat-item rounded-[15px] relative flex w-full items-center gap-[7px] cursor-pointer overflow-hidden">
+      <motion.li
+        className="chat-item rounded-[15px] relative flex w-full items-center gap-[7px] cursor-pointer overflow-hidden"
+        variants={chatPreviewVariants}
+        initial="hidden"
+        animate="visible"
+        custom={props.index}
+      >
         <div className="chat-content flex items-center gap-[7px] w-full transition-transform duration-300">
           <img
             src={props.chatData.avatar || DevImage}
@@ -81,7 +107,7 @@ const ChatPreviewComponent = (props: ChatPreviewComponentProps) => {
             className=""
           />
         </div>
-      </li>
+      </motion.li>
     );
   }
 };

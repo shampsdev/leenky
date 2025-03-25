@@ -12,6 +12,14 @@ import { BOT_USERNAME } from "../shared/constants";
 import useUserStore from "../stores/user.store";
 import NotFound from "../assets/notFound.svg";
 import AddButton from "../assets/add_green.svg";
+import { motion } from "motion/react";
+const containerVariants = {
+  visible: {
+    transition: {
+      staggerChildren: 0.1,
+    },
+  },
+};
 const ChatsPage = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [chats, setChats] = useState<ChatPreviewData[]>([]);
@@ -94,7 +102,12 @@ const ChatsPage = () => {
           />
 
           {chats.length > 0 && (
-            <ul className="flex flex-col gap-0 mt-[25px]">
+            <motion.ul
+              className="flex flex-col gap-0 mt-[25px]"
+              initial="hidden"
+              animate="visible"
+              variants={containerVariants}
+            >
               {chats.map((chat, index) =>
                 index !== chats.length - 1 ? (
                   <ChatPreviewComponent
@@ -102,16 +115,18 @@ const ChatsPage = () => {
                     chatData={chat}
                     deleteHandler={() => deleteHandler(chat)}
                     underline
+                    index={index}
                   />
                 ) : (
                   <ChatPreviewComponent
                     key={chat.id}
                     chatData={chat}
                     deleteHandler={() => deleteHandler(chat)}
+                    index={index}
                   />
                 )
               )}
-            </ul>
+            </motion.ul>
           )}
           {chats.length === 0 && !isLoading && (
             <div className="flex w-full flex-col items-center text-center mt-[120px] gap-[20px]">
