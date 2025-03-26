@@ -59,7 +59,6 @@ const ChatPage = () => {
   };
 
   const searchUsers = async () => {
-    isLoading(true);
     const searchResponse = await searchInChat(
       initData.raw() ?? "",
       chatId ?? "",
@@ -89,6 +88,7 @@ const ChatPage = () => {
     if (previewChatData.isMember) {
       searchUsers();
     }
+    setOpened(true);
   }, [searchQuery]);
 
   useEffect(() => {
@@ -105,12 +105,35 @@ const ChatPage = () => {
     <EBBComponent>
       <RequireMembershipComponent chatID={chatId}>
         <div className="max-w-[95%]  max-h-[100vh] overflow-auto scroll-container mx-auto px-4">
-          <ChatPreviewComponent
-            chatData={previewChatData}
-            view={true}
-            className=" mt-[25px]"
-            index={0}
-          />
+          {previewChatData.isMember === null && (
+            <li
+              className={
+                "chat-item rounded-[15px] relative flex w-full items-center gap-[7px] mt-[25px] "
+              }
+            >
+              <div className="chat-content flex items-center h-[60px] gap-[7px] w-full transition-transform duration-300">
+                <div
+                  className={
+                    "flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px]"
+                  }
+                >
+                  <div className="flex flex-col gap-[2px]">
+                    <p className="font-normal text-[17px]"></p>
+                    <p className="text-hint font-light text-[15px]"></p>
+                  </div>
+                </div>
+              </div>
+            </li>
+          )}
+          {previewChatData.isMember !== null && (
+            <ChatPreviewComponent
+              chatData={previewChatData}
+              view={true}
+              className=" mt-[25px]"
+              index={0}
+            />
+          )}
+
           <SearchBarComponent
             value={searchQuery}
             inputHandler={setSearchQuery}
@@ -150,7 +173,7 @@ const ChatPage = () => {
               ))}
             </motion.ul>
           )}
-          {chatData.users.length === 0 && !isLoading && (
+          {chatData.users.length === 0 && !loading && (
             <div className="flex w-full flex-col items-center text-center mt-[120px] gap-[20px]">
               <img src={NotFound} />
 
