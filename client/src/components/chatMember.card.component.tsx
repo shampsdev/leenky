@@ -63,12 +63,12 @@ const ChatMemberCardComponent = (
                   {props.userData.firstName} {props.userData.lastName}
                 </p>
                 <div className="flex flex-col">
-                  <p className="text-hint flex gap-[4px] text-[13px]">
-                    <img src={Case} />
+                  <p className="text-hint flex items-start gap-[4px] text-[13px]">
+                    <img src={Case} className="self-start mt-[3px]" />
                     {props.userData.company}
                   </p>
-                  <p className="text-hint flex gap-[4px] text-[13px]">
-                    <img src={Person} />
+                  <p className="text-hint flex items-start gap-[4px] text-[13px]">
+                    <img src={Person} className="self-start mt-[3px]" />
                     {props.userData.role}
                   </p>
                 </div>
@@ -105,12 +105,12 @@ const ChatMemberCardComponent = (
                   {props.userData.firstName} {props.userData.lastName}
                 </p>
                 <div className="flex flex-col">
-                  <p className="text-hint flex gap-[4px] text-[13px]">
-                    <img src={Case} />
+                  <p className="text-hint flex items-start gap-[4px] text-[13px]">
+                    <img src={Case} className="self-start mt-[3px]" />
                     {props.userData.company}
                   </p>
-                  <p className="text-hint flex gap-[4px] text-[13px]">
-                    <img src={Person} />
+                  <p className="text-hint flex items-start gap-[4px] text-[13px]">
+                    <img src={Person} className="self-start mt-[3px]" />
                     {props.userData.role}
                   </p>
                 </div>
