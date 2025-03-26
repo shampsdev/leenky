@@ -25,7 +25,11 @@ const chatPreviewVariants = {
   }),
 };
 const ChatPreviewComponent = (
-  props: ChatPreviewComponentProps & { index: number }
+  props: ChatPreviewComponentProps & {
+    index: number;
+    onAnimationComplete?: () => void;
+    animated?: boolean;
+  }
 ) => {
   const navigate = useNavigate();
   if (props.view) {
@@ -63,52 +67,97 @@ const ChatPreviewComponent = (
       </motion.li>
     );
   } else {
-    return (
-      <motion.li
-        className="chat-item rounded-[15px] relative flex w-full items-center gap-[7px] cursor-pointer overflow-hidden"
-        variants={chatPreviewVariants}
-        initial="hidden"
-        animate="visible"
-        custom={props.index}
-      >
-        <div className="chat-content flex items-center gap-[7px] w-full transition-transform duration-300">
-          <img
-            src={props.chatData.avatar || DevImage}
-            onError={handleImageError}
-            className="w-[60px] h-[60px] rounded-full aspect-square object-cover"
-            onClick={() => {
-              navigate(`/chat/${props.chatData.id}`);
-            }}
-          />
-          <div
-            className={`flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px] ${
-              props.underline ? "border-b-[#D9D9D9] border-b-[1px]" : ""
-            }`}
-          >
-            <div
-              className={`flex flex-col gap-[2px]`}
+    if (props.animated) {
+      return (
+        <motion.li
+          className="chat-item rounded-[15px] relative flex w-full items-center gap-[7px] cursor-pointer overflow-hidden"
+          variants={chatPreviewVariants}
+          initial="hidden"
+          animate="visible"
+          custom={props.index}
+          onAnimationComplete={props.onAnimationComplete}
+        >
+          <div className="chat-content flex items-center gap-[7px] w-full transition-transform duration-300">
+            <img
+              src={props.chatData.avatar || DevImage}
+              onError={handleImageError}
+              className="w-[60px] h-[60px] rounded-full aspect-square object-cover"
               onClick={() => {
                 navigate(`/chat/${props.chatData.id}`);
               }}
+            />
+            <div
+              className={`flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px] ${
+                props.underline ? "border-b-[#D9D9D9] border-b-[1px]" : ""
+              }`}
             >
-              <p className="font-normal text-[17px]">{props.chatData.name}</p>
-              <p className="text-hint font-light text-[15px]">
-                {props.chatData.usersAmount} участников
-              </p>
+              <div
+                className={`flex flex-col gap-[2px]`}
+                onClick={() => {
+                  navigate(`/chat/${props.chatData.id}`);
+                }}
+              >
+                <p className="font-normal text-[17px]">{props.chatData.name}</p>
+                <p className="text-hint font-light text-[15px]">
+                  {props.chatData.usersAmount} участников
+                </p>
+              </div>
             </div>
+            <img
+              src={TrashBin}
+              onClick={() => {
+                if (props.deleteHandler) {
+                  props.deleteHandler();
+                }
+              }}
+              className=""
+            />
           </div>
-          <img
-            src={TrashBin}
-            onClick={() => {
-              if (props.deleteHandler) {
-                props.deleteHandler();
-              }
-            }}
-            className=""
-          />
-        </div>
-      </motion.li>
-    );
+        </motion.li>
+      );
+    }
+    if (!props.animated) {
+      return (
+        <li className="chat-item rounded-[15px] relative flex w-full items-center gap-[7px] cursor-pointer overflow-hidden">
+          <div className="chat-content flex items-center gap-[7px] w-full transition-transform duration-300">
+            <img
+              src={props.chatData.avatar || DevImage}
+              onError={handleImageError}
+              className="w-[60px] h-[60px] rounded-full aspect-square object-cover"
+              onClick={() => {
+                navigate(`/chat/${props.chatData.id}`);
+              }}
+            />
+            <div
+              className={`flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px] ${
+                props.underline ? "border-b-[#D9D9D9] border-b-[1px]" : ""
+              }`}
+            >
+              <div
+                className={`flex flex-col gap-[2px]`}
+                onClick={() => {
+                  navigate(`/chat/${props.chatData.id}`);
+                }}
+              >
+                <p className="font-normal text-[17px]">{props.chatData.name}</p>
+                <p className="text-hint font-light text-[15px]">
+                  {props.chatData.usersAmount} участников
+                </p>
+              </div>
+            </div>
+            <img
+              src={TrashBin}
+              onClick={() => {
+                if (props.deleteHandler) {
+                  props.deleteHandler();
+                }
+              }}
+              className=""
+            />
+          </div>
+        </li>
+      );
+    }
   }
 };
 export default ChatPreviewComponent;

@@ -21,6 +21,7 @@ const containerVariants = {
   },
 };
 const ChatsPage = () => {
+  const [opened, setOpened] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [chats, setChats] = useState<ChatPreviewData[]>([]);
   const { searchQuery, setSearchQuery } = useChatsSearchStore();
@@ -70,6 +71,7 @@ const ChatsPage = () => {
   }, []);
 
   useEffect(() => {
+    setOpened(false);
     fetchUserData();
   }, []);
 
@@ -100,14 +102,8 @@ const ChatsPage = () => {
             placeholder="Поиск"
             className="mt-[15px]"
           />
-
-          {chats.length > 0 && (
-            <motion.ul
-              className="flex flex-col gap-0 mt-[25px]"
-              initial="hidden"
-              animate="visible"
-              variants={containerVariants}
-            >
+          {opened && (
+            <ul className="flex flex-col gap-0 mt-[25px]">
               {chats.map((chat, index) =>
                 index !== chats.length - 1 ? (
                   <ChatPreviewComponent
@@ -123,6 +119,45 @@ const ChatsPage = () => {
                     chatData={chat}
                     deleteHandler={() => deleteHandler(chat)}
                     index={index}
+                  />
+                )
+              )}
+            </ul>
+          )}
+          {!opened && (
+            <motion.ul
+              className="flex flex-col gap-0 mt-[25px]"
+              initial="hidden"
+              animate="visible"
+              variants={containerVariants}
+            >
+              {chats.map((chat, index) =>
+                index !== chats.length - 1 ? (
+                  <ChatPreviewComponent
+                    key={chat.id}
+                    chatData={chat}
+                    deleteHandler={() => deleteHandler(chat)}
+                    underline
+                    index={index}
+                    animated
+                    onAnimationComplete={
+                      index === chats.length - 1
+                        ? () => setOpened(true)
+                        : undefined
+                    }
+                  />
+                ) : (
+                  <ChatPreviewComponent
+                    key={chat.id}
+                    chatData={chat}
+                    deleteHandler={() => deleteHandler(chat)}
+                    index={index}
+                    animated
+                    onAnimationComplete={
+                      index === chats.length - 1
+                        ? () => setOpened(true)
+                        : undefined
+                    }
                   />
                 )
               )}

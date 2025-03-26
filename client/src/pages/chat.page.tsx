@@ -20,7 +20,7 @@ const containerVariants = {
 };
 const ChatPage = () => {
   const { chatId } = useParams();
-
+  const [opened, setOpened] = useState<boolean>(false);
   const { searchQuery, setSearchQuery, chatID, setChatID } =
     useChatSearchStore();
 
@@ -97,6 +97,10 @@ const ChatPage = () => {
     }
   }, [loading]);
 
+  useEffect(() => {
+    setOpened(false);
+  }, []);
+
   return (
     <EBBComponent>
       <RequireMembershipComponent chatID={chatId}>
@@ -113,22 +117,40 @@ const ChatPage = () => {
             placeholder="Поиск участников"
             className="mt-[20px]"
           />
-
-          <motion.ul
-            className="flex flex-col gap-[12px] mt-[25px]"
-            initial="hidden"
-            animate="visible"
-            variants={containerVariants}
-          >
-            {chatData.users.map((user, index) => (
-              <ChatMemberCardComponent
-                index={index}
-                key={user.id}
-                userData={user}
-              />
-            ))}
-          </motion.ul>
-          {chatData.users.length === 0 && !loading && (
+          {opened && (
+            <ul className="flex flex-col gap-[12px] mt-[25px]">
+              {chatData.users.map((user, index) => (
+                <ChatMemberCardComponent
+                  index={index}
+                  key={user.id}
+                  userData={user}
+                />
+              ))}
+            </ul>
+          )}
+          {!opened && (
+            <motion.ul
+              className="flex flex-col gap-[12px] mt-[25px]"
+              initial="hidden"
+              animate="visible"
+              variants={containerVariants}
+            >
+              {chatData.users.map((user, index) => (
+                <ChatMemberCardComponent
+                  animated
+                  index={index}
+                  key={user.id}
+                  userData={user}
+                  onAnimationComplete={
+                    index === chatData.users.length - 1
+                      ? () => setOpened(true)
+                      : undefined
+                  }
+                />
+              ))}
+            </motion.ul>
+          )}
+          {chatData.users.length === 0 && !isLoading && (
             <div className="flex w-full flex-col items-center text-center mt-[120px] gap-[20px]">
               <img src={NotFound} />
 
