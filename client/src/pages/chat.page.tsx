@@ -59,7 +59,6 @@ const ChatPage = () => {
   };
 
   const searchUsers = async () => {
-    isLoading(true);
     const searchResponse = await searchInChat(
       initData.raw() ?? "",
       chatId ?? "",
@@ -150,7 +149,7 @@ const ChatPage = () => {
               ))}
             </motion.ul>
           )}
-          {chatData.users.length === 0 && !isLoading && (
+          {chatData.users.length === 0 && !loading && (
             <div className="flex w-full flex-col items-center text-center mt-[120px] gap-[20px]">
               <img src={NotFound} />
 
