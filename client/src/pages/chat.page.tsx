@@ -11,7 +11,6 @@ import useChatSearchStore from "../stores/chatSearch.store";
 import ChatMemberCardComponent from "../components/chatMember.card.component";
 import { motion } from "motion/react";
 import NotFound from "../assets/notFound.svg";
-import DevImage from "../assets/dev.png";
 const containerVariants = {
   visible: {
     transition: {
