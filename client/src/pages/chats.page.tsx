@@ -77,6 +77,7 @@ const ChatsPage = () => {
 
   useEffect(() => {
     fetchChats(searchQuery);
+    setOpened(true);
   }, [searchQuery]);
   return (
     <>

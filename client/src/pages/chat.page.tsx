@@ -88,6 +88,7 @@ const ChatPage = () => {
     if (previewChatData.isMember) {
       searchUsers();
     }
+    setOpened(true);
   }, [searchQuery]);
 
   useEffect(() => {
