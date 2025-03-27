@@ -226,7 +226,7 @@ func (b *Bot) handleChatChanged(ctx context.Context, _ *bot.Bot, update *models.
 
 func (b *Bot) handleMigrate(ctx context.Context, _ *bot.Bot, update *models.Update) {
 	fromChatID := update.Message.MigrateFromChatID
-	toChatID := update.Message.MigrateToChatID
+	toChatID := update.Message.Chat.ID
 
 	err := b.cases.Chat.ChangeChatTelegramID(ctx, fromChatID, toChatID)
 	if err != nil {
