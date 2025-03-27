@@ -216,6 +216,16 @@ func (c *Chat) DetachUserFromChat(ctx context.Context, chatTGID, userTGID int64)
 	return c.chatRepo.DetachUserFromChat(ctx, chatID, userID)
 }
 
+func (c *Chat) ChangeChatTelegramID(ctx context.Context, oldTGID, newTGID int64) error {
+	oldChat, err := c.chatRepo.GetChatByTelegramID(ctx, oldTGID)
+	if err != nil {
+		return fmt.Errorf("error getting chat: %w", err)
+	}
+	oldChat.TelegramID = newTGID
+	_, err = c.UpdateChat(ctx, oldChat.ID, newTGID)
+	return err
+}
+
 func (c *Chat) downloadChatAvatar(ctx context.Context, b *bot.Bot, s repo.ImageStorage, fileID string, tgID int64) (string, error) {
 	file, err := b.GetFile(ctx, &bot.GetFileParams{
 		FileID: fileID,

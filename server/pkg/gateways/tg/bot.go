@@ -78,6 +78,10 @@ func (b *Bot) Run(ctx context.Context) {
 		return update.Message != nil && update.Message.LeftChatMember != nil
 	}, b.handleLeftChatMember)
 
+	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
+		return update.Message != nil && update.Message.MigrateFromChatID != 0
+	}, b.handleMigrate)
+
 	b.Start(ctx)
 }
 
@@ -218,6 +222,17 @@ func (b *Bot) handleChatChanged(ctx context.Context, _ *bot.Bot, update *models.
 	if err != nil {
 		slogx.FromCtxWithErr(ctx, err).Error("error sending message")
 	}
+}
+
+func (b *Bot) handleMigrate(ctx context.Context, _ *bot.Bot, update *models.Update) {
+	fromChatID := update.Message.MigrateFromChatID
+	toChatID := update.Message.MigrateToChatID
+
+	err := b.cases.Chat.ChangeChatTelegramID(ctx, fromChatID, toChatID)
+	if err != nil {
+		slogx.FromCtxWithErr(ctx, err).Error("error changing chat telegram id")
+	}
+	slogx.Info(ctx, "chat migrated", "from", fromChatID, "to", toChatID)
 }
 
 func (b *Bot) registerChat(ctx context.Context, chatID int64) error {
