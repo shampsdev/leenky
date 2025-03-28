@@ -23,6 +23,8 @@ type Bot struct {
 
 	botUrl    string
 	webAppUrl string
+
+	supergroupDelay time.Duration
 }
 
 func NewBot(ctx context.Context, cfg *config.Config, pool *pgxpool.Pool) (*Bot, error) {
@@ -41,6 +43,8 @@ func NewBot(ctx context.Context, cfg *config.Config, pool *pgxpool.Pool) (*Bot, 
 		Bot:   tgb,
 		cases: cases,
 		log:   slogx.FromCtx(ctx),
+
+		supergroupDelay: 5 * time.Second,
 	}
 
 	me, err := b.GetMe(context.Background())
@@ -189,7 +193,7 @@ func (b *Bot) handleMyChatMember(ctx context.Context, _ *bot.Bot, update *models
 			if mcm.Chat.Type == models.ChatTypeSupergroup {
 				go func() {
 					log.Info("waiting for migrate event")
-					time.Sleep(time.Second * 5)
+					time.Sleep(b.supergroupDelay)
 
 					_, err := b.cases.Chat.GetChatByTGID(ctx, mcm.Chat.ID)
 
