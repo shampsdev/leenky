@@ -58,7 +58,7 @@ func Load(envFile string) *Config {
 	c := &Config{}
 	err = envconfig.Process("", c)
 	if err != nil {
-		slogx.Fatal(slog.Default(), "can't parse config", slogx.ErrAttr(err))
+		slogx.Fatal(slog.Default(), "can't parse config", slogx.Err(err))
 	}
 	return c
 }

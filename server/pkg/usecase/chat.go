@@ -9,6 +9,7 @@ import (
 	"github.com/shampsdev/tglinked/server/pkg/domain"
 	"github.com/shampsdev/tglinked/server/pkg/repo"
 	"github.com/shampsdev/tglinked/server/pkg/usecase/names"
+	"github.com/shampsdev/tglinked/server/pkg/utils/slogx"
 )
 
 type Chat struct {
@@ -149,6 +150,14 @@ func (c *Chat) ForgetChatByTGID(ctx context.Context, chatID int64) error {
 	return c.chatRepo.DeleteChat(ctx, chat.ID)
 }
 
+func (c *Chat) GetChatByTGID(ctx context.Context, chatID int64) (*domain.Chat, error) {
+	chat, err := c.chatRepo.GetChatByTelegramID(ctx, chatID)
+	if err != nil {
+		return nil, fmt.Errorf("error getting chat: %w", err)
+	}
+	return chat, nil
+}
+
 func (c *Chat) getChatFromTelegram(ctx context.Context, chatID int64) (*domain.Chat, error) {
 	tgchat, err := c.bot.GetChat(ctx, &bot.GetChatParams{
 		ChatID: chatID,
@@ -214,6 +223,38 @@ func (c *Chat) DetachUserFromChat(ctx context.Context, chatTGID, userTGID int64)
 		return fmt.Errorf("error getting user ID: %w", err)
 	}
 	return c.chatRepo.DetachUserFromChat(ctx, chatID, userID)
+}
+
+func (c *Chat) MigrateChatTelegramID(ctx context.Context, oldTGID, newTGID int64) error {
+	oldChat, err := c.chatRepo.GetChatByTelegramID(ctx, oldTGID)
+	if err != nil {
+		return fmt.Errorf("error getting old chat: %w", err)
+	}
+	// maybe migrate event was too late and new chat already registered
+	newChat, err := c.chatRepo.GetChatByTelegramID(ctx, newTGID)
+
+	if err != nil && !errors.Is(err, repo.ErrChatNotFound) {
+		return fmt.Errorf("error getting new chat: %w", err)
+	}
+
+	if err == nil {
+		slogx.FromCtx(ctx).Warn("Unexpected case, migrate was too late, new chat already registered",
+			"old_tg_id", oldTGID, "new_tg_id", newTGID, "old_chat_id", oldChat.ID, "new_chat_id", newChat.ID)
+
+		err = c.chatRepo.DeleteChat(ctx, newChat.ID)
+		if err != nil {
+			return fmt.Errorf("error deleting chat: %w", err)
+		}
+	} else {
+		slogx.FromCtx(ctx).Info("Migrating chat", "old_tg_id", oldTGID, "new_tg_id", newTGID)
+	}
+
+	oldChat.TelegramID = newTGID
+	_, err = c.UpdateChat(ctx, oldChat.ID, newTGID)
+	if err != nil {
+		return fmt.Errorf("error updating chat: %w", err)
+	}
+	return nil
 }
 
 func (c *Chat) downloadChatAvatar(ctx context.Context, b *bot.Bot, s repo.ImageStorage, fileID string, tgID int64) (string, error) {
