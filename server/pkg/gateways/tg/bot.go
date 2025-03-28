@@ -197,7 +197,7 @@ func (b *Bot) handleMyChatMember(ctx context.Context, _ *bot.Bot, update *models
 						log.Info("chat not found, registering chat")
 						err := b.registerChat(ctx, mcm.Chat.ID)
 						if err != nil {
-							slogx.FromCtxWithErr(ctx, err).Error("error registering chat")
+							log.With(slogx.Err(err)).Error("error registering chat")
 						}
 						return
 					}
