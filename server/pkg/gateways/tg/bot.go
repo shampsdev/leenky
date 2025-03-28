@@ -2,13 +2,16 @@ package tg
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
+	"time"
 
 	"github.com/go-telegram/bot"
 	"github.com/go-telegram/bot/models"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/shampsdev/tglinked/server/cmd/config"
+	"github.com/shampsdev/tglinked/server/pkg/repo"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
 	"github.com/shampsdev/tglinked/server/pkg/utils/slogx"
 )
@@ -169,15 +172,49 @@ func (b *Bot) handleCommandStart(ctx context.Context, _ *bot.Bot, update *models
 
 func (b *Bot) handleMyChatMember(ctx context.Context, _ *bot.Bot, update *models.Update) {
 	mcm := update.MyChatMember
+	log := slogx.FromCtx(ctx).With("tg_chat_id", mcm.Chat.ID)
+
 	if mcm.NewChatMember.Type == models.ChatMemberTypeBanned || mcm.NewChatMember.Type == models.ChatMemberTypeLeft {
 		err := b.cases.Chat.ForgetChatByTGID(ctx, mcm.Chat.ID)
 		if err != nil {
-			slogx.FromCtxWithErr(ctx, err).Error("error forgetting chat")
+			log.With(slogx.Err(err)).Error("error forgetting chat")
 		}
 	} else {
-		err := b.registerChat(ctx, mcm.Chat.ID)
-		if err != nil {
-			slogx.FromCtxWithErr(ctx, err).Error("error registering chat")
+		// if bot wasn't in chat
+		if mcm.OldChatMember.Type == models.ChatMemberTypeLeft ||
+			mcm.OldChatMember.Type == models.ChatMemberTypeBanned {
+
+			// if chat is supergroup, there is a change, that it migrated from known chat
+			// so we need to wait for possible migrate event
+			if mcm.Chat.Type == models.ChatTypeSupergroup {
+				go func() {
+					log.Info("waiting for migrate event")
+					time.Sleep(time.Second * 5)
+
+					_, err := b.cases.Chat.GetChatByTGID(ctx, mcm.Chat.ID)
+
+					if errors.Is(err, repo.ErrChatNotFound) {
+						log.Info("chat not found, registering chat")
+						err := b.registerChat(ctx, mcm.Chat.ID)
+						if err != nil {
+							slogx.FromCtxWithErr(ctx, err).Error("error registering chat")
+						}
+						return
+					}
+
+					if err != nil {
+						log.With(slogx.Err(err)).Error("error getting chat")
+						return
+					}
+					log.Info("chat found, not registering chat")
+				}()
+				return
+			}
+
+			err := b.registerChat(ctx, mcm.Chat.ID)
+			if err != nil {
+				log.With(slogx.Err(err)).Error("error registering chat")
+			}
 		}
 	}
 }
@@ -228,7 +265,7 @@ func (b *Bot) handleMigrate(ctx context.Context, _ *bot.Bot, update *models.Upda
 	fromChatID := update.Message.MigrateFromChatID
 	toChatID := update.Message.Chat.ID
 
-	err := b.cases.Chat.ChangeChatTelegramID(ctx, fromChatID, toChatID)
+	err := b.cases.Chat.MigrateChatTelegramID(ctx, fromChatID, toChatID)
 	if err != nil {
 		slogx.FromCtxWithErr(ctx, err).Error("error changing chat telegram id")
 	}
