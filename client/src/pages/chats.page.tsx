@@ -85,7 +85,7 @@ const ChatsPage = () => {
         <div className="max-w-[95%]  max-h-[100vh] overflow-auto scroll-container mx-auto px-4">
           <div className="flex items-center mt-[25px] justify-between gap-[15px]  ">
             <div className="flex gap-[12px] items-center">
-              <h1 className="text-xl font-semibold">Чаты patch1</h1>
+              <h1 className="text-xl font-semibold">Чаты patch2</h1>
               <img
                 className="w-[22px] h-[22px]"
                 src={AddButton}
