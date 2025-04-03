@@ -2,6 +2,7 @@ import { initData, initDataStartParam } from "@telegram-apps/sdk-react";
 import { getChatPreview } from "../api/api";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import useInviteStore from "../stores/invite.store";
 
 interface RequireMembershipComponentProps {
   children: React.ReactNode;
@@ -9,13 +10,19 @@ interface RequireMembershipComponentProps {
 }
 const RequireMembershipComponent = (props: RequireMembershipComponentProps) => {
   const navigate = useNavigate();
+
+  const inviteStore = useInviteStore();
+
   const initDataRaw = initData.raw();
   let chatID = props.chatID !== undefined ? props.chatID : initDataStartParam();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isMember, setIsMember] = useState<boolean>(false);
 
   const checkMembership = async () => {
-    if (initDataStartParam() !== undefined) chatID = initDataStartParam();
+    if (initDataStartParam() !== undefined && !inviteStore.showedOnce) {
+      chatID = initDataStartParam();
+      inviteStore.setShowedOnce();
+    }
     const data = await getChatPreview(initDataRaw ?? "", chatID || "");
     if (data !== null && data?.isMember !== null) {
       setIsMember(data.isMember);
