@@ -18,7 +18,7 @@ const chatPreviewVariants = {
     opacity: 1,
     y: 0,
     transition: {
-      delay: index * 0.1,
+      delay: index > 10 ? index * 0.01 : 11 * 0.01,
       duration: 0.4,
       ease: "easeOut",
     },
