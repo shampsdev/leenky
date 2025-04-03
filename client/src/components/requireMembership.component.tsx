@@ -10,20 +10,18 @@ interface RequireMembershipComponentProps {
 }
 const RequireMembershipComponent = (props: RequireMembershipComponentProps) => {
   const navigate = useNavigate();
-  const initDataRaw = initData.raw();
+
   const inviteStore = useInviteStore();
+
+  const initDataRaw = initData.raw();
   let chatID = props.chatID !== undefined ? props.chatID : initDataStartParam();
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [isMember, setIsMember] = useState<boolean>(false);
 
   const checkMembership = async () => {
-    if (initDataStartParam() !== undefined) {
-      if (inviteStore.showedOnce) {
-        chatID = "";
-      } else {
-        chatID = initDataStartParam();
-        inviteStore.setShowedOnce();
-      }
+    if (initDataStartParam() !== undefined && !inviteStore.showedOnce) {
+      chatID = initDataStartParam();
+      inviteStore.setShowedOnce();
     }
     const data = await getChatPreview(initDataRaw ?? "", chatID || "");
     if (data !== null && data?.isMember !== null) {
