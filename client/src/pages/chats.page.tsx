@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import ProfileComponent from "../components/profile.component";
 import SearchBarComponent from "../components/searchBar.component";
 import { ChatPreviewData } from "../types/user.interface";
@@ -24,7 +24,8 @@ const ChatsPage = () => {
   const [opened, setOpened] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [chats, setChats] = useState<ChatPreviewData[]>([]);
-  const { searchQuery, setSearchQuery } = useChatsSearchStore();
+  const { searchQuery, setSearchQuery, scroll, setScroll } =
+    useChatsSearchStore();
   const userStore = useUserStore();
   const deleteHandler = async (chatPreviewData: ChatPreviewData) => {
     popup
@@ -79,10 +80,34 @@ const ChatsPage = () => {
     fetchChats(searchQuery);
     setOpened(true);
   }, [searchQuery]);
+
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      setScroll(scrollContainerRef.current.scrollTop);
+    }
+  };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (scrollContainerRef.current) {
+        console.log(scroll);
+        scrollContainerRef.current.scrollTo({
+          top: scroll,
+          behavior: "smooth",
+        });
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [isLoading]);
   return (
     <>
       <DBBComponent>
-        <div className="max-w-[95%]  max-h-[100vh] overflow-auto scroll-container mx-auto px-4">
+        <div
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="max-w-[95%]  max-h-[100vh] overflow-auto scroll-container mx-auto px-4"
+        >
           <div className="flex items-center mt-[25px] justify-between gap-[15px]  ">
             <div className="flex gap-[12px] items-center">
               <h1 className="text-xl font-semibold">Чаты</h1>
