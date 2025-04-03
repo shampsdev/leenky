@@ -6,7 +6,7 @@ import ChatPreviewComponent from "../components/chatPreview.component";
 import { getChat, getChatPreview, searchInChat } from "../api/api";
 import { initData } from "@telegram-apps/sdk-react";
 import { ChatData, ChatPreviewData } from "../types/user.interface";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import useChatSearchStore from "../stores/chatSearch.store";
 import ChatMemberCardComponent from "../components/chatMember.card.component";
 import { motion } from "motion/react";
@@ -21,7 +21,7 @@ const containerVariants = {
 const ChatPage = () => {
   const { chatId } = useParams();
   const [opened, setOpened] = useState<boolean>(false);
-  const { searchQuery, setSearchQuery, chatID, setChatID } =
+  const { searchQuery, setSearchQuery, chatID, setChatID, setScroll, scroll } =
     useChatSearchStore();
 
   const [loading, isLoading] = useState<boolean>(true);
@@ -72,6 +72,13 @@ const ChatPage = () => {
     isLoading(false);
   };
 
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      setScroll(scrollContainerRef.current.scrollTop);
+    }
+  };
+
   useEffect(() => {
     if (chatId !== chatID) {
       setChatID(chatId ?? "");
@@ -101,10 +108,27 @@ const ChatPage = () => {
     setOpened(false);
   }, []);
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (scrollContainerRef.current) {
+        console.log(scroll);
+        scrollContainerRef.current.scrollTo({
+          top: scroll,
+          behavior: "smooth",
+        });
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [loading]);
   return (
     <EBBComponent>
       <RequireMembershipComponent chatID={chatId}>
-        <div className="max-w-[95%]  max-h-[100vh] overflow-auto scroll-container mx-auto px-4">
+        <div
+          ref={scrollContainerRef}
+          onScroll={handleScroll}
+          className="max-w-[95%]  max-h-[100vh] overflow-auto scroll-container mx-auto px-4"
+        >
           {previewChatData.isMember === null && (
             <li
               className={
