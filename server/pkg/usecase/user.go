@@ -194,7 +194,9 @@ func (u *User) determineUserBio(username string) (string, error) {
 
 func (u *User) telegramAvatarLocation(userpicURL string) (string, error) {
 	httpCli := &http.Client{
-		Timeout: 3 * time.Second,
+		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
 	}
 	resp, err := httpCli.Head(userpicURL)
 	if err != nil {
