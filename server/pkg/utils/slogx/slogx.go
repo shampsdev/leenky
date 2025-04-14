@@ -48,6 +48,10 @@ func Info(ctx context.Context, msg string, args ...any) {
 	FromCtx(ctx).Info(msg, args...)
 }
 
+func Debug(ctx context.Context, msg string, args ...any) {
+	FromCtx(ctx).Debug(msg, args...)
+}
+
 func InjectGin(c *gin.Context, logger *slog.Logger) {
 	c.Set(loggerKey, logger)
 }

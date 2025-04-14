@@ -141,20 +141,22 @@ func (u *User) GetMePreview(ctx context.Context, tgData *domain.UserTGData) (*do
 		LastName:         tgData.LastName,
 		Bio:              "",
 	}
-
+	log := slogx.FromCtx(ctx).With("user", tgData.TelegramID)
+	_, err := u.userRepo.GetUserByTelegramID(ctx, up.TelegramID)
+	if err != nil && !errors.Is(err, repo.ErrUserNotFound) {
+		return nil, fmt.Errorf("failed to get user: %w", err)
+	}
+	if err == nil {
+		log.Debug("user is already registered")
+		up.IsRegistered = true
+		return up, nil
+	}
+	log.Debug("user is not registered, determining bio")
 	bio, err := u.determineUserBio(up.TelegramUsername)
 	if err != nil {
 		return nil, fmt.Errorf("failed to determine user bio: %w", err)
 	}
 	up.Bio = bio
-
-	_, err = u.userRepo.GetUserByTelegramID(ctx, up.TelegramID)
-	if err != nil && !errors.Is(err, repo.ErrUserNotFound) {
-		return nil, fmt.Errorf("failed to get user: %w", err)
-	}
-	if err == nil {
-		up.IsRegistered = true
-	}
 
 	return up, nil
 }
