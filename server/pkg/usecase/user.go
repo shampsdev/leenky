@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -163,7 +164,14 @@ func (u *User) GetMePreview(ctx context.Context, tgData *domain.UserTGData) (*do
 
 func (u *User) determineUserBio(username string) (string, error) {
 	url := fmt.Sprintf("https://t.me/%s", username)
-	resp, err := http.Get(url)
+	httpCli := &http.Client{
+		Timeout: 3 * time.Second,
+	}
+	resp, err := httpCli.Get(url)
+	// if context expired, return empty bio
+	if err != nil && errors.Is(err, os.ErrDeadlineExceeded) {
+		return "", nil
+	}
 	if err != nil {
 		return "", fmt.Errorf("failed to get user bio: %w", err)
 	}
