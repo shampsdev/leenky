@@ -49,9 +49,9 @@ func (c *Chat) GetChatPreview(ctx context.Context, userTGID int64, chatID string
 	if err != nil {
 		return nil, fmt.Errorf("error getting chat preview: %w", err)
 	}
-	if err := c.ensureUserInTGChat(ctx, userTGID, cp.TelegramID); err != nil {
-		return nil, fmt.Errorf("error ensuring user in chat: %w", err)
-	}
+	// if err := c.ensureUserInTGChat(ctx, userTGID, cp.TelegramID); err != nil {
+	// 	return nil, fmt.Errorf("error ensuring user in chat: %w", err)
+	// }
 
 	u, err := c.userRepo.GetUserByTelegramID(ctx, userTGID)
 	if err != nil && !errors.Is(err, repo.ErrUserNotFound) {
@@ -79,19 +79,16 @@ func (c *Chat) GetChatUsers(ctx Context, chatID string) ([]*domain.User, error) 
 }
 
 func (c *Chat) JoinChat(ctx Context, chatID string) error {
-	chat, err := c.chatRepo.GetChatByID(ctx, chatID)
-	if err != nil {
-		return fmt.Errorf("error getting chat: %w", err)
-	}
-	_, err = c.bot.GetChatMember(ctx, &bot.GetChatMemberParams{
-		ChatID: chat.TelegramID,
-		UserID: ctx.User.TelegramID,
-	})
-	if err != nil {
-		return fmt.Errorf("error getting chat member: %w", err)
-	}
+	// chat, err := c.chatRepo.GetChatByID(ctx, chatID)
+	// if err != nil {
+	// 	return fmt.Errorf("error getting chat: %w", err)
+	// }
 
-	err = c.chatRepo.AttachUserToChat(ctx, chatID, ctx.User.ID)
+	// if err = c.ensureUserInTGChat(ctx, ctx.User.TelegramID, chat.TelegramID); err != nil {
+	// 	return fmt.Errorf("error getting chat member: %w", err)
+	// }
+
+	err := c.chatRepo.AttachUserToChat(ctx, chatID, ctx.User.ID)
 	if err != nil {
 		return fmt.Errorf("error attaching user to chat: %w", err)
 	}
@@ -182,17 +179,6 @@ func (c *Chat) getChatFromTelegram(ctx context.Context, chatID int64) (*domain.C
 	return chat, nil
 }
 
-func (c *Chat) ensureUserInTGChat(ctx context.Context, userID, chatID int64) error {
-	_, err := c.bot.GetChatMember(ctx, &bot.GetChatMemberParams{
-		ChatID: chatID,
-		UserID: userID,
-	})
-	if err != nil {
-		return fmt.Errorf("error getting chat member: %w", err)
-	}
-	return nil
-}
-
 func (c *Chat) ensureUserInChat(ctx Context, chatID string) error {
 	inChat, err := c.chatRepo.IsUserInChat(ctx, ctx.User.ID, chatID)
 	if err != nil {
@@ -202,13 +188,13 @@ func (c *Chat) ensureUserInChat(ctx Context, chatID string) error {
 		return fmt.Errorf("user is not in chat")
 	}
 
-	tgID, err := c.chatRepo.GetChatTelegramIDByID(ctx, chatID)
-	if err != nil {
-		return fmt.Errorf("error getting chat preview: %w", err)
-	}
-	if err := c.ensureUserInTGChat(ctx, ctx.User.TelegramID, tgID); err != nil {
-		return fmt.Errorf("error checking if user is in tg chat: %w", err)
-	}
+	// tgID, err := c.chatRepo.GetChatTelegramIDByID(ctx, chatID)
+	// if err != nil {
+	// 	return fmt.Errorf("error getting chat preview: %w", err)
+	// }
+	// if err := c.ensureUserInTGChat(ctx, ctx.User.TelegramID, tgID); err != nil {
+	// 	return fmt.Errorf("error checking if user is in tg chat: %w", err)
+	// }
 
 	return nil
 }
