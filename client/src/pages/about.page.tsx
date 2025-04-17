@@ -32,7 +32,7 @@ export const AboutSecondPage = () => {
         handleButtonClick={goToRegistration}
         imageSrc={AboutSecond}
         contentText={
-          "Рассказывайте о себе и узнавайте больше о других участниках чата"
+          "Рассказывайте о себе и узнавайте больше о других участниках сообщества"
         }
         buttonText={"Далее"}
       />
