@@ -71,6 +71,7 @@ func (b *Bot) Run(ctx context.Context) {
 
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/register", bot.MatchTypePrefix, b.handleCommandRegister)
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, b.handleCommandStart)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/link", bot.MatchTypeExact, b.handleCommandLink)
 
 	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
 		return update.Message != nil &&
@@ -171,6 +172,26 @@ func (b *Bot) handleCommandStart(ctx context.Context, _ *bot.Bot, update *models
 	})
 	if err != nil {
 		slogx.FromCtxWithErr(ctx, err).Error("error sending message")
+	}
+}
+
+func (b *Bot) handleCommandLink(ctx context.Context, _ *bot.Bot, update *models.Update) {
+	tgChatID := update.Message.Chat.ID
+	log := slogx.FromCtx(ctx).With("tg_chat_id", tgChatID)
+	chat, err := b.cases.Chat.GetChatByTGID(ctx, tgChatID)
+	if err != nil {
+		log.Error("error getting chat", slogx.Err(err))
+		return
+	}
+	log = log.With("chat_id", chat.ID)
+
+	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID:    tgChatID,
+		Text:      fmt.Sprintf("По этой ссылке можно вступить в наше комьюнити <b>%s</b>!\n 👉 %s 👈", chat.Name, b.urlForChat(chat.ID)),
+		ParseMode: models.ParseModeHTML,
+	})
+	if err != nil {
+		log.Error("error sending message", slogx.Err(err))
 	}
 }
 
