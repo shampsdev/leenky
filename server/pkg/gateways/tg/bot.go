@@ -71,7 +71,7 @@ func (b *Bot) Run(ctx context.Context) {
 
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/register", bot.MatchTypePrefix, b.handleCommandRegister)
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, b.handleCommandStart)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/getlink", bot.MatchTypeExact, b.handleCommandGetlink)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/link", bot.MatchTypeExact, b.handleCommandLink)
 
 	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
 		return update.Message != nil &&
@@ -175,7 +175,7 @@ func (b *Bot) handleCommandStart(ctx context.Context, _ *bot.Bot, update *models
 	}
 }
 
-func (b *Bot) handleCommandGetlink(ctx context.Context, _ *bot.Bot, update *models.Update) {
+func (b *Bot) handleCommandLink(ctx context.Context, _ *bot.Bot, update *models.Update) {
 	tgChatID := update.Message.Chat.ID
 	log := slogx.FromCtx(ctx).With("tg_chat_id", tgChatID)
 	chat, err := b.cases.Chat.GetChatByTGID(ctx, tgChatID)
