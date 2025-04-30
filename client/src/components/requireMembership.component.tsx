@@ -1,6 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import useInitDataStore from "../stores/InitData.store";
 import useChatPreview from "../hooks/useChatPreview";
+import { useEffect } from "react";
 
 interface RequireMembershipComponentProps {
   children: React.ReactNode;
@@ -10,18 +11,17 @@ const RequireMembershipComponent = (props: RequireMembershipComponentProps) => {
   const navigate = useNavigate();
   const { initDataStartParam } = useInitDataStore();
 
-  const chatID = props.chatID !== undefined ? props.chatID : initDataStartParam;
-
+  const chatID = props.chatID ?? initDataStartParam;
   const { isPending, data } = useChatPreview(chatID || "");
 
-  if (isPending) {
-    return null;
-  }
-
-  if (!isPending) {
-    if (!data?.isMember) {
+  useEffect(() => {
+    if (!isPending && data && data.isMember === false) {
       navigate("/invite", { replace: true });
     }
+  }, [isPending, data, navigate]);
+
+  if (isPending || !data || data.isMember === false) {
+    return null;
   }
 
   return <>{props.children}</>;

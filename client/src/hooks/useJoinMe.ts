@@ -11,6 +11,9 @@ const useJoinMe = () => {
     onSuccess: (_, chatId) => {
       queryClient.invalidateQueries({ queryKey: ["chats"] });
       queryClient.invalidateQueries({ queryKey: [`chat/${chatId}`, chatId] });
+      queryClient.invalidateQueries({
+        queryKey: [`chat/${chatId}/preview`, initData, chatId],
+      });
     },
   });
 };
