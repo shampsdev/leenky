@@ -1,11 +1,13 @@
-import useUserStore from "../stores/user.store";
+import useMe from "../hooks/useMe";
 import { Navigate, Outlet } from "react-router-dom";
 const ProtectedRoute = () => {
-  const { isAuthenticated, isLoading } = useUserStore();
-  if (isLoading) {
+  const { isPending, data } = useMe();
+
+  if (isPending) {
     return null;
   }
-  if (!isAuthenticated) {
+
+  if (!data?.isRegistered) {
     return <Navigate to="/about/1" />;
   }
   return <Outlet />;
