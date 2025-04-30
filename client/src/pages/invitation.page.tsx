@@ -40,10 +40,7 @@ const InvitationPage = () => {
           </p>
         </div>
 
-        <div
-          v-if="inviteStore.chat"
-          className="flex flex-col gap-[10px] items-center rounded-lg"
-        >
+        <div className="flex flex-col gap-[10px] items-center rounded-lg">
           <img
             src={chatData?.avatar || DevImage}
             onError={handleImageError}

@@ -1,12 +1,10 @@
-import useMe from "../hooks/useMe";
 import { Navigate, Outlet } from "react-router-dom";
+import useMePreview from "../hooks/useMePreview";
 const ProtectedRoute = () => {
-  const { isPending, data } = useMe();
-
+  const { isPending, data } = useMePreview();
   if (isPending) {
     return null;
   }
-
   if (!data?.isRegistered) {
     return <Navigate to="/about/1" />;
   }
