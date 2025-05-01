@@ -3,21 +3,34 @@ import InputFieldComponent from "../components/inputField.component";
 import TextareaFieldComponent from "../components/textareaField.component";
 import { UserData, ProfileUserData } from "../types/user.interface";
 import { handleImageError } from "../utils/imageErrorHandler";
-import useUserStore from "../stores/user.store";
-import { getMe, postMe } from "../api/api";
-import { initData } from "@telegram-apps/sdk-react";
 import { useNavigate } from "react-router-dom";
 import EBBComponent from "../components/enableBackButtonComponent";
 import DevImage from "../assets/dev.png";
 import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
 import ButtonComponent from "../components/button.component";
 import useInitDataStore from "../stores/InitData.store";
+import useMe from "../hooks/useMe";
+import useUpdateMe from "../hooks/useUpdateMe";
 
 const EditProfilePage = () => {
+  const updateMeMutation = useUpdateMe();
+
   const { launchParams } = useInitDataStore();
   const navigate = useNavigate();
 
-  const { userData, updateUserData } = useUserStore();
+  const { data } = useMe();
+  const userData = {
+    firstName: data?.firstName ?? null,
+    lastName: data?.lastName ?? null,
+    company: data?.company ?? null,
+    role: data?.role ?? null,
+    bio: data?.bio ?? null,
+    avatar: data?.avatar ?? null,
+    id: data?.id ?? null,
+    telegramId: data?.telegramId ?? null,
+    telegramUsername: data?.telegramUsername ?? null,
+  };
+
   const [profileData, setProfileData] = useState<
     Omit<UserData, "isRegistered">
   >({ ...userData });
@@ -63,30 +76,11 @@ const EditProfilePage = () => {
   const goBack = () => {
     navigate(-1);
   };
-  const updateProfile = async () => {
-    const newUserData = await postMe(initData.raw() ?? "", profileData);
-    if (newUserData) {
-      updateUserData(newUserData);
-      setIsChanged(false);
-      goBack();
-    }
-  };
 
   useEffect(() => {
     setIsChanged(isProfileChanged(profileData));
     setIsFilled(isProfileFilled(profileData));
   }, [profileData]);
-
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      const data = await getMe(initData.raw() ?? "");
-      if (data) {
-        updateUserData(data);
-        setProfileData(data);
-      }
-    };
-    fetchProfileData();
-  }, []);
 
   const [iosKeyboardOpen, setIosKeyboardOpen] = useState<boolean>(false);
   const [focusedFieldsCount, setFocusedFiledsCount] = useState<number>(0);
@@ -106,7 +100,24 @@ const EditProfilePage = () => {
       }
     }
   };
+
+  const handleClick = async () => {
+    if (!isFilled) return;
+
+    if (isChanged) {
+      try {
+        await updateMeMutation.mutateAsync(profileData);
+        goBack();
+      } catch (error) {
+        console.error("Ошибка при обновлении профиля", error);
+      }
+    } else {
+      goBack();
+    }
+  };
+
   useEffect(handleFieldsCount, [focusedFieldsCount]);
+
   return (
     <EBBComponent>
       <div
@@ -173,15 +184,7 @@ const EditProfilePage = () => {
                   content={
                     isChanged && isFilled ? "Сохранить" : "Редактировать"
                   }
-                  handleClick={() => {
-                    if (isFilled) {
-                      if (isChanged) {
-                        updateProfile();
-                      } else {
-                        goBack();
-                      }
-                    }
-                  }}
+                  handleClick={handleClick}
                   state={isChanged && isFilled ? "active" : "disabled"}
                 />
               </div>
@@ -197,15 +200,7 @@ const EditProfilePage = () => {
         <div className="absolute bottom-0 flex justify-center w-full pb-[10px]">
           <FixedBottomButtonComponent
             content={isChanged && isFilled ? "Сохранить" : "Редактировать"}
-            handleClick={() => {
-              if (isFilled) {
-                if (isChanged) {
-                  updateProfile();
-                } else {
-                  goBack();
-                }
-              }
-            }}
+            handleClick={handleClick}
             state={isChanged && isFilled ? "active" : "disabled"}
           />
         </div>

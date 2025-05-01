@@ -1,9 +1,9 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import { createMe, postMe } from "../api/api";
 import useInitDataStore from "../stores/InitData.store";
-import { createMe } from "../api/api";
 import { UserData } from "../types/user.interface";
 
-const useCreateMe = () => {
+const useUpdateMe = () => {
   const { initData } = useInitDataStore();
 
   const queryClient = useQueryClient();
@@ -14,7 +14,7 @@ const useCreateMe = () => {
         UserData,
         "firstName" | "lastName" | "bio" | "role" | "company"
       >,
-    ) => createMe(initData, profileData),
+    ) => postMe(initData, profileData),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["user/me", initData] });
       queryClient.invalidateQueries({
@@ -24,4 +24,4 @@ const useCreateMe = () => {
   });
 };
 
-export default useCreateMe;
+export default useUpdateMe;
