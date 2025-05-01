@@ -1,18 +1,18 @@
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import ProfileComponent from "../components/profile.component";
 import SearchBarComponent from "../components/searchBar.component";
 import { ChatPreviewData } from "../types/user.interface";
-import { getMe, leaveChat, searchChats } from "../api/api";
-import { initData, openTelegramLink, popup } from "@telegram-apps/sdk-react";
+import { openTelegramLink, popup } from "@telegram-apps/sdk-react";
 import ChatPreviewComponent from "../components/chatPreview.component";
 import DBBComponent from "../components/disableBackButton.component";
 import { Outlet } from "react-router-dom";
 import useChatsSearchStore from "../stores/chatsSearch.store";
 import { BOT_USERNAME } from "../shared/constants";
-import useUserStore from "../stores/user.store";
 import NotFound from "../assets/notFound.svg";
 import AddButton from "../assets/add_green.svg";
 import { motion } from "motion/react";
+import useLeaveChat from "../hooks/useLeaveChat";
+import useSearchChats from "../hooks/useSearchChats";
 const containerVariants = {
   visible: {
     transition: {
@@ -21,12 +21,15 @@ const containerVariants = {
   },
 };
 const ChatsPage = () => {
-  const [opened, setOpened] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [chats, setChats] = useState<ChatPreviewData[]>([]);
+  const useLeaveChatMutation = useLeaveChat();
+
   const { searchQuery, setSearchQuery, scroll, setScroll } =
     useChatsSearchStore();
-  const userStore = useUserStore();
+
+  const { data: chats, isPending } = useSearchChats(searchQuery);
+
+  const [loadedFirstTime, setLoadedFirstTime] = useState<boolean>(false);
+
   const deleteHandler = async (chatPreviewData: ChatPreviewData) => {
     popup
       .open({
@@ -39,47 +42,10 @@ const ChatsPage = () => {
       })
       .then(async (buttonId) => {
         if (buttonId === "Ok") {
-          const response = await leaveChat(
-            initData.raw() ?? "",
-            chatPreviewData.id ?? ""
-          );
-          if (response) {
-            setChats(chats.filter((chat) => chat.id !== chatPreviewData.id));
-          }
+          await useLeaveChatMutation.mutateAsync(chatPreviewData.id ?? "");
         }
       });
   };
-
-  const fetchChats = async (query: string) => {
-    try {
-      const data = await searchChats(initData.raw() ?? "", query);
-      if (data) {
-        setChats(data);
-      } else {
-        setChats([]);
-      }
-    } catch (error) {
-      console.error("Ошибка загрузки чатов:", error);
-    }
-    setIsLoading(false);
-  };
-
-  const fetchUserData = useCallback(async () => {
-    const userData = await getMe(initData.raw() ?? "");
-    if (userData) {
-      userStore.updateUserData(userData);
-    }
-  }, []);
-
-  useEffect(() => {
-    setOpened(false);
-    fetchUserData();
-  }, []);
-
-  useEffect(() => {
-    fetchChats(searchQuery);
-    setOpened(true);
-  }, [searchQuery]);
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const handleScroll = () => {
@@ -87,6 +53,7 @@ const ChatsPage = () => {
       setScroll(scrollContainerRef.current.scrollTop);
     }
   };
+
   useEffect(() => {
     const timer = setTimeout(() => {
       if (scrollContainerRef.current) {
@@ -99,7 +66,13 @@ const ChatsPage = () => {
     }, 100);
 
     return () => clearTimeout(timer);
-  }, [isLoading]);
+  }, [isPending]);
+
+  useEffect(() => {
+    if (!isPending) {
+      setLoadedFirstTime(true);
+    }
+  }, [isPending]);
   return (
     <>
       <DBBComponent>
@@ -128,9 +101,9 @@ const ChatsPage = () => {
             placeholder="Поиск"
             className="mt-[15px]"
           />
-          {opened && (
+          {loadedFirstTime && (
             <ul className="flex flex-col gap-0 mt-[25px]">
-              {chats.map((chat, index) =>
+              {chats?.map((chat, index) =>
                 index !== chats.length - 1 ? (
                   <ChatPreviewComponent
                     key={chat.id}
@@ -146,18 +119,18 @@ const ChatsPage = () => {
                     deleteHandler={() => deleteHandler(chat)}
                     index={index}
                   />
-                )
+                ),
               )}
             </ul>
           )}
-          {!opened && (
+          {!loadedFirstTime && (
             <motion.ul
               className="flex flex-col gap-0 mt-[25px]"
               initial="hidden"
               animate="visible"
               variants={containerVariants}
             >
-              {chats.map((chat, index) =>
+              {chats?.map((chat, index) =>
                 index !== chats.length - 1 ? (
                   <ChatPreviewComponent
                     key={chat.id}
@@ -168,7 +141,7 @@ const ChatsPage = () => {
                     animated
                     onAnimationComplete={
                       index === chats.length - 1
-                        ? () => setOpened(true)
+                        ? () => setLoadedFirstTime(true)
                         : undefined
                     }
                   />
@@ -179,20 +152,15 @@ const ChatsPage = () => {
                     deleteHandler={() => deleteHandler(chat)}
                     index={index}
                     animated
-                    onAnimationComplete={
-                      index === chats.length - 1
-                        ? () => setOpened(true)
-                        : undefined
-                    }
                   />
-                )
+                ),
               )}
             </motion.ul>
           )}
-          {chats.length === 0 && !isLoading && (
+
+          {!chats && !isPending && (
             <div className="flex w-full flex-col items-center text-center mt-[120px] gap-[20px]">
               <img src={NotFound} />
-
               <div className="flex flex-col items-center text-center gap-[8px]">
                 <h1 className="font-semibold text-[20px]">
                   Тут пока ничего нет
