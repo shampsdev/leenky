@@ -21,19 +21,19 @@ const ChatPage = () => {
   const { chatId } = useParams();
   const [loadedFirstTime, setLoadedFirstTime] = useState<boolean>(false);
 
-  const { searchQuery, setSearchQuery, setScroll, scroll } =
+  const { getScroll, saveScroll, getSearchQuery, saveSearchQuery } =
     useChatSearchStore();
 
   const { data: chatData, isPending } = useSearchUsersInChat(
     chatId ?? "",
-    searchQuery,
+    getSearchQuery(chatId ?? ""),
   );
   const { data: previewChatData, isSuccess } = useChatPreview(chatId ?? "");
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const handleScroll = () => {
     if (scrollContainerRef.current) {
-      setScroll(scrollContainerRef.current.scrollTop);
+      saveScroll(chatId ?? "", scrollContainerRef.current.scrollTop);
     }
   };
 
@@ -41,7 +41,7 @@ const ChatPage = () => {
     const timer = setTimeout(() => {
       if (scrollContainerRef.current) {
         scrollContainerRef.current.scrollTo({
-          top: scroll,
+          top: getScroll(chatId ?? ""),
           behavior: "smooth",
         });
       }
@@ -74,8 +74,8 @@ const ChatPage = () => {
           )}
 
           <SearchBarComponent
-            value={searchQuery}
-            inputHandler={setSearchQuery}
+            value={getSearchQuery(chatId ?? "")}
+            inputHandler={(value) => saveSearchQuery(chatId ?? "", value)}
             placeholder="Поиск участников"
             className="mt-[20px]"
           />
