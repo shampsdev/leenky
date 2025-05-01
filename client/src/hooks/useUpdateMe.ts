@@ -1,5 +1,5 @@
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import { createMe, postMe } from "../api/api";
+import { postMe } from "../api/api";
 import useInitDataStore from "../stores/InitData.store";
 import { UserData } from "../types/user.interface";
 

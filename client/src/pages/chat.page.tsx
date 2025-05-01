@@ -62,7 +62,7 @@ const ChatPage = () => {
     const searchResponse = await searchInChat(
       initData.raw() ?? "",
       chatId ?? "",
-      searchQuery
+      searchQuery,
     );
     if (searchResponse) {
       setChatData({ ...chatData, users: searchResponse });
@@ -111,7 +111,6 @@ const ChatPage = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (scrollContainerRef.current) {
-        console.log(scroll);
         scrollContainerRef.current.scrollTo({
           top: scroll,
           behavior: "smooth",
