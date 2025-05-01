@@ -33,7 +33,7 @@ function App() {
 
   useEffect(() => {
     setBackButtonHandler();
-  }, [setBackButtonHandler]);
+  }, []);
 
   return (
     <InitDataWrapper>
