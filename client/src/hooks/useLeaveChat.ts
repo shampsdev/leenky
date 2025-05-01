@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { leaveChat } from "../api/api";
 import useInitDataStore from "../stores/InitData.store";
+import { ChatPreviewData } from "../types/user.interface";
 
 const useLeaveChat = () => {
   const { initData } = useInitDataStore();
@@ -8,9 +9,11 @@ const useLeaveChat = () => {
 
   return useMutation({
     mutationFn: (chatId: string) => leaveChat(initData, chatId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["chats"] });
-      queryClient.invalidateQueries({ queryKey: ["chats/preview"] });
+    onSuccess: (_, chatId) => {
+      queryClient.setQueryData<ChatPreviewData[]>(
+        ["chats/preview", initData, ""],
+        (old) => old?.filter((chat) => chat.id !== chatId) ?? [],
+      );
     },
   });
 };

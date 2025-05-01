@@ -4,6 +4,7 @@ import useInitDataStore from "../stores/InitData.store";
 
 const useSearchChats = (query: string) => {
   const { initData } = useInitDataStore();
+
   return useQuery({
     queryKey: ["chats/preview", initData, query],
     queryFn: () => searchChats(initData, query),
