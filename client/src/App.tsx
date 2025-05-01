@@ -13,7 +13,6 @@ import InitialPage from "./pages/initial.page";
 import InvitationPage from "./pages/invitation.page";
 import ProfilePage from "./pages/profile.page";
 import { AnimatePresence, motion } from "framer-motion";
-import useInitDataStore from "./stores/InitData.store";
 import InitDataWrapper from "./utils/InitDataWrapper";
 
 const pageVariants = {
