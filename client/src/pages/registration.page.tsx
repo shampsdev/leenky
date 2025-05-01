@@ -1,34 +1,37 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect } from "react";
 import InputFieldComponent from "../components/inputField.component";
 import TextareaFieldComponent from "../components/textareaField.component";
 import { UserData } from "../types/user.interface";
 import { handleImageError } from "../utils/imageErrorHandler";
 import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
-import {
-  initData,
-  initDataStartParam,
-  initDataUser,
-  retrieveLaunchParams,
-} from "@telegram-apps/sdk-react";
 import EBBComponent from "../components/enableBackButtonComponent";
-import { createMe, getMePreview, joinMe } from "../api/api";
 import { useNavigate } from "react-router-dom";
-import useUserStore from "../stores/user.store";
 import DevImage from "../assets/dev.png";
 import ButtonComponent from "../components/button.component";
+import useStartParamStore from "../stores/StartData.store";
+import useInitDataStore from "../stores/InitData.store";
+import useCreateMe from "../hooks/useCreateMe";
+import useJoinMe from "../hooks/useJoinMe";
+import useMePreview from "../hooks/useMePreview";
 
 const RegistrationPage = () => {
-  const launchParams = retrieveLaunchParams();
+  //mutations
+  const createMeMutation = useCreateMe();
+  const joinMeMutation = useJoinMe();
 
-  const startParam = initDataStartParam();
-  const userStore = useUserStore();
   const navigate = useNavigate();
-  const avatar = initDataUser()?.photo_url;
+
+  //tg params
+  const { startParam } = useStartParamStore();
+  const { initDataUser, launchParams } = useInitDataStore();
+  const avatar = initDataUser?.photo_url;
+
+  //form validation data
   const [profileData, setProfileData] = useState<
     Pick<UserData, "firstName" | "lastName" | "bio" | "role" | "company">
   >({
-    firstName: initDataUser()?.first_name || "",
-    lastName: initDataUser()?.last_name || "",
+    firstName: initDataUser?.first_name || "",
+    lastName: initDataUser?.last_name || "",
     company: "",
     role: "",
     bio: "",
@@ -54,45 +57,32 @@ const RegistrationPage = () => {
       [field]: value,
     }));
   };
-  const checkAuth = async () => {
-    userStore.setIsLoading(true);
-    const userData = await getMePreview(initData.raw() ?? "");
-    if (userData?.isRegistered) {
-      userStore.authenticate();
-      userStore.setIsLoading(false);
-      userStore.updateUserData(userData);
-    } else {
-      userStore.setIsLoading(false);
-    }
-  };
 
-  const registerUser = async () => {
-    const response = await createMe(initData.raw() ?? "", profileData);
-    if (response) {
-      checkAuth();
+  const handleRegister = async () => {
+    try {
+      await createMeMutation.mutateAsync(profileData);
       navigate("/chats", { replace: true });
-
       if (startParam !== undefined && startParam.length > 0) {
-        const joinResponse = await joinMe(initData.raw() ?? "", startParam);
-        if (joinResponse) {
-          navigate(`/chat/${startParam}`);
-        }
+        await joinMeMutation.mutateAsync(startParam);
+        navigate(`/chat/${startParam}`);
+      } else {
+        navigate("/chats", { replace: true });
       }
+    } catch (error) {
+      console.error("Ошибка при создании пользователя", error);
     }
   };
 
-  const fetchBio = useCallback(async () => {
-    const data = await getMePreview(initData.raw() ?? "");
-    if (data) {
+  const { data: preview } = useMePreview();
+  useEffect(() => {
+    if (preview?.bio) {
       setProfileData((prevState) => ({
         ...prevState,
-        bio: data.bio,
+        bio: preview.bio,
       }));
     }
-  }, []);
-  useEffect(() => {
-    fetchBio();
-  }, []);
+  }, [preview?.bio]);
+
   useEffect(() => {
     setIsFilled(isProfileFilled());
   }, [profileData]);
@@ -106,7 +96,7 @@ const RegistrationPage = () => {
     setFocusedFiledsCount(focusedFieldsCount - 1);
   };
   const handleFieldsCount = () => {
-    if (launchParams.tgWebAppPlatform === "ios") {
+    if (launchParams?.tgWebAppPlatform === "ios") {
       if (focusedFieldsCount > 0) {
         setIosKeyboardOpen(true);
       }
@@ -175,20 +165,20 @@ const RegistrationPage = () => {
           />
         </div>
 
-        {launchParams.tgWebAppPlatform !== "ios" && (
+        {launchParams?.tgWebAppPlatform !== "ios" && (
           <div className="pt-[40px] pb-[39px]"></div>
         )}
-        {launchParams.tgWebAppPlatform === "ios" && (
+        {launchParams?.tgWebAppPlatform === "ios" && (
           <div
             onClick={() => {
-              if (isFilled) registerUser();
+              if (isFilled) handleRegister();
             }}
             className="flex w-full justify-center pt-[20px]"
           >
             <ButtonComponent
               content={"Готово"}
               handleClick={() => {
-                if (isFilled) registerUser();
+                if (isFilled) handleRegister();
               }}
               state={isFilled ? "active" : "disabled"}
             />
@@ -196,12 +186,12 @@ const RegistrationPage = () => {
         )}
       </div>
 
-      {launchParams.tgWebAppPlatform !== "ios" && (
+      {launchParams?.tgWebAppPlatform !== "ios" && (
         <div className="absolute bottom-0 flex justify-center w-full pb-[10px]">
           <FixedBottomButtonComponent
             content={"Готово"}
             handleClick={() => {
-              if (isFilled) registerUser();
+              if (isFilled) handleRegister();
             }}
             state={isFilled ? "active" : "disabled"}
           />

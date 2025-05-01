@@ -11,7 +11,7 @@ export const api = axios.create({
 
 export const getChat = async (
   initData: string,
-  chatId: string
+  chatId: string,
 ): Promise<ChatData | null> => {
   try {
     const response = await api.get<ChatData>(`/chats/id/${chatId}`, {
@@ -26,14 +26,14 @@ export const getChat = async (
 
 export const getChatPreview = async (
   initData: string,
-  chatId: string
+  chatId: string,
 ): Promise<ChatPreviewData | null> => {
   try {
     const response = await api.get<ChatPreviewData>(
       `/chats/id/${chatId}/preview`,
       {
         headers: { "X-Api-Token": initData },
-      }
+      },
     );
     return response.data;
   } catch (error) {
@@ -43,7 +43,7 @@ export const getChatPreview = async (
 };
 
 export const getChats = async (
-  initData: string
+  initData: string,
 ): Promise<ChatData[] | null> => {
   try {
     const response = await api.get<ChatData[]>(`/chats`, {
@@ -59,7 +59,7 @@ export const getChats = async (
 // userID – inner backend id
 export const getUserById = async (
   initData: string,
-  userId: string
+  userId: string,
 ): Promise<UserData | null> => {
   try {
     const response = await api.get<UserData>(`/users/id/${userId}`, {
@@ -86,7 +86,10 @@ export const getMe = async (initData: string): Promise<UserData | null> => {
 
 export const postMe = async (
   initData: string,
-  newData: Pick<UserData, "firstName" | "lastName" | "bio" | "role" | "company">
+  newData: Pick<
+    UserData,
+    "firstName" | "lastName" | "bio" | "role" | "company"
+  >,
 ): Promise<UserData | null> => {
   try {
     const response = await api.put<UserData>(`/users/me`, newData, {
@@ -104,7 +107,7 @@ export const createMe = async (
   userData: Pick<
     UserData,
     "firstName" | "lastName" | "bio" | "role" | "company"
-  >
+  >,
 ): Promise<Pick<
   UserData,
   "firstName" | "lastName" | "bio" | "role" | "company"
@@ -124,7 +127,7 @@ export const createMe = async (
 
 export const joinMe = async (
   initData: string,
-  chatId: string
+  chatId: string,
 ): Promise<boolean> => {
   try {
     const response = await api.post(
@@ -134,7 +137,7 @@ export const joinMe = async (
         headers: {
           "X-Api-Token": initData,
         },
-      }
+      },
     );
     return response.status === 200;
   } catch (error) {
@@ -146,7 +149,7 @@ export const joinMe = async (
 export const searchInChat = async (
   initData: string,
   chatId: string,
-  query: string
+  query: string,
 ): Promise<UserData[] | null> => {
   try {
     const response = await api.get<UserData[]>(`/chats/id/${chatId}/search`, {
@@ -166,7 +169,7 @@ export const searchInChat = async (
 
 export const searchChats = async (
   initData: string,
-  query: string
+  query: string,
 ): Promise<ChatPreviewData[] | null> => {
   try {
     const response = await api.get<ChatPreviewData[]>(`/chats/search`, {
@@ -186,7 +189,7 @@ export const searchChats = async (
 
 export const leaveChat = async (
   initData: string,
-  chatId: string
+  chatId: string,
 ): Promise<boolean> => {
   try {
     const response = await api.post<UserData[]>(
@@ -196,7 +199,7 @@ export const leaveChat = async (
         headers: {
           "X-Api-Token": initData,
         },
-      }
+      },
     );
     return response.status === 200;
   } catch (error) {
@@ -205,22 +208,8 @@ export const leaveChat = async (
   }
 };
 
-export const getUserBioByTelegramUsername = async (
-  telegramUsername: string
-) => {
-  try {
-    const response = await axios.get(
-      `http://localhost:8000/proxy/?url=https://t.me/${telegramUsername}`
-    );
-    return response.data;
-  } catch (error) {
-    console.error("Ошибка при получении био пользователя:", error);
-    return null;
-  }
-};
-
 export const getMePreview = async (
-  initData: string
+  initData: string,
 ): Promise<UserData | null> => {
   try {
     const response = await api.get<UserData>(`/users/me/preview`, {
