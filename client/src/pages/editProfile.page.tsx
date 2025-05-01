@@ -11,10 +11,10 @@ import EBBComponent from "../components/enableBackButtonComponent";
 import DevImage from "../assets/dev.png";
 import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
 import ButtonComponent from "../components/button.component";
-import { retrieveLaunchParams } from "@telegram-apps/sdk-react";
+import useInitDataStore from "../stores/InitData.store";
 
 const EditProfilePage = () => {
-  const launchParams = retrieveLaunchParams();
+  const { launchParams } = useInitDataStore();
   const navigate = useNavigate();
 
   const { userData, updateUserData } = useUserStore();
@@ -39,7 +39,7 @@ const EditProfilePage = () => {
     newProfileData: Pick<
       UserData,
       "firstName" | "lastName" | "bio" | "role" | "company"
-    >
+    >,
   ) => {
     const isFilled =
       profileData.firstName?.trim() != "" &&
@@ -97,7 +97,7 @@ const EditProfilePage = () => {
     setFocusedFiledsCount(focusedFieldsCount - 1);
   };
   const handleFieldsCount = () => {
-    if (launchParams.tgWebAppPlatform === "ios") {
+    if (launchParams?.tgWebAppPlatform === "ios") {
       if (focusedFieldsCount > 0) {
         setIosKeyboardOpen(true);
       }
@@ -167,7 +167,7 @@ const EditProfilePage = () => {
               value={profileData.bio ?? ""}
               maxLength={MAX_TEXTAREA_LENGTH}
             />
-            {launchParams.tgWebAppPlatform === "ios" && (
+            {launchParams?.tgWebAppPlatform === "ios" && (
               <div className="w-full text-center mx-auto pb-[10px]">
                 <ButtonComponent
                   content={
@@ -186,14 +186,14 @@ const EditProfilePage = () => {
                 />
               </div>
             )}
-            {launchParams.tgWebAppPlatform !== "ios" && (
+            {launchParams?.tgWebAppPlatform !== "ios" && (
               <div className="pt-[40px] pb-[39px]"></div>
             )}
           </div>
         </div>
       </div>
 
-      {launchParams.tgWebAppPlatform !== "ios" && (
+      {launchParams?.tgWebAppPlatform !== "ios" && (
         <div className="absolute bottom-0 flex justify-center w-full pb-[10px]">
           <FixedBottomButtonComponent
             content={isChanged && isFilled ? "Сохранить" : "Редактировать"}

@@ -4,7 +4,6 @@ import TextareaFieldComponent from "../components/textareaField.component";
 import { UserData } from "../types/user.interface";
 import { handleImageError } from "../utils/imageErrorHandler";
 import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
-import { retrieveLaunchParams } from "@telegram-apps/sdk-react";
 import EBBComponent from "../components/enableBackButtonComponent";
 import { useNavigate } from "react-router-dom";
 import DevImage from "../assets/dev.png";
@@ -23,9 +22,8 @@ const RegistrationPage = () => {
   const navigate = useNavigate();
 
   //tg params
-  const launchParams = retrieveLaunchParams();
   const { startParam } = useStartParamStore();
-  const { initDataUser } = useInitDataStore();
+  const { initDataUser, launchParams } = useInitDataStore();
   const avatar = initDataUser?.photo_url;
 
   //form validation data
@@ -98,7 +96,7 @@ const RegistrationPage = () => {
     setFocusedFiledsCount(focusedFieldsCount - 1);
   };
   const handleFieldsCount = () => {
-    if (launchParams.tgWebAppPlatform === "ios") {
+    if (launchParams?.tgWebAppPlatform === "ios") {
       if (focusedFieldsCount > 0) {
         setIosKeyboardOpen(true);
       }
@@ -167,10 +165,10 @@ const RegistrationPage = () => {
           />
         </div>
 
-        {launchParams.tgWebAppPlatform !== "ios" && (
+        {launchParams?.tgWebAppPlatform !== "ios" && (
           <div className="pt-[40px] pb-[39px]"></div>
         )}
-        {launchParams.tgWebAppPlatform === "ios" && (
+        {launchParams?.tgWebAppPlatform === "ios" && (
           <div
             onClick={() => {
               if (isFilled) handleRegister();
@@ -188,7 +186,7 @@ const RegistrationPage = () => {
         )}
       </div>
 
-      {launchParams.tgWebAppPlatform !== "ios" && (
+      {launchParams?.tgWebAppPlatform !== "ios" && (
         <div className="absolute bottom-0 flex justify-center w-full pb-[10px]">
           <FixedBottomButtonComponent
             content={"Готово"}

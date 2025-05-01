@@ -1,33 +1,19 @@
-import { initData } from "@telegram-apps/sdk-react";
-import { useEffect, useCallback } from "react";
-import { getMe } from "../api/api";
 import { handleImageError } from "../utils/imageErrorHandler";
 import InfoBlockComponent from "../components/infoBlock.component";
 import InfoParagraphComponent from "../components/infoParagraph.component";
-import useUserStore from "../stores/user.store";
 import { useNavigate } from "react-router-dom";
 import EBBComponent from "../components/enableBackButtonComponent";
 import DevImage from "../assets/dev.png";
 import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
+import useMe from "../hooks/useMe";
 
 const CurrentProfilePage = () => {
-  const { userData, updateUserData } = useUserStore();
+  const { data: userData } = useMe();
   const navigate = useNavigate();
 
   const goToEditProfilePage = () => {
     navigate("/profile/edit");
   };
-
-  const fetchProfileData = useCallback(async () => {
-    const data = await getMe(initData.raw() ?? "");
-    if (data) {
-      updateUserData(data);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchProfileData();
-  }, []);
 
   return (
     <EBBComponent>
@@ -36,15 +22,15 @@ const CurrentProfilePage = () => {
           <div className="flex flex-col mt-6 items-center gap-4">
             <img
               className="w-[115px] h-[115px] rounded-full object-cover"
-              src={userData.avatar || DevImage}
+              src={userData?.avatar || DevImage}
               onError={handleImageError}
             />
             <div className="text-center">
               <p className="font-semibold inline-flex text-lg gap-2 items-center">
-                {userData.firstName} {userData.lastName}
+                {userData?.firstName} {userData?.lastName}
               </p>
               <p className="text-hint text-sm">
-                {`@${userData.telegramUsername}`}
+                {`@${userData?.telegramUsername}`}
               </p>
             </div>
           </div>
@@ -53,18 +39,18 @@ const CurrentProfilePage = () => {
             <InfoBlockComponent>
               <InfoParagraphComponent
                 title="Место работы"
-                content={userData.company ?? ""}
+                content={userData?.company ?? ""}
               />
               <InfoParagraphComponent
                 title="Должность"
-                content={userData.role ?? ""}
+                content={userData?.role ?? ""}
               />
             </InfoBlockComponent>
             <div className="px-4 text-hint mb-2 mt-4 text-sm">ПОДРОБНЕЕ</div>
             <InfoBlockComponent>
               <InfoParagraphComponent
                 title="Описание"
-                content={userData.bio ?? ""}
+                content={userData?.bio ?? ""}
               />
             </InfoBlockComponent>
           </div>
