@@ -37,6 +37,8 @@ func (r *CommunityRepo) Create(ctx context.Context, community *domain.CreateComm
 		id,
 		community.Name,
 		community.Description,
+		community.Avatar,
+		community.Config,
 	)
 	return id, err
 }
