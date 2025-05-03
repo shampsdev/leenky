@@ -15,10 +15,12 @@ func Setup(r *gin.RouterGroup, cases usecase.Cases) {
 
 	g.
 		GET("", GetPreviews(cases.Community)).
-		GET("/search", Search(cases.Community, cases.Search))
+		GET("/search", Search(cases.Community, cases.Search)).
+		POST("", Create(cases.Community))
 
 	g.Group("/id/:id").
 		GET("", GetByID(cases.Community)).
+		PATCH("", Patch(cases.Community)).
 		POST("/join", Join(cases.Community)).
 		POST("/leave", Leave(cases.Community)).
 		GET("/preview", GetPreview(cases.Community))

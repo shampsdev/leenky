@@ -49,6 +49,48 @@ const docTemplate = `{
                         "description": "Internal Server Error"
                     }
                 }
+            },
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "communities"
+                ],
+                "summary": "Create community",
+                "parameters": [
+                    {
+                        "description": "Community data",
+                        "name": "community",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.CreateCommunity"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Community data",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Community"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
             }
         },
         "/communities/id/{id}": {
@@ -75,6 +117,48 @@ const docTemplate = `{
                         "name": "id",
                         "in": "path",
                         "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Community data",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Community"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            },
+            "patch": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "communities"
+                ],
+                "summary": "Patch community",
+                "parameters": [
+                    {
+                        "description": "Community data",
+                        "name": "community",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.PatchCommunity"
+                        }
                     }
                 ],
                 "responses": {
@@ -421,7 +505,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.PatchUser"
+                            "$ref": "#/definitions/domain.PatchMe"
                         }
                     }
                 ],
@@ -548,6 +632,17 @@ const docTemplate = `{
                 }
             }
         },
+        "domain.CreateCommunity": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.Field": {
             "type": "object",
             "properties": {
@@ -654,7 +749,30 @@ const docTemplate = `{
                 }
             }
         },
-        "domain.PatchUser": {
+        "domain.PatchCommunity": {
+            "type": "object",
+            "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "config": {
+                    "$ref": "#/definitions/domain.CommunityConfig"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "tgChatID": {
+                    "type": "integer"
+                }
+            }
+        },
+        "domain.PatchMe": {
             "type": "object",
             "properties": {
                 "firstName": {

@@ -27,6 +27,13 @@ definitions:
           $ref: '#/definitions/domain.Field'
         type: array
     type: object
+  domain.CreateCommunity:
+    properties:
+      description:
+        type: string
+      name:
+        type: string
+    type: object
   domain.Field:
     properties:
       description:
@@ -96,7 +103,22 @@ definitions:
         description: title to field
         type: object
     type: object
-  domain.PatchUser:
+  domain.PatchCommunity:
+    properties:
+      avatar:
+        type: string
+      config:
+        $ref: '#/definitions/domain.CommunityConfig'
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      tgChatID:
+        type: integer
+    type: object
+  domain.PatchMe:
     properties:
       firstName:
         type: string
@@ -157,6 +179,32 @@ paths:
       summary: Get community previews
       tags:
       - communities
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Community data
+        in: body
+        name: community
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateCommunity'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Community data
+          schema:
+            $ref: '#/definitions/domain.Community'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      summary: Create community
+      tags:
+      - communities
   /communities/id/{id}:
     get:
       consumes:
@@ -181,6 +229,32 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Get community
+      tags:
+      - communities
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Community data
+        in: body
+        name: community
+        required: true
+        schema:
+          $ref: '#/definitions/domain.PatchCommunity'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Community data
+          schema:
+            $ref: '#/definitions/domain.Community'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      summary: Patch community
       tags:
       - communities
   /communities/id/{id}/join:
@@ -420,7 +494,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/domain.PatchUser'
+          $ref: '#/definitions/domain.PatchMe'
       produces:
       - application/json
       responses:

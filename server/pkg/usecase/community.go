@@ -30,10 +30,10 @@ func NewCommunity(communityRepo repo.Community, memberRepo repo.Member, userRepo
 	}
 }
 
-func (c *Community) Create(ctx Context, community *domain.CreateCommunity) error {
+func (c *Community) Create(ctx Context, community *domain.CreateCommunity) (*domain.Community, error) {
 	id, err := c.communityRepo.Create(ctx, community)
 	if err != nil {
-		return fmt.Errorf("failed to create community: %w", err)
+		return nil, fmt.Errorf("failed to create community: %w", err)
 	}
 
 	adminMember := &domain.CreateMember{
@@ -45,21 +45,25 @@ func (c *Community) Create(ctx Context, community *domain.CreateCommunity) error
 		},
 	}
 	if err := c.memberRepo.Create(ctx, adminMember); err != nil {
-		return fmt.Errorf("failed to create admin member: %w", err)
+		return nil, fmt.Errorf("failed to create admin member: %w", err)
 	}
 
-	return nil
+	return c.GetByID(ctx, id)
 }
 
-func (c *Community) Patch(ctx Context, community *domain.PatchCommunity) error {
+func (c *Community) Patch(ctx Context, community *domain.PatchCommunity) (*domain.Community, error) {
 	member, err := repo.First(c.memberRepo.Filter)(ctx, &domain.FilterMember{CommunityID: &community.ID, UserID: &ctx.User.ID})
 	if err != nil {
-		return fmt.Errorf("failed to get member: %w", err)
+		return nil, fmt.Errorf("failed to get member: %w", err)
 	}
 	if !member.IsAdmin {
-		return fmt.Errorf("only admins can patch community")
+		return nil, fmt.Errorf("only admins can patch community")
 	}
-	return c.communityRepo.Patch(ctx, community)
+	err = c.communityRepo.Patch(ctx, community)
+	if err != nil {
+		return nil, fmt.Errorf("failed to patch community: %w", err)
+	}
+	return c.GetByID(ctx, community.ID)
 }
 
 func (c *Community) GetPreviewByID(ctx Context, id string) (*domain.Community, error) {
