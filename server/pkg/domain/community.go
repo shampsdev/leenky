@@ -18,8 +18,10 @@ type CommunityConfig struct {
 }
 
 type CreateCommunity struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
+	Name        string           `json:"name"`
+	Description string           `json:"description"`
+	Avatar      string           `json:"avatar"`
+	Config      *CommunityConfig `json:"config"`
 }
 
 type PatchCommunity struct {

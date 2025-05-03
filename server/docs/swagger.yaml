@@ -29,6 +29,10 @@ definitions:
     type: object
   domain.CreateCommunity:
     properties:
+      avatar:
+        type: string
+      config:
+        $ref: '#/definitions/domain.CommunityConfig'
       description:
         type: string
       name:

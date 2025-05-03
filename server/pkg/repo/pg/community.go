@@ -33,7 +33,7 @@ func (r *CommunityRepo) Create(ctx context.Context, community *domain.CreateComm
 	id := r.generateID()
 	_, err := r.db.Exec(
 		ctx,
-		"INSERT INTO community (id, name, description) VALUES ($1, $2, $3)",
+		"INSERT INTO community (id, name, description, avatar, config) VALUES ($1, $2, $3, $4, $5)",
 		id,
 		community.Name,
 		community.Description,

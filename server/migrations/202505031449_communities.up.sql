@@ -29,6 +29,8 @@ SET config = '{
 ALTER TABLE community ALTER COLUMN config SET NOT NULL;
 
 ALTER TABLE community RENAME COLUMN "telegram_id" TO "tg_chat_id";
+ALTER TABLE community ALTER COLUMN "tg_chat_id" DROP NOT NULL;
+ALTER TABLE community ALTER COLUMN "avatar" DROP NOT NULL;
 
 ALTER TABLE "chat_user" RENAME TO "member";
 

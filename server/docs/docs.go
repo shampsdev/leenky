@@ -635,6 +635,12 @@ const docTemplate = `{
         "domain.CreateCommunity": {
             "type": "object",
             "properties": {
+                "avatar": {
+                    "type": "string"
+                },
+                "config": {
+                    "$ref": "#/definitions/domain.CommunityConfig"
+                },
                 "description": {
                     "type": "string"
                 },
