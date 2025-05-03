@@ -264,6 +264,55 @@ const docTemplate = `{
                 }
             }
         },
+        "/communities/id/{id}/members/id/{member_id}": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "communities"
+                ],
+                "summary": "Get member",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Community ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Member id",
+                        "name": "member_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Member",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Member"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/communities/id/{id}/members/search": {
             "get": {
                 "security": [
@@ -304,55 +353,6 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/domain.Member"
                             }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/communities/id/{id}/members/{member_id}": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "communities"
-                ],
-                "summary": "Get member",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Community ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    },
-                    {
-                        "type": "string",
-                        "description": "Member id",
-                        "name": "member_id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Member",
-                        "schema": {
-                            "$ref": "#/definitions/domain.Member"
                         }
                     },
                     "400": {
