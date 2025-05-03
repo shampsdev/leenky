@@ -250,8 +250,17 @@ func (m *Community) ConnectCommunityWithTGChat(ctx context.Context, actorID int6
 		return fmt.Errorf("error getting community: %w", err)
 	}
 
+	tgChat, err := m.bot.GetChat(ctx, &bot.GetChatParams{
+		ChatID: tgChatID,
+	})
+	if err != nil {
+		return fmt.Errorf("error getting chat: %w", err)
+	}
+
 	community.TGChatID = &tgChatID
-	community.Avatar, err = m.downloadTGChatAvatar(ctx, m.bot, m.storage, community.Avatar, tgChatID)
+	if tgChat.Photo != nil {
+		community.Avatar, err = m.downloadTGChatAvatar(ctx, m.bot, m.storage, tgChat.Photo.SmallFileID, tgChatID)
+	}
 	if err != nil {
 		return fmt.Errorf("error downloading avatar: %w", err)
 	}
@@ -259,6 +268,7 @@ func (m *Community) ConnectCommunityWithTGChat(ctx context.Context, actorID int6
 	err = m.communityRepo.Patch(ctx, &domain.PatchCommunity{
 		ID:       communityID,
 		TGChatID: &tgChatID,
+		Avatar:   &community.Avatar,
 	})
 	if err != nil {
 		return fmt.Errorf("error updating community: %w", err)

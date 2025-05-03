@@ -26,7 +26,7 @@ func NewMemberRepo(db *pgxpool.Pool) *MemberRepo {
 func (r *MemberRepo) Create(ctx context.Context, member *domain.CreateMember) error {
 	_, err := r.db.Exec(
 		ctx,
-		"INSERT INTO member (user_id, id, is_admin, config) VALUES ($1, $2, $3, $4)",
+		"INSERT INTO member (user_id, community_id, is_admin, config) VALUES ($1, $2, $3, $4)",
 		member.UserID,
 		member.CommunityID,
 		member.IsAdmin,

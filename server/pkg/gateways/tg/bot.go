@@ -73,7 +73,7 @@ func (b *Bot) Run(ctx context.Context) {
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/register", bot.MatchTypePrefix, b.handleCommandRegister)
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, b.handleCommandStart)
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/link", bot.MatchTypeExact, b.handleCommandLink)
-	b.RegisterHandler(bot.HandlerTypeMessageText, "/connect", bot.MatchTypeExact, b.handleCommandConnect)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/connect", bot.MatchTypePrefix, b.handleCommandConnect)
 
 	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
 		return update.Message != nil && update.Message.MigrateFromChatID != 0
@@ -235,6 +235,22 @@ func (b *Bot) handleCommandConnect(ctx context.Context, _ *bot.Bot, update *mode
 	err := b.cases.Community.ConnectCommunityWithTGChat(ctx, msg.From.ID, communityID, msg.Chat.ID)
 	if err != nil {
 		log.With(slogx.Err(err)).Error("error connecting chat")
+		_, err = b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID: msg.Chat.ID,
+			Text:   "Не получилось подключить чат",
+		})
+		if err != nil {
+			log.With(slogx.Err(err)).Error("error sending message")
+		}
+		return
+	}
+	log.Info("chat connected")
+	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: msg.Chat.ID,
+		Text:   "Чат подключен!",
+	})
+	if err != nil {
+		log.With(slogx.Err(err)).Error("error sending message")
 	}
 }
 
