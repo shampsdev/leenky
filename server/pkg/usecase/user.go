@@ -2,16 +2,13 @@ package usecase
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
-	"os"
 	"strings"
 	"sync"
 	"sync/atomic"
 	"time"
 
-	"github.com/PuerkitoBio/goquery"
 	"github.com/go-telegram/bot"
 	"github.com/shampsdev/tglinked/server/pkg/domain"
 	"github.com/shampsdev/tglinked/server/pkg/repo"
@@ -20,10 +17,11 @@ import (
 )
 
 type User struct {
-	userRepo repo.User
-	chatRepo repo.Chat
-	storage  repo.ImageStorage
-	bot      *bot.Bot
+	userRepo      repo.User
+	communityRepo repo.Community
+	memberRepo    repo.Member
+	storage       repo.ImageStorage
+	bot           *bot.Bot
 
 	tgDataCache sync.Map
 }
@@ -31,43 +29,67 @@ type User struct {
 func NewUser(
 	ctx context.Context,
 	userRepo repo.User,
-	chatRepo repo.Chat,
+	communityRepo repo.Community,
+	memberRepo repo.Member,
 	storage repo.ImageStorage,
 	tgbot *bot.Bot,
 ) *User {
 	u := &User{
-		userRepo: userRepo,
-		chatRepo: chatRepo,
-		storage:  storage,
-		bot:      tgbot,
+		userRepo:      userRepo,
+		communityRepo: communityRepo,
+		memberRepo:    memberRepo,
+		storage:       storage,
+		bot:           tgbot,
 	}
 
 	go u.cacheCleaner(ctx)
 	return u
 }
 
-func (u *User) GetMe(ctx Context) (*domain.User, error) {
-	return u.userRepo.GetUserByID(ctx, ctx.User.ID)
-}
+func (u *User) Create(ctx context.Context, userTGData *domain.UserTGData) (*domain.User, error) {
+	user := &domain.CreateUser{
+		UserTGData: domain.UserTGData{
+			TelegramID:       userTGData.TelegramID,
+			TelegramUsername: userTGData.TelegramUsername,
+			FirstName:        userTGData.FirstName,
+			LastName:         userTGData.LastName,
+		},
+	}
 
-func (u *User) GetUserByID(ctx Context, id string) (*domain.User, error) {
-	share, err := u.chatRepo.AreUsersShareSameChat(ctx, []string{ctx.User.ID, id})
+	var err error
+	user.Avatar, err = u.storage.SaveImageByURL(ctx, user.Avatar, names.ForUserAvatar(user.TelegramID, user.Avatar))
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("failed to upload user avatar: %w", err)
 	}
-	if !share {
-		return nil, fmt.Errorf("users are not in the same chat")
+
+	id, err := u.userRepo.Create(ctx, user)
+	if err != nil {
+		return nil, fmt.Errorf("failed to create user: %w", err)
 	}
-	return u.userRepo.GetUserByID(ctx, id)
+	return repo.First(u.userRepo.Filter)(ctx, &domain.FilterUser{ID: &id})
 }
 
-func (u *User) GetUserByTGData(ctx context.Context, tgData *domain.UserTGData) (*domain.User, error) {
+func (u *User) Patch(ctx context.Context, user *domain.PatchUser) (*domain.User, error) {
+	err := u.userRepo.Patch(ctx, user)
+	if err != nil {
+		return nil, fmt.Errorf("failed to patch user: %w", err)
+	}
+	return repo.First(u.userRepo.Filter)(ctx, &domain.FilterUser{ID: &user.ID})
+}
+
+func (u *User) Delete(ctx Context, userID string) error {
+	return u.userRepo.Delete(ctx, userID)
+}
+
+func (u *User) GetByTGData(ctx context.Context, tgData *domain.UserTGData) (*domain.User, error) {
 	if u, ok := u.tgDataCache.Load(tgData.TelegramID); ok {
 		//nolint:errcheck// because sure
 		return u.(*domain.User), nil
 	}
 
-	user, err := u.userRepo.GetUserByTelegramID(ctx, tgData.TelegramID)
+	user, err := repo.First(u.userRepo.Filter)(ctx, &domain.FilterUser{
+		TelegramID: &tgData.TelegramID,
+	})
 	if err != nil {
 		return nil, err
 	}
@@ -86,6 +108,7 @@ func (u *User) GetUserByTGData(ctx context.Context, tgData *domain.UserTGData) (
 	if !strings.Contains(user.Avatar, names.ForUserAvatar(user.TelegramID, tgData.Avatar)) {
 		var err error
 		tgData.Avatar, err = u.storage.SaveImageByURL(ctx, tgData.Avatar, names.ForUserAvatar(user.TelegramID, tgData.Avatar))
+		user.Avatar = tgData.Avatar
 		slogx.FromCtx(ctx).Debug("user avatar changed", "user", user.ID, "old_avatar", user.Avatar, "new_avatar", tgData.Avatar)
 		if err != nil {
 			return nil, fmt.Errorf("failed to upload user avatar: %w", err)
@@ -94,7 +117,13 @@ func (u *User) GetUserByTGData(ctx context.Context, tgData *domain.UserTGData) (
 	}
 
 	if needUpdate {
-		user, err = u.userRepo.UpdateUserTGData(ctx, user.ID, tgData)
+		err = u.userRepo.Patch(ctx, &domain.PatchUser{
+			ID:               user.ID,
+			FirstName:        &tgData.FirstName,
+			LastName:         &tgData.LastName,
+			Avatar:           &user.Avatar,
+			TelegramUsername: &tgData.TelegramUsername,
+		})
 		if err != nil {
 			return nil, fmt.Errorf("failed to update user: %w", err)
 		}
@@ -104,92 +133,27 @@ func (u *User) GetUserByTGData(ctx context.Context, tgData *domain.UserTGData) (
 	return user, nil
 }
 
-func (u *User) UpdateUser(ctx Context, id string, user *domain.EditUser) (*domain.User, error) {
-	return u.userRepo.UpdateUser(ctx, id, user)
+func (u *User) GetMeProfile(ctx Context) (*domain.UserProfile, error) {
+	return u.GetProfile(ctx, ctx.User.ID)
 }
 
-func (u *User) DeleteUser(ctx Context) error {
-	return u.userRepo.DeleteUser(ctx, ctx.User.ID)
-}
-
-func (u *User) CreateUser(ctx Context, editUser *domain.EditUser) (*domain.User, error) {
-	user := &domain.User{
-		// tgID, tgUsername, avatar are supposed to be injected by auth middleware
-		TelegramID:       ctx.User.TelegramID,
-		TelegramUsername: ctx.User.TelegramUsername,
-		Avatar:           ctx.User.Avatar,
-		FirstName:        editUser.FirstName,
-		LastName:         editUser.LastName,
-		Company:          editUser.Company,
-		Role:             editUser.Role,
-		Bio:              editUser.Bio,
-	}
-
-	var err error
-	user.Avatar, err = u.storage.SaveImageByURL(ctx, user.Avatar, names.ForUserAvatar(user.TelegramID, user.Avatar))
+func (u *User) GetProfile(ctx Context, userID string) (*domain.UserProfile, error) {
+	user, err := repo.First(u.userRepo.Filter)(ctx, &domain.FilterUser{ID: &userID})
 	if err != nil {
-		return nil, fmt.Errorf("failed to upload user avatar: %w", err)
-	}
-
-	id, err := u.userRepo.CreateUser(ctx, user)
-	if err != nil {
-		return nil, fmt.Errorf("failed to create user: %w", err)
-	}
-	user.ID = id
-	return user, nil
-}
-
-func (u *User) GetMePreview(ctx context.Context, tgData *domain.UserTGData) (*domain.UserPreview, error) {
-	up := &domain.UserPreview{
-		TelegramID:       tgData.TelegramID,
-		TelegramUsername: tgData.TelegramUsername,
-		Avatar:           tgData.Avatar,
-		FirstName:        tgData.FirstName,
-		LastName:         tgData.LastName,
-		Bio:              "",
-	}
-	log := slogx.FromCtx(ctx).With("user", tgData.TelegramID)
-	_, err := u.userRepo.GetUserByTelegramID(ctx, up.TelegramID)
-	if err != nil && !errors.Is(err, repo.ErrUserNotFound) {
 		return nil, fmt.Errorf("failed to get user: %w", err)
 	}
-	if err == nil {
-		log.Debug("user is already registered")
-		up.IsRegistered = true
-		return up, nil
-	}
-	log.Debug("user is not registered, determining bio")
-	bio, err := u.determineUserBio(up.TelegramUsername)
+
+	members, err := u.memberRepo.Filter(ctx, &domain.FilterMember{UserID: &userID, IncludeCommunity: true})
 	if err != nil {
-		return nil, fmt.Errorf("failed to determine user bio: %w", err)
+		return nil, fmt.Errorf("failed to get user members: %w", err)
 	}
-	up.Bio = bio
-
-	return up, nil
-}
-
-func (u *User) determineUserBio(username string) (string, error) {
-	url := fmt.Sprintf("https://t.me/%s", username)
-	httpCli := &http.Client{
-		Timeout: 3 * time.Second,
+	for _, member := range members {
+		member.User = ctx.User
 	}
-	resp, err := httpCli.Get(url)
-	// if context expired, return empty bio
-	if err != nil && errors.Is(err, os.ErrDeadlineExceeded) {
-		return "", nil
-	}
-	if err != nil {
-		return "", fmt.Errorf("failed to get user bio: %w", err)
-	}
-	defer resp.Body.Close()
-
-	doc, err := goquery.NewDocumentFromReader(resp.Body)
-	if err != nil {
-		return "", fmt.Errorf("failed to parse user bio: %w", err)
-	}
-
-	bio := doc.Find("div.tgme_page_description").First().Text()
-	return bio, nil
+	return &domain.UserProfile{
+		User:    user,
+		Members: members,
+	}, nil
 }
 
 func (u *User) telegramAvatarLocation(userpicURL string) (string, error) {

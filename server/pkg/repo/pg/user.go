@@ -5,153 +5,117 @@ import (
 	"errors"
 	"fmt"
 
+	sq "github.com/Masterminds/squirrel"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/shampsdev/tglinked/server/pkg/domain"
-	"github.com/shampsdev/tglinked/server/pkg/repo"
 )
 
 type UserRepo struct {
-	db *pgxpool.Pool
+	db   *pgxpool.Pool
+	psql sq.StatementBuilderType
 }
 
 func NewUserRepo(db *pgxpool.Pool) *UserRepo {
-	return &UserRepo{db: db}
+	return &UserRepo{
+		db:   db,
+		psql: sq.StatementBuilder.PlaceholderFormat(sq.Dollar),
+	}
 }
 
-func (r *UserRepo) CreateUser(ctx context.Context, user *domain.User) (string, error) {
-	var newID string
-	err := r.db.QueryRow(ctx, `
-        INSERT INTO "user" ("telegram_id", "telegram_username", "avatar", "first_name", "last_name", "company", "role", "bio") 
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING "id"`,
-		user.TelegramID, user.TelegramUsername, user.Avatar, user.FirstName, user.LastName, user.Company, user.Role, user.Bio,
-	).Scan(&newID)
-	if err != nil {
-		return "", fmt.Errorf("failed to create user: %w", err)
-	}
-	return newID, nil
+func (r *UserRepo) Create(ctx context.Context, user *domain.CreateUser) (string, error) {
+	var id string
+	err := r.db.QueryRow(
+		ctx,
+		`INSERT INTO "user" (id, telegram_id, telegram_username, first_name, last_name, avatar)
+		VALUES ($1, $2, $3, $4, $5, $6, $7)`,
+		user.TelegramID,
+		user.TelegramUsername,
+		user.FirstName,
+		user.LastName,
+		user.Avatar,
+	).Scan(&id)
+	return id, err
 }
 
-func (r *UserRepo) UpdateUser(ctx context.Context, id string, user *domain.EditUser) (*domain.User, error) {
-	newUser := &domain.User{}
-	err := r.db.QueryRow(ctx, `
-		UPDATE "user" 
-		SET "first_name" = $1, "last_name" = $2, "company" = $3, "role" = $4, "bio" = $5, "updated_at" = NOW()
-		WHERE "id" = $6 
-		RETURNING "id", "telegram_id", "telegram_username", "avatar", "first_name", "last_name", "company", "role", "bio"`,
-		user.FirstName, user.LastName, user.Company, user.Role, user.Bio, id,
-	).Scan(
-		&newUser.ID,
-		&newUser.TelegramID,
-		&newUser.TelegramUsername,
-		&newUser.Avatar,
-		&newUser.FirstName,
-		&newUser.LastName,
-		&newUser.Company,
-		&newUser.Role,
-		&newUser.Bio,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to update user: %w", err)
-	}
-	return newUser, nil
-}
+func (r *UserRepo) Patch(ctx context.Context, user *domain.PatchUser) error {
+	s := r.psql.Update(`"user"`).
+		Where(sq.Eq{"id": user.ID})
 
-func (r *UserRepo) UpdateUserTGData(ctx context.Context, id string, user *domain.UserTGData) (*domain.User, error) {
-	newUser := &domain.User{}
-	err := r.db.QueryRow(ctx, `
-		UPDATE "user" 
-		SET "telegram_id" = $1, "telegram_username" = $2, "avatar" = $3, "updated_at" = NOW()
-		WHERE "id" = $4 
-		RETURNING "id", "telegram_id", "telegram_username", "avatar", "first_name", "last_name", "company", "role", "bio"`,
-		user.TelegramID, user.TelegramUsername, user.Avatar, id,
-	).Scan(
-		&newUser.ID,
-		&newUser.TelegramID,
-		&newUser.TelegramUsername,
-		&newUser.Avatar,
-		&newUser.FirstName,
-		&newUser.LastName,
-		&newUser.Company,
-		&newUser.Role,
-		&newUser.Bio,
-	)
-	if err != nil {
-		return nil, fmt.Errorf("failed to update user: %w", err)
+	if user.FirstName != nil {
+		s = s.Set("first_name", *user.FirstName)
 	}
-	return newUser, nil
-}
 
-func (r *UserRepo) DeleteUser(ctx context.Context, id string) error {
-	_, err := r.db.Exec(ctx, `DELETE FROM "user" WHERE "id" = $1`, id)
-	if err != nil {
-		return fmt.Errorf("failed to delete user: %w", err)
+	if user.LastName != nil {
+		s = s.Set("last_name", *user.LastName)
 	}
+	if user.TelegramUsername != nil {
+		s = s.Set("telegram_username", *user.TelegramUsername)
+	}
+	if user.Avatar != nil {
+		s = s.Set("avatar", *user.Avatar)
+	}
+
+	sql, args, err := s.ToSql()
+	if err != nil {
+		return fmt.Errorf("failed to build SQL: %w", err)
+	}
+
+	_, err = r.db.Exec(ctx, sql, args...)
+	if err != nil {
+		return fmt.Errorf("failed to execute SQL: %w", err)
+	}
+
 	return nil
 }
 
-func (r *UserRepo) GetUserByID(ctx context.Context, id string) (*domain.User, error) {
-	row := r.db.QueryRow(ctx, `
-		SELECT "id", "telegram_id", "telegram_username", "avatar", "first_name", "last_name", "company", "role", "bio"
-		FROM "user" 
-		WHERE "id" = $1`,
-		id,
-	)
-	user := &domain.User{}
-	if err := row.Scan(
-		&user.ID,
-		&user.TelegramID,
-		&user.TelegramUsername,
-		&user.Avatar,
-		&user.FirstName,
-		&user.LastName,
-		&user.Company,
-		&user.Role,
-		&user.Bio,
-	); err != nil {
-		return nil, fmt.Errorf("failed to get user: %w", err)
-	}
-	return user, nil
+func (r *UserRepo) Delete(ctx context.Context, id string) error {
+	_, err := r.db.Exec(ctx, `DELETE FROM "user" WHERE id = $1`, id)
+	return err
 }
 
-func (r *UserRepo) GetUserByTelegramID(ctx context.Context, telegramID int64) (*domain.User, error) {
-	row := r.db.QueryRow(ctx, `
-		SELECT "id", "telegram_id", "telegram_username", "avatar", "first_name", "last_name", "company", "role", "bio" 
-		FROM "user" 
-		WHERE "telegram_id" = $1`,
-		telegramID,
-	)
-	user := &domain.User{}
-	err := row.Scan(
-		&user.ID,
-		&user.TelegramID,
-		&user.TelegramUsername,
-		&user.Avatar,
-		&user.FirstName,
-		&user.LastName,
-		&user.Company,
-		&user.Role,
-		&user.Bio,
-	)
+func (r *UserRepo) Filter(ctx context.Context, filter *domain.FilterUser) ([]*domain.User, error) {
+	s := r.psql.Select("id", "telegram_id", "telegram_username", "first_name", "last_name", "avatar").
+		From(`"user"`)
+
+	if filter.ID != nil {
+		s = s.Where(sq.Eq{"id": *filter.ID})
+	}
+
+	if filter.TelegramID != nil {
+		s = s.Where(sq.Eq{"telegram_id": *filter.TelegramID})
+	}
+
+	sql, args, err := s.ToSql()
+	if err != nil {
+		return nil, fmt.Errorf("failed to build SQL: %w", err)
+	}
+
+	rows, err := r.db.Query(ctx, sql, args...)
 	if errors.Is(err, pgx.ErrNoRows) {
-		return nil, repo.ErrUserNotFound
+		return []*domain.User{}, nil
 	}
 	if err != nil {
-		return nil, fmt.Errorf("failed to get user: %w", err)
+		return nil, fmt.Errorf("failed to execute SQL: %w", err)
 	}
-	return user, nil
-}
+	defer rows.Close()
 
-func (r *UserRepo) GetUserIDByTelegramID(ctx context.Context, telegramID int64) (string, error) {
-	var id string
-	err := r.db.QueryRow(ctx, `
-		SELECT "id" 
-		FROM "user" 
-		WHERE "telegram_id" = $1`,
-		telegramID,
-	).Scan(&id)
-	if err != nil {
-		return "", fmt.Errorf("failed to get user ID by telegram ID: %w", err)
+	var users []*domain.User
+	for rows.Next() {
+		var user domain.User
+		err := rows.Scan(
+			&user.ID,
+			&user.TelegramID,
+			&user.TelegramUsername,
+			&user.FirstName,
+			&user.LastName,
+			&user.Avatar,
+		)
+		if err != nil {
+			return nil, fmt.Errorf("failed to scan row: %w", err)
+		}
+		users = append(users, &user)
 	}
-	return id, nil
+
+	return users, nil
 }

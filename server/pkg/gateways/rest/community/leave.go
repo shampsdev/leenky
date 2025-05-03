@@ -1,37 +1,36 @@
-package user
+package community
 
 import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-
 	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/ginerr"
 	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/middlewares"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
 )
 
-// GetUser godoc
-// @Summary Get user
-// @Tags users
+// Leave godoc
+// @Summary Leave community
+// @Tags communities
 // @Accept json
 // @Produce json
 // @Schemes http https
-// @Param id path string true "User ID"
-// @Success 200 {object} domain.User "User data"
+// @Param id path string true "community ID"
+// @Success 200
 // @Failure 400 "Bad Request"
 // @Failure 500 "Internal Server Error"
 // @Security ApiKeyAuth
-// @Router /users/id/{id} [get]
-func GetUser(userCase *usecase.User) gin.HandlerFunc {
+// @Router /communities/id/{id}/leave [post]
+func Leave(communityCase *usecase.Community) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)
-		userID := c.Param("id")
+		communityID := c.Param("id")
 
-		user, err := userCase.GetUserByID(usecase.NewContext(c, user), userID)
-		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to get user") {
+		err := communityCase.LeaveCommunity(usecase.NewContext(c, user), communityID)
+		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to leave community") {
 			return
 		}
 
-		c.JSON(http.StatusOK, user)
+		c.Status(http.StatusOK)
 	}
 }

@@ -14,29 +14,29 @@ import (
 )
 
 type Search struct {
-	chatCase *Chat
+	communityCase *Community
 
-	// cache is map string -> *usersIndex | *chatsIndex
+	// cache is map string -> *usersIndex | *communitiesIndex
 	indexesCache  sync.Map
 	cacheLifetime time.Duration
 	cleanupPeriod time.Duration
 }
 
-type usersIndex struct {
+type membersIndex struct {
 	createdAt time.Time
 	index     bleve.Index
-	users     map[string]*domain.User
+	members   map[string]*domain.Member
 }
 
-type chatsIndex struct {
-	createdAt time.Time
-	index     bleve.Index
-	chats     map[string]*domain.ChatPreview
+type communitiesIndex struct {
+	createdAt   time.Time
+	index       bleve.Index
+	communities map[string]*domain.Community
 }
 
-func NewSearch(chatCase *Chat) *Search {
+func NewSearch(communityCase *Community) *Search {
 	s := &Search{
-		chatCase:      chatCase,
+		communityCase: communityCase,
 		cacheLifetime: 30 * time.Second,
 		cleanupPeriod: 5 * time.Minute,
 	}
@@ -44,14 +44,14 @@ func NewSearch(chatCase *Chat) *Search {
 	return s
 }
 
-func (s *Search) SearchInChat(ctx Context, chatID, text string) ([]*domain.User, error) {
-	if err := s.chatCase.ensureUserInChat(ctx, chatID); err != nil {
-		return nil, fmt.Errorf("failed to ensure user in chat: %w", err)
+func (s *Search) SearchMembers(ctx Context, communityID, text string) ([]*domain.Member, error) {
+	if err := s.communityCase.ensureUserIsMember(ctx, communityID); err != nil {
+		return nil, fmt.Errorf("failed to ensure user is member: %w", err)
 	}
 
-	index, err := s.getUsersIndex(ctx, chatID)
+	index, err := s.getMembersIndex(ctx, communityID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get chat index: %w", err)
+		return nil, fmt.Errorf("failed to get members index: %w", err)
 	}
 
 	req := s.buildSearchRequest(text)
@@ -62,44 +62,44 @@ func (s *Search) SearchInChat(ctx Context, chatID, text string) ([]*domain.User,
 	return users, nil
 }
 
-func (s *Search) SearchChats(ctx Context, text string) ([]*domain.ChatPreview, error) {
-	index, err := s.getChatsIndex(ctx)
+func (s *Search) SearchCommunities(ctx Context, text string) ([]*domain.Community, error) {
+	index, err := s.getCommunitiesIndex(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get chat index: %w", err)
+		return nil, fmt.Errorf("failed to get community index: %w", err)
 	}
 
 	req := s.buildSearchRequest(text)
-	chats, err := index.Search(req)
+	communities, err := index.Search(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to search index: %w", err)
 	}
-	return chats, nil
+	return communities, nil
 }
 
-func (i *usersIndex) Search(req *bleve.SearchRequest) ([]*domain.User, error) {
+func (i *membersIndex) Search(req *bleve.SearchRequest) ([]*domain.Member, error) {
 	res, err := i.index.Search(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to search index: %w", err)
 	}
 
-	var users []*domain.User
+	var users []*domain.Member
 	for _, hit := range res.Hits {
-		users = append(users, i.users[hit.ID])
+		users = append(users, i.members[hit.ID])
 	}
 	return users, nil
 }
 
-func (i *chatsIndex) Search(req *bleve.SearchRequest) ([]*domain.ChatPreview, error) {
+func (i *communitiesIndex) Search(req *bleve.SearchRequest) ([]*domain.Community, error) {
 	res, err := i.index.Search(req)
 	if err != nil {
 		return nil, fmt.Errorf("failed to search index: %w", err)
 	}
 
-	var chats []*domain.ChatPreview
+	var communities []*domain.Community
 	for _, hit := range res.Hits {
-		chats = append(chats, i.chats[hit.ID])
+		communities = append(communities, i.communities[hit.ID])
 	}
-	return chats, nil
+	return communities, nil
 }
 
 func (s *Search) buildSearchRequest(text string) *bleve.SearchRequest {
@@ -135,148 +135,156 @@ func (s *Search) buildSearchRequest(text string) *bleve.SearchRequest {
 	return bleve.NewSearchRequest(query)
 }
 
-func (s *Search) usersIndexFromCache(chatID string) (*usersIndex, bool) {
-	i, ok := s.indexesCache.Load(chatID)
+func (s *Search) usersIndexFromCache(communityID string) (*membersIndex, bool) {
+	i, ok := s.indexesCache.Load(communityID)
 	if !ok {
 		return nil, false
 	}
-	index, _ := i.(*usersIndex)
+	index, _ := i.(*membersIndex)
 	if time.Since(index.createdAt) > s.cacheLifetime {
-		s.indexesCache.Delete(chatID)
+		s.indexesCache.Delete(communityID)
 		return nil, false
 	}
 
 	return index, true
 }
 
-func (s *Search) chatsIndexFromCache(chatID string) (*chatsIndex, bool) {
-	i, ok := s.indexesCache.Load(chatID)
+func (s *Search) communitiesIndexFromCache(communityID string) (*communitiesIndex, bool) {
+	i, ok := s.indexesCache.Load(communityID)
 	if !ok {
 		return nil, false
 	}
-	index, _ := i.(*chatsIndex)
+	index, _ := i.(*communitiesIndex)
 	if time.Since(index.createdAt) > s.cacheLifetime {
-		s.indexesCache.Delete(chatID)
+		s.indexesCache.Delete(communityID)
 		return nil, false
 	}
 
 	return index, true
 }
 
-func (s *Search) getUsersIndex(ctx Context, chatID string) (*usersIndex, error) {
-	index, ok := s.usersIndexFromCache(chatID)
+func (s *Search) getMembersIndex(ctx Context, communityID string) (*membersIndex, error) {
+	index, ok := s.usersIndexFromCache(communityID)
 	if ok {
 		return index, nil
 	}
 
-	users, err := s.chatCase.GetChatUsers(ctx, chatID)
+	community, err := s.communityCase.GetByID(ctx, communityID)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get chat users: %w", err)
+		return nil, fmt.Errorf("failed to get community: %w", err)
 	}
-	newIndex, err := s.buildUsersIndex(users)
+	newIndex, err := s.buildMembersIndex(community.Members)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build index: %w", err)
 	}
-	s.indexesCache.Store(chatID, newIndex)
+	s.indexesCache.Store(communityID, newIndex)
 
 	return newIndex, nil
 }
 
-func (s *Search) getChatsIndex(ctx Context) (*chatsIndex, error) {
-	index, ok := s.chatsIndexFromCache("chats")
+func (s *Search) getCommunitiesIndex(ctx Context) (*communitiesIndex, error) {
+	index, ok := s.communitiesIndexFromCache("communities")
 	if ok {
 		return index, nil
 	}
 
-	chats, err := s.chatCase.chatRepo.GetChatPreviewsWithUser(ctx, ctx.User.ID)
+	communities, err := s.communityCase.GetPreviews(ctx)
 	if err != nil {
-		return nil, fmt.Errorf("failed to get chats: %w", err)
+		return nil, fmt.Errorf("failed to get communities: %w", err)
 	}
-	newIndex, err := s.buildChatsIndex(chats)
+	newIndex, err := s.buildCommunitiesIndex(communities)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build index: %w", err)
 	}
-	s.indexesCache.Store("chats", newIndex)
+	s.indexesCache.Store("communities", newIndex)
 
 	return newIndex, nil
 }
 
-type searchUser struct {
+type searchMember struct {
 	Data string `json:"data"`
 }
 
-func userToSearchUser(user *domain.User) *searchUser {
-	return &searchUser{
-		Data: user.FirstName + " " + user.LastName + " " + user.TelegramUsername + " " +
-			user.Company + " " + user.Role + " " + user.Bio,
+func memberToSearchMember(member *domain.Member) *searchMember {
+	data := member.User.FirstName + " " + member.User.LastName + " " + member.User.TelegramUsername
+	for _, field := range member.Config.Fields {
+		switch field.Type {
+		case domain.FieldTypeTextarea:
+			data += " " + field.Textarea.Value
+		case domain.FieldTypeTextinput:
+			data += " " + field.Textinput.Value
+		}
+	}
+	return &searchMember{
+		Data: data,
 	}
 }
 
-func (s *Search) buildUsersIndex(users []*domain.User) (*usersIndex, error) {
+func (s *Search) buildMembersIndex(members []*domain.Member) (*membersIndex, error) {
 	russianTextAnalyzer := bleve.NewTextFieldMapping()
 	russianTextAnalyzer.Analyzer = ru.AnalyzerName
 
 	mapping := bleve.NewIndexMapping()
-	userMapping := bleve.NewDocumentMapping()
-	userMapping.AddFieldMappingsAt("data", russianTextAnalyzer)
-	mapping.AddDocumentMapping("user", userMapping)
-	mapping.DefaultType = "user"
+	memberMapping := bleve.NewDocumentMapping()
+	memberMapping.AddFieldMappingsAt("data", russianTextAnalyzer)
+	mapping.AddDocumentMapping("member", memberMapping)
+	mapping.DefaultType = "member"
 
 	index, err := bleve.NewMemOnly(mapping)
 	if err != nil {
 		panic(err)
 	}
-	for _, user := range users {
-		err := index.Index(user.ID, userToSearchUser(user))
+	for _, member := range members {
+		err := index.Index(member.User.ID, memberToSearchMember(member))
 		if err != nil {
 			return nil, fmt.Errorf("failed to index user: %w", err)
 		}
 	}
 
-	usersMap := make(map[string]*domain.User)
-	for _, user := range users {
-		usersMap[user.ID] = user
+	membersMap := make(map[string]*domain.Member)
+	for _, member := range members {
+		membersMap[member.User.ID] = member
 	}
 
-	return &usersIndex{
+	return &membersIndex{
 		createdAt: time.Now(),
 		index:     index,
-		users:     usersMap,
+		members:   membersMap,
 	}, nil
 }
 
-func (s *Search) buildChatsIndex(chats []*domain.ChatPreview) (*chatsIndex, error) {
-	chatMapping := bleve.NewDocumentMapping()
-	chatNameMapping := bleve.NewTextFieldMapping()
-	chatNameMapping.Analyzer = ru.AnalyzerName
-	chatMapping.AddFieldMappingsAt("name", chatNameMapping)
+func (s *Search) buildCommunitiesIndex(communities []*domain.Community) (*communitiesIndex, error) {
+	communityMapping := bleve.NewDocumentMapping()
+	communityNameMapping := bleve.NewTextFieldMapping()
+	communityNameMapping.Analyzer = ru.AnalyzerName
+	communityMapping.AddFieldMappingsAt("name", communityNameMapping)
 	noneMapping := bleve.NewTextFieldMapping()
 	noneMapping.Store = false
-	chatMapping.AddFieldMappingsAt("id", noneMapping)
-	chatMapping.AddFieldMappingsAt("avatar", noneMapping)
+	communityMapping.AddFieldMappingsAt("id", noneMapping)
+	communityMapping.AddFieldMappingsAt("avatar", noneMapping)
 
 	mapping := bleve.NewIndexMapping()
-	mapping.AddDocumentMapping("chat", chatMapping)
+	mapping.AddDocumentMapping("community", communityMapping)
 	index, err := bleve.NewMemOnly(mapping)
 	if err != nil {
 		panic(err)
 	}
-	for _, chat := range chats {
-		err := index.Index(chat.ID, chat)
+	for _, community := range communities {
+		err := index.Index(community.ID, community)
 		if err != nil {
-			return nil, fmt.Errorf("failed to index chat: %w", err)
+			return nil, fmt.Errorf("failed to index community: %w", err)
 		}
 	}
 
-	chatsMap := make(map[string]*domain.ChatPreview)
-	for _, chat := range chats {
-		chatsMap[chat.ID] = chat
+	communitiesMap := make(map[string]*domain.Community)
+	for _, community := range communities {
+		communitiesMap[community.ID] = community
 	}
 
-	return &chatsIndex{
-		createdAt: time.Now(),
-		index:     index,
-		chats:     chatsMap,
+	return &communitiesIndex{
+		createdAt:   time.Now(),
+		index:       index,
+		communities: communitiesMap,
 	}, nil
 }
 
@@ -285,11 +293,11 @@ func (s *Search) cacheCleaner() {
 		time.Sleep(s.cacheLifetime)
 		s.indexesCache.Range(func(key, value interface{}) bool {
 			switch v := value.(type) {
-			case *usersIndex:
+			case *membersIndex:
 				if time.Since(v.createdAt) > s.cacheLifetime {
 					s.indexesCache.Delete(key)
 				}
-			case *chatsIndex:
+			case *communitiesIndex:
 				if time.Since(v.createdAt) > s.cacheLifetime {
 					s.indexesCache.Delete(key)
 				}

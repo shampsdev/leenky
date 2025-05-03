@@ -15,7 +15,7 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/chats": {
+        "/communities": {
             "get": {
                 "security": [
                     {
@@ -29,16 +29,16 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "chats"
+                    "communities"
                 ],
-                "summary": "Get chat previews",
+                "summary": "Get community previews",
                 "responses": {
                     "200": {
-                        "description": "Chats data",
+                        "description": "Communities data",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/domain.ChatPreview"
+                                "$ref": "#/definitions/domain.Community"
                             }
                         }
                     },
@@ -51,7 +51,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/chats/id/{id}": {
+        "/communities/id/{id}": {
             "get": {
                 "security": [
                     {
@@ -65,13 +65,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "chats"
+                    "communities"
                 ],
-                "summary": "Get chat",
+                "summary": "Get community",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Chat ID",
+                        "description": "Community ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -79,9 +79,9 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Chat data",
+                        "description": "Community data",
                         "schema": {
-                            "$ref": "#/definitions/domain.Chat"
+                            "$ref": "#/definitions/domain.Community"
                         }
                     },
                     "400": {
@@ -93,7 +93,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/chats/id/{id}/join": {
+        "/communities/id/{id}/join": {
             "post": {
                 "security": [
                     {
@@ -107,13 +107,61 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "chats"
+                    "communities"
                 ],
-                "summary": "Join to chat",
+                "summary": "Join to community",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Chat ID",
+                        "description": "Community ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "description": "Community config",
+                        "name": "config",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/domain.MemberConfig"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK"
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/communities/id/{id}/leave": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "communities"
+                ],
+                "summary": "Leave community",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "community ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -132,46 +180,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/chats/id/{id}/leave": {
-            "post": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "chats"
-                ],
-                "summary": "Leave chat",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Chat ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK"
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/chats/id/{id}/preview": {
+        "/communities/id/{id}/members/search": {
             "get": {
                 "security": [
                     {
@@ -185,55 +194,13 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "chats"
+                    "communities"
                 ],
-                "summary": "Get chat preview",
+                "summary": "Search members",
                 "parameters": [
                     {
                         "type": "string",
-                        "description": "Chat ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "Chat data",
-                        "schema": {
-                            "$ref": "#/definitions/domain.ChatPreview"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/chats/id/{id}/search": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "chats"
-                ],
-                "summary": "Search users in chat",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "Chat ID",
+                        "description": "Community ID",
                         "name": "id",
                         "in": "path",
                         "required": true
@@ -247,11 +214,11 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Users",
+                        "description": "Members",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/domain.User"
+                                "$ref": "#/definitions/domain.Member"
                             }
                         }
                     },
@@ -264,7 +231,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/chats/search": {
+        "/communities/id/{id}/members/{member_id}": {
             "get": {
                 "security": [
                     {
@@ -278,9 +245,100 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "chats"
+                    "communities"
                 ],
-                "summary": "Search chats",
+                "summary": "Get member",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Community ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Member id",
+                        "name": "member_id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Member",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Member"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/communities/id/{id}/preview": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "communities"
+                ],
+                "summary": "Get community preview",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Community ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Community preview",
+                        "schema": {
+                            "$ref": "#/definitions/domain.Community"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
+        "/communities/search": {
+            "get": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "communities"
+                ],
+                "summary": "Search communities",
                 "parameters": [
                     {
                         "type": "string",
@@ -291,54 +349,12 @@ const docTemplate = `{
                 ],
                 "responses": {
                     "200": {
-                        "description": "Chats",
+                        "description": "Communities",
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/domain.ChatPreview"
+                                "$ref": "#/definitions/domain.Community"
                             }
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
-        },
-        "/users/id/{id}": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Get user",
-                "parameters": [
-                    {
-                        "type": "string",
-                        "description": "User ID",
-                        "name": "id",
-                        "in": "path",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "User data",
-                        "schema": {
-                            "$ref": "#/definitions/domain.User"
                         }
                     },
                     "400": {
@@ -371,7 +387,7 @@ const docTemplate = `{
                     "200": {
                         "description": "User data",
                         "schema": {
-                            "$ref": "#/definitions/domain.User"
+                            "$ref": "#/definitions/domain.UserProfile"
                         }
                     },
                     "400": {
@@ -405,7 +421,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/domain.EditUser"
+                            "$ref": "#/definitions/domain.PatchUser"
                         }
                     }
                 ],
@@ -440,17 +456,6 @@ const docTemplate = `{
                     "users"
                 ],
                 "summary": "Create me",
-                "parameters": [
-                    {
-                        "description": "User data",
-                        "name": "user",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/domain.EditUser"
-                        }
-                    }
-                ],
                 "responses": {
                     "200": {
                         "description": "User data",
@@ -497,105 +502,168 @@ const docTemplate = `{
                     }
                 }
             }
-        },
-        "/users/me/preview": {
-            "get": {
-                "security": [
-                    {
-                        "ApiKeyAuth": []
-                    }
-                ],
-                "description": "Use for bio extraction",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "users"
-                ],
-                "summary": "Get me preview",
-                "responses": {
-                    "200": {
-                        "description": "User data",
-                        "schema": {
-                            "$ref": "#/definitions/domain.UserPreview"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request"
-                    },
-                    "500": {
-                        "description": "Internal Server Error"
-                    }
-                }
-            }
         }
     },
     "definitions": {
-        "domain.Chat": {
+        "domain.Community": {
             "type": "object",
             "properties": {
                 "avatar": {
                     "type": "string"
                 },
+                "config": {
+                    "$ref": "#/definitions/domain.CommunityConfig"
+                },
+                "description": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
+                },
+                "members": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Member"
+                    }
+                },
+                "membersCount": {
+                    "type": "integer"
                 },
                 "name": {
                     "type": "string"
                 },
-                "telegramId": {
+                "tgChatID": {
                     "type": "integer"
-                },
-                "users": {
+                }
+            }
+        },
+        "domain.CommunityConfig": {
+            "type": "object",
+            "properties": {
+                "fields": {
                     "type": "array",
                     "items": {
-                        "$ref": "#/definitions/domain.User"
+                        "$ref": "#/definitions/domain.Field"
                     }
                 }
             }
         },
-        "domain.ChatPreview": {
+        "domain.Field": {
             "type": "object",
             "properties": {
-                "avatar": {
+                "description": {
+                    "type": "string"
+                },
+                "textarea": {
+                    "$ref": "#/definitions/domain.FieldTextarea"
+                },
+                "textinput": {
+                    "$ref": "#/definitions/domain.FieldTextinput"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "$ref": "#/definitions/domain.FieldType"
+                }
+            }
+        },
+        "domain.FieldTextarea": {
+            "type": "object",
+            "properties": {
+                "default": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.FieldTextinput": {
+            "type": "object",
+            "properties": {
+                "default": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.FieldType": {
+            "type": "string",
+            "enum": [
+                "textinput",
+                "textarea"
+            ],
+            "x-enum-varnames": [
+                "FieldTypeTextinput",
+                "FieldTypeTextarea"
+            ]
+        },
+        "domain.FieldValue": {
+            "type": "object",
+            "properties": {
+                "textarea": {
+                    "$ref": "#/definitions/domain.FieldValueTextarea"
+                },
+                "textinput": {
+                    "$ref": "#/definitions/domain.FieldValueTextinput"
+                },
+                "type": {
+                    "$ref": "#/definitions/domain.FieldType"
+                }
+            }
+        },
+        "domain.FieldValueTextarea": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.FieldValueTextinput": {
+            "type": "object",
+            "properties": {
+                "value": {
+                    "type": "string"
+                }
+            }
+        },
+        "domain.Member": {
+            "type": "object",
+            "properties": {
+                "community": {
+                    "$ref": "#/definitions/domain.Community"
+                },
+                "config": {
+                    "$ref": "#/definitions/domain.MemberConfig"
+                },
+                "isAdmin": {
+                    "type": "boolean"
+                },
+                "user": {
+                    "$ref": "#/definitions/domain.User"
+                }
+            }
+        },
+        "domain.MemberConfig": {
+            "type": "object",
+            "properties": {
+                "fields": {
+                    "description": "title to field",
+                    "type": "object",
+                    "additionalProperties": {
+                        "$ref": "#/definitions/domain.FieldValue"
+                    }
+                }
+            }
+        },
+        "domain.PatchUser": {
+            "type": "object",
+            "properties": {
+                "firstName": {
                     "type": "string"
                 },
                 "id": {
                     "type": "string"
                 },
-                "isMember": {
-                    "type": "boolean"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "telegramId": {
-                    "type": "integer"
-                },
-                "usersAmount": {
-                    "type": "integer"
-                }
-            }
-        },
-        "domain.EditUser": {
-            "type": "object",
-            "properties": {
-                "bio": {
-                    "type": "string"
-                },
-                "company": {
-                    "type": "string"
-                },
-                "firstName": {
-                    "type": "string"
-                },
                 "lastName": {
-                    "type": "string"
-                },
-                "role": {
                     "type": "string"
                 }
             }
@@ -606,12 +674,6 @@ const docTemplate = `{
                 "avatar": {
                     "type": "string"
                 },
-                "bio": {
-                    "type": "string"
-                },
-                "company": {
-                    "type": "string"
-                },
                 "firstName": {
                     "type": "string"
                 },
@@ -619,9 +681,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "lastName": {
-                    "type": "string"
-                },
-                "role": {
                     "type": "string"
                 },
                 "telegramId": {
@@ -632,29 +691,17 @@ const docTemplate = `{
                 }
             }
         },
-        "domain.UserPreview": {
+        "domain.UserProfile": {
             "type": "object",
             "properties": {
-                "avatar": {
-                    "type": "string"
+                "members": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/domain.Member"
+                    }
                 },
-                "bio": {
-                    "type": "string"
-                },
-                "firstName": {
-                    "type": "string"
-                },
-                "isRegistered": {
-                    "type": "boolean"
-                },
-                "lastName": {
-                    "type": "string"
-                },
-                "telegramId": {
-                    "type": "integer"
-                },
-                "telegramUsername": {
-                    "type": "string"
+                "user": {
+                    "$ref": "#/definitions/domain.User"
                 }
             }
         }
