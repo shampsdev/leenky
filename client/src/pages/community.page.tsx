@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import EBBComponent from "../components/enableBackButtonComponent";
 import RequireMembershipComponent from "../components/requireMembership.component";
 import SearchBarComponent from "../components/searchBar.component";
@@ -18,22 +18,29 @@ const containerVariants = {
   },
 };
 const CommunityPage = () => {
-  const { chatId } = useParams();
+  const navigate = useNavigate();
+
+  const { communityId } = useParams();
   const [loadedFirstTime, setLoadedFirstTime] = useState<boolean>(false);
 
   const { getScroll, saveScroll, getSearchQuery, saveSearchQuery } =
     useChatSearchStore();
 
   const { data: chatData, isPending } = useSearchMembers(
-    chatId ?? "",
-    getSearchQuery(chatId ?? "")
+    communityId ?? "",
+    getSearchQuery(communityId ?? "")
   );
-  const { data: previewChatData, isSuccess } = useCommunity(chatId ?? "");
+
+  const goToProfile = (memberId: string) => {
+    navigate(`/community/${communityId}/member/${memberId}`);
+  };
+
+  const { data: previewChatData, isSuccess } = useCommunity(communityId ?? "");
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const handleScroll = () => {
     if (scrollContainerRef.current) {
-      saveScroll(chatId ?? "", scrollContainerRef.current.scrollTop);
+      saveScroll(communityId ?? "", scrollContainerRef.current.scrollTop);
     }
   };
 
@@ -41,7 +48,7 @@ const CommunityPage = () => {
     const timer = setTimeout(() => {
       if (scrollContainerRef.current) {
         scrollContainerRef.current.scrollTo({
-          top: getScroll(chatId ?? ""),
+          top: getScroll(communityId ?? ""),
           behavior: "smooth",
         });
       }
@@ -58,7 +65,7 @@ const CommunityPage = () => {
 
   return (
     <EBBComponent>
-      <RequireMembershipComponent chatID={chatId}>
+      <RequireMembershipComponent chatID={communityId}>
         <div
           ref={scrollContainerRef}
           onScroll={handleScroll}
@@ -74,8 +81,8 @@ const CommunityPage = () => {
           )}
 
           <SearchBarComponent
-            value={getSearchQuery(chatId ?? "")}
-            inputHandler={(value) => saveSearchQuery(chatId ?? "", value)}
+            value={getSearchQuery(communityId ?? "")}
+            inputHandler={(value) => saveSearchQuery(communityId ?? "", value)}
             placeholder="Поиск участников"
             className="mt-[20px]"
           />
@@ -83,9 +90,10 @@ const CommunityPage = () => {
             <ul className="flex flex-col gap-[12px] mt-[25px]">
               {chatData?.map((user, index) => (
                 <ChatMemberCardComponent
+                  onClick={() => goToProfile(user.user.id)}
                   index={index}
                   key={user.user.id}
-                  userData={user}
+                  member={user}
                 />
               ))}
             </ul>
@@ -102,7 +110,7 @@ const CommunityPage = () => {
                   animated
                   index={index}
                   key={user.user.id}
-                  userData={user}
+                  member={user}
                   onAnimationComplete={
                     index === chatData.length - 1
                       ? () => setLoadedFirstTime(true)

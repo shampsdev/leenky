@@ -4,7 +4,7 @@ import SearchBarComponent from "../components/searchBar.component";
 import { openTelegramLink, popup } from "@telegram-apps/sdk-react";
 import ChatPreviewComponent from "../components/chatPreview.component";
 import DBBComponent from "../components/disableBackButton.component";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import useChatsSearchStore from "../stores/chatsSearch.store";
 import { BOT_USERNAME } from "../shared/constants";
 import NotFound from "../assets/notFound.svg";
@@ -21,6 +21,8 @@ const containerVariants = {
   },
 };
 const CommunitiesPage = () => {
+  const navigate = useNavigate();
+
   const useLeaveChatMutation = useLeaveCommunity();
 
   const { searchQuery, setSearchQuery, scroll, setScroll } =
@@ -29,6 +31,10 @@ const CommunitiesPage = () => {
   const { data: chats, isPending } = useCommunitiesSearch(searchQuery);
 
   const [loadedFirstTime, setLoadedFirstTime] = useState<boolean>(false);
+
+  const goToCommunity = (communityId: string) => {
+    navigate(`/community/${communityId}`);
+  };
 
   const deleteHandler = async (chatPreviewData: Community) => {
     popup
@@ -109,6 +115,7 @@ const CommunitiesPage = () => {
                     key={chat.id}
                     chatData={chat}
                     deleteHandler={() => deleteHandler(chat)}
+                    onClick={() => goToCommunity(chat.id)}
                     underline
                     index={index}
                   />
@@ -117,6 +124,7 @@ const CommunitiesPage = () => {
                     key={chat.id}
                     chatData={chat}
                     deleteHandler={() => deleteHandler(chat)}
+                    onClick={() => goToCommunity(chat.id)}
                     index={index}
                   />
                 )
@@ -136,6 +144,7 @@ const CommunitiesPage = () => {
                     key={chat.id}
                     chatData={chat}
                     deleteHandler={() => deleteHandler(chat)}
+                    onClick={() => goToCommunity(chat.id)}
                     underline
                     index={index}
                     animated
@@ -147,6 +156,7 @@ const CommunitiesPage = () => {
                   />
                 ) : (
                   <ChatPreviewComponent
+                    onClick={() => goToCommunity(chat.id)}
                     key={chat.id}
                     chatData={chat}
                     deleteHandler={() => deleteHandler(chat)}

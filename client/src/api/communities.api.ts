@@ -127,7 +127,7 @@ export const getMember = async (
 ): Promise<Member | null> => {
   try {
     const response = await api.get<Member>(
-      `/communities/id/${communityId}/members/${memberId}`,
+      `/communities/id/${communityId}/members/id/${memberId}`,
       {
         headers: { "X-Api-Token": initData },
       }

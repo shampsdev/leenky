@@ -49,9 +49,9 @@ function App() {
             <Routes location={location}>
               <Route element={<ProtectedRoute />}>
                 <Route path="/communities" element={<CommunitiesPage />} />
-                <Route path="/chat/:chatId" element={<ChatPage />} />
+                <Route path="/community/:communityId" element={<ChatPage />} />
                 <Route
-                  path="/profile/:chatId/:userId"
+                  path="/community/:communityId/member/:memberId"
                   element={<ProfilePage />}
                 />
                 <Route path="/profile" element={<CurrentProfilePage />} />

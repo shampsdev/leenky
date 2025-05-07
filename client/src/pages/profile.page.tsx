@@ -9,8 +9,8 @@ import ButtonComponent from "../components/button.component";
 import TGWhite from "../assets/tg_white.svg";
 import useMember from "../hooks/members/fetchHooks/useMember";
 const ProfilePage = () => {
-  const { chatId, userId } = useParams();
-  const { data } = useMember(chatId ?? "", userId ?? "");
+  const { communityId, memberId } = useParams();
+  const { data } = useMember(communityId ?? "", memberId ?? "");
   const userData = data?.user;
   return (
     <EBBComponent>
