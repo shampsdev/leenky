@@ -2,6 +2,17 @@ import { useQueryClient, useMutation } from "@tanstack/react-query";
 import { postMe } from "../api/api";
 import useInitDataStore from "../stores/InitData.store";
 import { UserData } from "../types/user.interface";
+import { PatchMe } from "../types/postApiTypes/patchMe.interface";
+import { updateMe } from "../api/users.api";
+
+const useUpdateMe = () => {
+  const { initData } = useInitDataStore();
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: (patchData: PatchMe) => updateMe(initData, patchData),
+  });
+};
 
 const useUpdateMe = () => {
   const { initData } = useInitDataStore();

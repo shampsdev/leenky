@@ -142,9 +142,9 @@ export const getMember = async (
 export const getCommunityPreview = async (
   initData: string,
   id: string,
-): Promise<Member[] | null> => {
+): Promise<Community | null> => {
   try {
-    const response = await api.get<Member[]>(`/communities/id/${id}/preview`, {
+    const response = await api.get<Community>(`/communities/id/${id}/preview`, {
       headers: { "X-Api-Token": initData },
     });
     return response.data;
