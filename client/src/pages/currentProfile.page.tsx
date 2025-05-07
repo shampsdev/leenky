@@ -5,10 +5,12 @@ import { useNavigate } from "react-router-dom";
 import EBBComponent from "../components/enableBackButtonComponent";
 import DevImage from "../assets/dev.png";
 import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
-import useMe from "../hooks/useMe";
+import useGetMe from "../hooks/users/fetchHooks/useGetMe";
 
 const CurrentProfilePage = () => {
-  const { data: userData } = useMe();
+  const { data } = useGetMe();
+  const userData = data?.user;
+
   const navigate = useNavigate();
 
   const goToEditProfilePage = () => {
@@ -37,21 +39,12 @@ const CurrentProfilePage = () => {
 
           <div className="rounded-lg mt-4 mx-auto">
             <InfoBlockComponent>
-              <InfoParagraphComponent
-                title="Место работы"
-                content={userData?.company ?? ""}
-              />
-              <InfoParagraphComponent
-                title="Должность"
-                content={userData?.role ?? ""}
-              />
+              <InfoParagraphComponent title="Место работы" content={""} />
+              <InfoParagraphComponent title="Должность" content={""} />
             </InfoBlockComponent>
             <div className="px-4 text-hint mb-2 mt-4 text-sm">ПОДРОБНЕЕ</div>
             <InfoBlockComponent>
-              <InfoParagraphComponent
-                title="Описание"
-                content={userData?.bio ?? ""}
-              />
+              <InfoParagraphComponent title="Описание" content={""} />
             </InfoBlockComponent>
           </div>
           <div className="pt-[40px] pb-[39px]"></div>

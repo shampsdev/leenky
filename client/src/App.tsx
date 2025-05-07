@@ -1,19 +1,16 @@
 import "./App.css";
 import { Route, Routes, useLocation, useNavigate } from "react-router-dom";
-import { AboutFirstPage, AboutSecondPage } from "./pages/about.page";
-import ChatPage from "./pages/chat.page";
-import ChatsPage from "./pages/chats.page";
 import { useCallback, useEffect } from "react";
 import { backButton } from "@telegram-apps/sdk-react";
-import ProtectedRoute from "./components/protectedRoute.component";
-import CurrentProfilePage from "./pages/currentProfile.page";
-import EditProfilePage from "./pages/editProfile.page";
-import RegistrationPage from "./pages/registration.page";
 import InitialPage from "./pages/initial.page";
-import InvitationPage from "./pages/invitation.page";
-import ProfilePage from "./pages/profile.page";
 import { AnimatePresence, motion } from "framer-motion";
 import InitDataWrapper from "./utils/InitDataWrapper";
+import ProtectedRoute from "./utils/protectedRoute";
+import { AboutFirstPage, AboutSecondPage } from "./pages/about.page";
+import ChatPage from "./pages/community.page";
+import CurrentProfilePage from "./pages/currentProfile.page";
+import ProfilePage from "./pages/profile.page";
+import CommunitiesPage from "./pages/communities.page";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -51,17 +48,20 @@ function App() {
           >
             <Routes location={location}>
               <Route element={<ProtectedRoute />}>
-                <Route path="/chats" element={<ChatsPage />} />
+                <Route path="/communities" element={<CommunitiesPage />} />
                 <Route path="/chat/:chatId" element={<ChatPage />} />
-                <Route path="/profile/:userId" element={<ProfilePage />} />
+                <Route
+                  path="/profile/:chatId/:userId"
+                  element={<ProfilePage />}
+                />
                 <Route path="/profile" element={<CurrentProfilePage />} />
-                <Route path="/profile/edit" element={<EditProfilePage />} />
-                <Route path="/invite" element={<InvitationPage />} />
+                {/* <Route path="/profile/edit" element={<EditProfilePage />} /> */}
+                {/* <Route path="/invite" element={<InvitationPage />} /> */}
               </Route>
               <Route path="/" element={<InitialPage />} />
               <Route path="/about/1" element={<AboutFirstPage />} />
               <Route path="/about/2" element={<AboutSecondPage />} />
-              <Route path="/registration" element={<RegistrationPage />} />
+              {/* <Route path="/registration" element={<RegistrationPage />} /> */}
             </Routes>
           </motion.div>
         </AnimatePresence>

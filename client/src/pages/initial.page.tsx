@@ -12,10 +12,10 @@ const InitialPage = () => {
       startParam !== null &&
       startParam.length > 0
     ) {
-      navigate("/chats", { replace: true });
+      navigate("/communities", { replace: true });
       navigate(`/chat/${startParam}`);
     } else {
-      navigate("/chats", { replace: true });
+      navigate("/communities", { replace: true });
     }
   }, []);
   return null;

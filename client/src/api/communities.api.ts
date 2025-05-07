@@ -6,7 +6,7 @@ import { PatchCommunity } from "../types/postApiTypes/patchCommunity.interface";
 import { api } from "./api";
 
 export const getCommunityPreviews = async (
-  initData: string,
+  initData: string
 ): Promise<Community[] | null> => {
   try {
     const response = await api.get<Community[]>(`/communities`, {
@@ -21,7 +21,7 @@ export const getCommunityPreviews = async (
 
 export const createCommunity = async (
   initData: string,
-  communityData: CreateCommunity,
+  communityData: CreateCommunity
 ): Promise<Community | null> => {
   try {
     const response = await api.post<Community>(`/communities`, communityData, {
@@ -36,7 +36,7 @@ export const createCommunity = async (
 
 export const patchCommunity = async (
   initData: string,
-  patchCommunityData: PatchCommunity,
+  patchCommunityData: PatchCommunity
 ): Promise<Community | null> => {
   try {
     const response = await api.patch<Community>(
@@ -44,7 +44,7 @@ export const patchCommunity = async (
       patchCommunityData,
       {
         headers: { "X-Api-Token": initData },
-      },
+      }
     );
     return response.data;
   } catch (error) {
@@ -55,7 +55,7 @@ export const patchCommunity = async (
 
 export const getCommunity = async (
   initData: string,
-  id: string,
+  id: string
 ): Promise<Community | null> => {
   try {
     const response = await api.get<Community>(`/communities/id/${id}`, {
@@ -70,7 +70,7 @@ export const getCommunity = async (
 
 export const joinCommunity = async (
   initData: string,
-  id: string,
+  id: string
 ): Promise<MemberConfig | null> => {
   try {
     const response = await api.post<MemberConfig>(`/communities/id/${id}`, {
@@ -85,7 +85,7 @@ export const joinCommunity = async (
 
 export const leaveCommunity = async (
   initData: string,
-  id: string,
+  id: string
 ): Promise<null> => {
   try {
     const response = await api.post<null>(`/communities/id/${id}`, {
@@ -101,7 +101,7 @@ export const leaveCommunity = async (
 export const searchMembers = async (
   initData: string,
   id: string,
-  query: string,
+  query: string
 ): Promise<Member[] | null> => {
   try {
     const response = await api.get<Member[]>(
@@ -111,7 +111,7 @@ export const searchMembers = async (
           q: query,
         },
         headers: { "X-Api-Token": initData },
-      },
+      }
     );
     return response.data;
   } catch (error) {
@@ -123,14 +123,14 @@ export const searchMembers = async (
 export const getMember = async (
   initData: string,
   communityId: string,
-  memberId: string,
-): Promise<Member[] | null> => {
+  memberId: string
+): Promise<Member | null> => {
   try {
-    const response = await api.get<Member[]>(
+    const response = await api.get<Member>(
       `/communities/id/${communityId}/members/${memberId}`,
       {
         headers: { "X-Api-Token": initData },
-      },
+      }
     );
     return response.data;
   } catch (error) {
@@ -141,7 +141,7 @@ export const getMember = async (
 
 export const getCommunityPreview = async (
   initData: string,
-  id: string,
+  id: string
 ): Promise<Community | null> => {
   try {
     const response = await api.get<Community>(`/communities/id/${id}/preview`, {
@@ -156,7 +156,7 @@ export const getCommunityPreview = async (
 
 export const searchCommunities = async (
   initData: string,
-  query: string,
+  query: string
 ): Promise<Community[] | null> => {
   try {
     const response = await api.get<Community[]>(`/communities/search`, {

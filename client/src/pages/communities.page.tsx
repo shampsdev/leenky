@@ -1,7 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import ProfileComponent from "../components/profile.component";
 import SearchBarComponent from "../components/searchBar.component";
-import { ChatPreviewData } from "../types/user.interface";
 import { openTelegramLink, popup } from "@telegram-apps/sdk-react";
 import ChatPreviewComponent from "../components/chatPreview.component";
 import DBBComponent from "../components/disableBackButton.component";
@@ -11,8 +10,9 @@ import { BOT_USERNAME } from "../shared/constants";
 import NotFound from "../assets/notFound.svg";
 import AddButton from "../assets/add_green.svg";
 import { motion } from "motion/react";
-import useLeaveChat from "../hooks/useLeaveChat";
-import useSearchChats from "../hooks/useSearchChats";
+import useLeaveCommunity from "../hooks/communities/mutations/useLeaveCommunity";
+import useCommunitiesSearch from "../hooks/communities/search/useCommunitiesSearch";
+import { Community } from "../types/community/community.interface";
 const containerVariants = {
   visible: {
     transition: {
@@ -20,17 +20,17 @@ const containerVariants = {
     },
   },
 };
-const ChatsPage = () => {
-  const useLeaveChatMutation = useLeaveChat();
+const CommunitiesPage = () => {
+  const useLeaveChatMutation = useLeaveCommunity();
 
   const { searchQuery, setSearchQuery, scroll, setScroll } =
     useChatsSearchStore();
 
-  const { data: chats, isPending } = useSearchChats(searchQuery);
+  const { data: chats, isPending } = useCommunitiesSearch(searchQuery);
 
   const [loadedFirstTime, setLoadedFirstTime] = useState<boolean>(false);
 
-  const deleteHandler = async (chatPreviewData: ChatPreviewData) => {
+  const deleteHandler = async (chatPreviewData: Community) => {
     popup
       .open({
         message:
@@ -119,7 +119,7 @@ const ChatsPage = () => {
                     deleteHandler={() => deleteHandler(chat)}
                     index={index}
                   />
-                ),
+                )
               )}
             </ul>
           )}
@@ -153,7 +153,7 @@ const ChatsPage = () => {
                     index={index}
                     animated
                   />
-                ),
+                )
               )}
             </motion.ul>
           )}
@@ -179,4 +179,4 @@ const ChatsPage = () => {
   );
 };
 
-export default ChatsPage;
+export default CommunitiesPage;

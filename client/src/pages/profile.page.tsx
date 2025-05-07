@@ -7,11 +7,11 @@ import { handleImageError } from "../utils/imageErrorHandler";
 import DevImage from "../assets/dev.png";
 import ButtonComponent from "../components/button.component";
 import TGWhite from "../assets/tg_white.svg";
-import useUser from "../hooks/useUser";
+import useMember from "../hooks/members/fetchHooks/useMember";
 const ProfilePage = () => {
-  const { userId } = useParams();
-  const { data: userData } = useUser(userId ?? "");
-
+  const { chatId, userId } = useParams();
+  const { data } = useMember(chatId ?? "", userId ?? "");
+  const userData = data?.user;
   return (
     <EBBComponent>
       <div className="w-[95%] mx-auto px-4 overflow-y-auto ">
@@ -44,23 +44,14 @@ const ProfilePage = () => {
         </div>
         <div className="rounded-lg mt-[15px] mx-auto">
           <InfoBlockComponent>
-            <InfoParagraphComponent
-              title="Место работы"
-              content={userData?.company ?? ""}
-            />
-            <InfoParagraphComponent
-              title="Должность"
-              content={userData?.role ?? ""}
-            />
+            <InfoParagraphComponent title="Место работы" content={""} />
+            <InfoParagraphComponent title="Должность" content={""} />
           </InfoBlockComponent>
           <div className="px-[16px] text-hint mb-[8px] mt-[15px] text-[13px]">
             ПОДРОБНЕЕ
           </div>
           <InfoBlockComponent>
-            <InfoParagraphComponent
-              title="Описание"
-              content={userData?.bio ?? ""}
-            />
+            <InfoParagraphComponent title="Описание" content={""} />
           </InfoBlockComponent>
         </div>
       </div>

@@ -8,8 +8,8 @@ import useChatSearchStore from "../stores/chatSearch.store";
 import ChatMemberCardComponent from "../components/chatMember.card.component";
 import { motion } from "motion/react";
 import NotFound from "../assets/notFound.svg";
-import useSearchUsersInChat from "../hooks/useSearchUsers";
-import useChatPreview from "../hooks/useChatPreview";
+import useSearchMembers from "../hooks/members/search/useSearchMembers";
+import useCommunity from "../hooks/communities/fetchHooks/useСommunity";
 const containerVariants = {
   visible: {
     transition: {
@@ -17,18 +17,18 @@ const containerVariants = {
     },
   },
 };
-const ChatPage = () => {
+const CommunityPage = () => {
   const { chatId } = useParams();
   const [loadedFirstTime, setLoadedFirstTime] = useState<boolean>(false);
 
   const { getScroll, saveScroll, getSearchQuery, saveSearchQuery } =
     useChatSearchStore();
 
-  const { data: chatData, isPending } = useSearchUsersInChat(
+  const { data: chatData, isPending } = useSearchMembers(
     chatId ?? "",
-    getSearchQuery(chatId ?? ""),
+    getSearchQuery(chatId ?? "")
   );
-  const { data: previewChatData, isSuccess } = useChatPreview(chatId ?? "");
+  const { data: previewChatData, isSuccess } = useCommunity(chatId ?? "");
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const handleScroll = () => {
@@ -84,7 +84,7 @@ const ChatPage = () => {
               {chatData?.map((user, index) => (
                 <ChatMemberCardComponent
                   index={index}
-                  key={user.id}
+                  key={user.user.id}
                   userData={user}
                 />
               ))}
@@ -101,7 +101,7 @@ const ChatPage = () => {
                 <ChatMemberCardComponent
                   animated
                   index={index}
-                  key={user.id}
+                  key={user.user.id}
                   userData={user}
                   onAnimationComplete={
                     index === chatData.length - 1
@@ -127,4 +127,4 @@ const ChatPage = () => {
   );
 };
 
-export default ChatPage;
+export default CommunityPage;
