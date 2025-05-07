@@ -5,7 +5,7 @@ import { getCommunityPreview } from "../../../api/communities.api";
 const useCommunityPreview = (id: string) => {
   const { initData } = useInitDataStore();
   return useQuery({
-    queryKey: [`communities/${id}`, initData, id],
+    queryKey: [`/communities/${id}`, initData],
     queryFn: () => getCommunityPreview(initData, id),
   });
 };

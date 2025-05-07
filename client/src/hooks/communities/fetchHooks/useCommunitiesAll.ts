@@ -7,13 +7,13 @@ const useCommunititesAll = () => {
   const { initData } = useInitDataStore();
   const queryClient = useQueryClient();
   return useQuery({
-    queryKey: [`communities/`, initData],
+    queryKey: [`/communities`, initData],
     queryFn: async () => {
       const communities = await getCommunityPreviews(initData);
 
       communities?.forEach((community: Community) => {
         queryClient.setQueryData(
-          [`communities/${community.id}`, initData, community.id],
+          [`/communities/${community.id}`, initData, community.id],
           community,
         );
       });

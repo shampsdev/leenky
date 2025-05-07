@@ -5,7 +5,7 @@ import { getCommunity } from "../../../api/communities.api";
 const useCommunity = (id: string) => {
   const { initData } = useInitDataStore();
   return useQuery({
-    queryKey: [`communities/${id}`, initData, id],
+    queryKey: [`/communities/${id}`, initData],
     queryFn: () => getCommunity(initData, id),
   });
 };
