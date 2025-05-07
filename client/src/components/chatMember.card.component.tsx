@@ -2,10 +2,8 @@ import { motion } from "framer-motion";
 import { handleImageError } from "../utils/imageErrorHandler";
 import DevImage from "../assets/dev.png";
 import NavImage from "../assets/navigation.svg";
-import Case from "../assets/case.svg";
-import Person from "../assets/person.svg";
 import { Member } from "../types/member/member.interface";
-import { useEffect, useState } from "react";
+import { useExtractFields } from "../hooks/utils/extractFields";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -29,21 +27,7 @@ const ChatMemberCardComponent = (props: {
 }) => {
   const fields = props.member.config.fields;
 
-  const [textInputs, setTextInputs] = useState<string[]>([]);
-  const [textArea, setTextArea] = useState<string>("");
-  useEffect(() => {
-    const textInputs = Object.entries(fields)
-      .filter(([_, field]) => field.type === "textinput")
-      .map(([key, field]) => ({ key, ...field }));
-    setTextInputs([
-      textInputs[0].textinput!.value,
-      textInputs[1].textinput!.value,
-    ]);
-    const textAreas = Object.entries(fields)
-      .filter(([_, field]) => field.type === "textarea")
-      .map(([key, field]) => ({ key, ...field }));
-    setTextArea(textAreas[0].textarea!.value);
-  }, []);
+  const { textInputs, textAreas } = useExtractFields(fields);
 
   if (props.animated) {
     return (
@@ -82,9 +66,9 @@ const ChatMemberCardComponent = (props: {
           </div>
 
           <p className="text-hint font-light text-[13px] pt-[10px]">
-            {textArea && textArea.length > 90
-              ? textArea.slice(0, 90) + "..."
-              : textArea}
+            {textAreas[0] && textAreas[0].length > 90
+              ? textAreas[0].slice(0, 90) + "..."
+              : textAreas[0]}
           </p>
         </div>
       </motion.li>
@@ -122,9 +106,9 @@ const ChatMemberCardComponent = (props: {
           </div>
 
           <p className="text-hint font-light text-[13px] pt-[10px]">
-            {textArea && textArea.length > 90
-              ? textArea.slice(0, 90) + "..."
-              : textArea}
+            {textAreas[0] && textAreas[0].length > 90
+              ? textAreas[0].slice(0, 90) + "..."
+              : textAreas[0]}
           </p>
         </div>
       </li>
