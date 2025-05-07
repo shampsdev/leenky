@@ -170,6 +170,7 @@ func (m *Community) GetMember(ctx Context, communityID, memberID string) (*domai
 	member, err := repo.First(m.memberRepo.Filter)(ctx, &domain.FilterMember{
 		UserID:      &memberID,
 		CommunityID: &communityID,
+		IncludeUser: true,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("error getting member: %w", err)
