@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import useInitDataStore from "../stores/InitData.store";
-import { getCommunity } from "../api/communities.api";
+import useInitDataStore from "../../../stores/InitData.store";
+import { getCommunity } from "../../../api/communities.api";
 
 const useCommunity = (id: string) => {
   const { initData } = useInitDataStore();
