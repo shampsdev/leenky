@@ -5,6 +5,7 @@ import NavImage from "../assets/navigation.svg";
 import Case from "../assets/case.svg";
 import Person from "../assets/person.svg";
 import { Member } from "../types/member/member.interface";
+import { useEffect, useState } from "react";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -26,6 +27,24 @@ const ChatMemberCardComponent = (props: {
   onAnimationComplete?: () => void;
   member: Member;
 }) => {
+  const fields = props.member.config.fields;
+
+  const [textInputs, setTextInputs] = useState<string[]>([]);
+  const [textArea, setTextArea] = useState<string>("");
+  useEffect(() => {
+    const textInputs = Object.entries(fields)
+      .filter(([_, field]) => field.type === "textinput")
+      .map(([key, field]) => ({ key, ...field }));
+    setTextInputs([
+      textInputs[0].textinput!.value,
+      textInputs[1].textinput!.value,
+    ]);
+    const textAreas = Object.entries(fields)
+      .filter(([_, field]) => field.type === "textarea")
+      .map(([key, field]) => ({ key, ...field }));
+    setTextArea(textAreas[0].textarea!.value);
+  }, []);
+
   if (props.animated) {
     return (
       <motion.li
@@ -51,12 +70,10 @@ const ChatMemberCardComponent = (props: {
                 </p>
                 <div className="flex flex-col">
                   <p className="text-hint flex items-start gap-[4px] text-[13px]">
-                    <img src={Case} className="self-start mt-[3px]" />
-                    компания
+                    {textInputs[0]}
                   </p>
                   <p className="text-hint flex items-start gap-[4px] text-[13px]">
-                    <img src={Person} className="self-start mt-[3px]" />
-                    роль
+                    {textInputs[1]}
                   </p>
                 </div>
               </div>
@@ -65,10 +82,9 @@ const ChatMemberCardComponent = (props: {
           </div>
 
           <p className="text-hint font-light text-[13px] pt-[10px]">
-            {/* {props.userData.bio && props.userData.bio.length > 90
-              ? props.userData.bio.slice(0, 90) + "..."
-              : props.userData.bio} */}
-            биография
+            {textArea && textArea.length > 90
+              ? textArea.slice(0, 90) + "..."
+              : textArea}
           </p>
         </div>
       </motion.li>
@@ -94,12 +110,10 @@ const ChatMemberCardComponent = (props: {
                 </p>
                 <div className="flex flex-col">
                   <p className="text-hint flex items-start gap-[4px] text-[13px]">
-                    <img src={Case} className="self-start mt-[3px]" />
-                    компания
+                    {textInputs[0]}
                   </p>
                   <p className="text-hint flex items-start gap-[4px] text-[13px]">
-                    <img src={Person} className="self-start mt-[3px]" />
-                    роль
+                    {textInputs[1]}
                   </p>
                 </div>
               </div>
@@ -108,10 +122,9 @@ const ChatMemberCardComponent = (props: {
           </div>
 
           <p className="text-hint font-light text-[13px] pt-[10px]">
-            {/* {props.userData.bio && props.userData.bio.length > 90
-              ? props.userData.bio.slice(0, 90) + "..."
-              : props.userData.bio} */}
-            биография
+            {textArea && textArea.length > 90
+              ? textArea.slice(0, 90) + "..."
+              : textArea}
           </p>
         </div>
       </li>
