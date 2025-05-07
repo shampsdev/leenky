@@ -9,6 +9,8 @@ definitions:
         type: string
       id:
         type: string
+      isMember:
+        type: boolean
       members:
         items:
           $ref: '#/definitions/domain.Member'

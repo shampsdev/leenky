@@ -61,7 +61,7 @@ func (r *MemberRepo) Patch(ctx context.Context, member *domain.PatchMember) erro
 }
 
 func (r *MemberRepo) Delete(ctx context.Context, userID, communityID string) error {
-	_, err := r.db.Exec(ctx, "DELETE FROM member WHERE user_id = $1 AND id = $2", userID, communityID)
+	_, err := r.db.Exec(ctx, "DELETE FROM member WHERE user_id = $1 AND community_id = $2", userID, communityID)
 	return err
 }
 

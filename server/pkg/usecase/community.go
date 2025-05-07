@@ -71,6 +71,12 @@ func (c *Community) GetPreviewByID(ctx Context, id string) (*domain.Community, e
 	if err != nil {
 		return nil, fmt.Errorf("failed to get community: %w", err)
 	}
+	isMember, err := c.IsMember(ctx, id)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get member: %w", err)
+	}
+	community.IsMember = &isMember
+
 	return community, nil
 }
 
@@ -220,6 +226,9 @@ func (m *Community) IsMember(ctx Context, communityID string) (bool, error) {
 		UserID:      &ctx.User.ID,
 		CommunityID: &communityID,
 	})
+	if errors.Is(err, repo.ErrNotFound) {
+		return false, nil
+	}
 	if err != nil {
 		return false, err
 	}

@@ -604,6 +604,9 @@ const docTemplate = `{
                 "id": {
                     "type": "string"
                 },
+                "isMember": {
+                    "type": "boolean"
+                },
                 "members": {
                     "type": "array",
                     "items": {

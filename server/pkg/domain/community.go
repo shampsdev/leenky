@@ -8,9 +8,11 @@ type Community struct {
 
 	TGChatID *int64 `json:"tgChatID"`
 
-	Config       *CommunityConfig `json:"config"`
-	MembersCount *int             `json:"membersCount,omitempty"`
-	Members      []*Member        `json:"members,omitempty"`
+	Config  *CommunityConfig `json:"config"`
+	Members []*Member        `json:"members,omitempty"`
+
+	MembersCount *int  `json:"membersCount,omitempty"`
+	IsMember     *bool `json:"isMember,omitempty"`
 }
 
 type CommunityConfig struct {

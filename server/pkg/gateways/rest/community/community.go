@@ -25,8 +25,7 @@ func Setup(r *gin.RouterGroup, cases usecase.Cases) {
 		POST("/leave", Leave(cases.Community)).
 		GET("/preview", GetPreview(cases.Community))
 
-	gM := g.Group("/id/:id/members")
-	gM.
+	g.Group("/id/:id/members").
 		GET("/search", SearchMembers(cases.Community, cases.Search)).
 		GET("/id/:member_id", GetMember(cases.Community))
 }
