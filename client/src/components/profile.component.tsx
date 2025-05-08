@@ -1,17 +1,16 @@
-import { initData } from "@telegram-apps/sdk-react";
 import { handleImageError } from "../utils/imageErrorHandler";
-import { useNavigate } from "react-router-dom";
 import DevImage from "../assets/dev.png";
-const ProfileComponent = () => {
-  const avatar = initData.user()?.photo_url;
-  const navigate = useNavigate();
-  const goToProfile = () => {
-    navigate("/profile");
-  };
+import useUserStore from "../stores/user.store";
+
+interface ProfileComponentProps {
+  onClick?: () => void;
+}
+const ProfileComponent = (props: ProfileComponentProps) => {
+  const avatar = useUserStore().userData.avatar;
 
   return (
     <>
-      <div className="" onClick={goToProfile}>
+      <div className="" onClick={props.onClick}>
         <img
           className="w-[36px] h-[36px] rounded-full"
           src={avatar || DevImage}

@@ -1,15 +1,16 @@
-import { useNavigate } from "react-router-dom";
-import { ChatPreviewData } from "../types/user.interface";
 import { handleImageError } from "../utils/imageErrorHandler";
 import DevImage from "../assets/dev.png";
 import TrashBin from "../assets/trash_bin.svg";
 import { motion } from "motion/react";
+import { Community } from "../types/community/community.interface";
+
 interface ChatPreviewComponentProps {
-  chatData: ChatPreviewData;
+  chatData: Community;
   view?: boolean;
   className?: string;
   underline?: boolean;
   deleteHandler?: () => void;
+  onClick?: () => void;
 }
 
 const chatPreviewVariants = {
@@ -31,7 +32,6 @@ const ChatPreviewComponent = (
     animated?: boolean;
   }
 ) => {
-  const navigate = useNavigate();
   if (props.view) {
     return (
       <motion.li
@@ -59,7 +59,7 @@ const ChatPreviewComponent = (
             <div className="flex flex-col gap-[2px]">
               <p className="font-normal text-[17px]">{props.chatData.name}</p>
               <p className="text-hint font-light text-[15px]">
-                {props.chatData.usersAmount} участников
+                {props.chatData.members.length} участников
               </p>
             </div>
           </div>
@@ -82,9 +82,7 @@ const ChatPreviewComponent = (
               src={props.chatData.avatar || DevImage}
               onError={handleImageError}
               className="w-[60px] h-[60px] rounded-full aspect-square object-cover"
-              onClick={() => {
-                navigate(`/chat/${props.chatData.id}`);
-              }}
+              onClick={props.onClick}
             />
             <div
               className={`flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px] ${
@@ -93,13 +91,11 @@ const ChatPreviewComponent = (
             >
               <div
                 className={`flex flex-col gap-[2px]`}
-                onClick={() => {
-                  navigate(`/chat/${props.chatData.id}`);
-                }}
+                onClick={props.onClick}
               >
                 <p className="font-normal text-[17px]">{props.chatData.name}</p>
                 <p className="text-hint font-light text-[15px]">
-                  {props.chatData.usersAmount} участников
+                  {props.chatData.membersCount} участников
                 </p>
               </div>
             </div>
@@ -124,9 +120,7 @@ const ChatPreviewComponent = (
               src={props.chatData.avatar || DevImage}
               onError={handleImageError}
               className="w-[60px] h-[60px] rounded-full aspect-square object-cover"
-              onClick={() => {
-                navigate(`/chat/${props.chatData.id}`);
-              }}
+              onClick={props.onClick}
             />
             <div
               className={`flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px] ${
@@ -135,13 +129,11 @@ const ChatPreviewComponent = (
             >
               <div
                 className={`flex flex-col gap-[2px]`}
-                onClick={() => {
-                  navigate(`/chat/${props.chatData.id}`);
-                }}
+                onClick={props.onClick}
               >
                 <p className="font-normal text-[17px]">{props.chatData.name}</p>
                 <p className="text-hint font-light text-[15px]">
-                  {props.chatData.usersAmount} участников
+                  {props.chatData.membersCount} участников
                 </p>
               </div>
             </div>
