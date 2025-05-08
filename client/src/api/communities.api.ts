@@ -70,13 +70,14 @@ export const getCommunity = async (
 
 export const joinCommunity = async (
   initData: string,
-  id: string
-): Promise<MemberConfig | null> => {
+  id: string,
+  memberConfig: MemberConfig
+): Promise<null> => {
   try {
-    const response = await api.post<MemberConfig>(`/communities/id/${id}`, {
+    await api.post<null>(`/communities/id/${id}/join`, memberConfig, {
       headers: { "X-Api-Token": initData },
     });
-    return response.data;
+    return null;
   } catch (error) {
     console.error("Ошибка при присоединении к сообществу:", error);
     return null;

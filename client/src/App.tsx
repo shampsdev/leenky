@@ -13,6 +13,7 @@ import ProfilePage from "./pages/profile.page";
 import CommunitiesPage from "./pages/communities.page";
 import ProfileRedirection from "./utils/profileRedirection";
 import GeneralCurrentProfilePage from "./pages/generalCurrentProfile.page";
+import RegistrationPage from "./pages/registration.page";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -65,7 +66,8 @@ function App() {
                 />
                 <Route
                   path="/profile/current/"
-                  element={<GeneralCurrentProfilePage />}
+                  // element={<GeneralCurrentProfilePage />}
+                  element={<RegistrationPage />}
                 />
                 {/* <Route path="/profile/edit" element={<EditProfilePage />} /> */}
                 {/* <Route path="/invite" element={<InvitationPage />} /> */}

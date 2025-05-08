@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import useInitDataStore from "../stores/InitData.store";
-import useCommunity from "../hooks/communities/fetchHooks/useСommunity";
+import useCommunityPreview from "../hooks/communities/fetchHooks/useCommunityPreview";
 
 interface RequireMembershipComponentProps {
   children: React.ReactNode;
@@ -11,13 +11,13 @@ const RequireMembershipComponent = (props: RequireMembershipComponentProps) => {
   const { initDataStartParam } = useInitDataStore();
 
   const chatID = props.chatID ?? initDataStartParam;
-  const { isPending, isSuccess } = useCommunity(chatID || "");
+  const { isPending, data } = useCommunityPreview(chatID || "");
 
   if (isPending) {
     return null;
   }
 
-  if (!initDataStartParam || (initDataStartParam === chatID && isSuccess)) {
+  if (data?.isMember) {
     return <>{props.children}</>;
   }
 

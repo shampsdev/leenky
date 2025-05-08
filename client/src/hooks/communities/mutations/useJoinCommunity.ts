@@ -1,6 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useInitDataStore from "../../../stores/InitData.store";
 import { joinCommunity } from "../../../api/communities.api";
+import { MemberConfig } from "../../../types/member/memberConfig.interface";
 
 const useJoinCommunity = () => {
   const { initData } = useInitDataStore();
@@ -8,7 +9,13 @@ const useJoinCommunity = () => {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: (communityId: string) => joinCommunity(initData, communityId),
+    mutationFn: ({
+      communityId,
+      memberConfig,
+    }: {
+      communityId: string;
+      memberConfig: MemberConfig;
+    }) => joinCommunity(initData, communityId, memberConfig),
     onSuccess: (_, communityId) => {
       queryClient.invalidateQueries({ queryKey: ["/communities", initData] });
       queryClient.invalidateQueries({
