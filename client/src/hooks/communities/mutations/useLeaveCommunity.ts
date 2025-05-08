@@ -13,18 +13,18 @@ const useLeaveCommunity = () => {
     onSuccess: (_, communityId) => {
       queryClient.setQueryData<Community[]>(
         ["/communities", initData],
-        (old) => old?.filter((community) => community.id !== communityId) ?? [],
+        (old) => old?.filter((community) => community.id !== communityId) ?? []
       );
 
       queryClient.setQueriesData(
         { queryKey: ["/communities", initData] },
         (old: Community[] | undefined) =>
-          old?.filter((community) => community.id !== communityId) ?? [],
+          old?.filter((community) => community.id !== communityId) ?? []
       );
 
       queryClient.setQueryData(
         [`/communities/${communityId}`, initData, communityId],
-        null,
+        null
       );
     },
   });

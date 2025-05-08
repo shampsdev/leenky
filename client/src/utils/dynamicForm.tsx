@@ -70,7 +70,10 @@ const DynamicForm = ({ fields, onSubmit, avatar }: DynamicFormProps) => {
           />
         </div>
 
-        <form className="w-full flex flex-col mt-[25px] gap-[12px] caret-[#20C86E]">
+        <form
+          className="w-full flex flex-col mt-[25px] gap-[12px] caret-[#20C86E]"
+          onSubmit={handleSubmit(handleFormSubmit)}
+        >
           {fields.map((field) => (
             <Controller
               key={field.title}
@@ -108,8 +111,8 @@ const DynamicForm = ({ fields, onSubmit, avatar }: DynamicFormProps) => {
           <div className="flex w-full justify-center pt-[20px]">
             <ButtonComponent
               content="Готово"
-              handleClick={handleSubmit(handleFormSubmit)}
               state={isValid ? "active" : "disabled"}
+              handleClick={() => {}}
             />
           </div>
         </form>

@@ -89,10 +89,14 @@ export const leaveCommunity = async (
   id: string
 ): Promise<null> => {
   try {
-    const response = await api.post<null>(`/communities/id/${id}`, {
-      headers: { "X-Api-Token": initData },
-    });
-    return response.data;
+    await api.post(
+      `/communities/id/${id}/leave`,
+      {},
+      {
+        headers: { "X-Api-Token": initData },
+      }
+    );
+    return null;
   } catch (error) {
     console.error("Ошибка при выходе из сообщества:", error);
     return null;

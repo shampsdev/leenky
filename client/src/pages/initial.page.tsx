@@ -13,7 +13,7 @@ const InitialPage = () => {
       startParam.length > 0
     ) {
       navigate("/communities", { replace: true });
-      // navigate(`/chat/${startParam}`);
+      navigate(`/community/${startParam}`);
     } else {
       navigate("/communities", { replace: true });
     }
