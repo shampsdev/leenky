@@ -1,4 +1,4 @@
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import useInitDataStore from "../../../stores/InitData.store";
 import { searchMembers } from "../../../api/communities.api";
 
@@ -13,6 +13,7 @@ const useSearchMembers = (communityId: string, query: string) => {
       communityId,
       query,
     ],
+    placeholderData: keepPreviousData,
   });
 };
 

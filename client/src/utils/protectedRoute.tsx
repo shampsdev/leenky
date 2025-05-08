@@ -1,14 +1,22 @@
 import { Navigate, Outlet } from "react-router-dom";
+import { useEffect } from "react";
 import useGetMe from "../hooks/users/fetchHooks/useGetMe";
-const ProtectedRoute = () => {
-  const { isPending, data } = useGetMe();
-  if (isPending) {
-    return null;
-  }
+import useUserStore from "../stores/user.store";
 
-  if (!data) {
-    return <Navigate to="/about/1" />;
-  }
+const ProtectedRoute = () => {
+  const userStore = useUserStore();
+  const { isPending, data, isSuccess, isError } = useGetMe();
+
+  useEffect(() => {
+    if (isSuccess && data) {
+      userStore.setUserData(data.user);
+    }
+  }, [isSuccess, data]);
+
+  if (isPending) return null;
+
+  if (isError) return <Navigate to="/about/1" />;
+
   return <Outlet />;
 };
 

@@ -36,6 +36,10 @@ const CommunitiesPage = () => {
     navigate(`/community/${communityId}`);
   };
 
+  const goToMyProfile = () => {
+    navigate(`/profile/current/`);
+  };
+
   const deleteHandler = async (chatPreviewData: Community) => {
     popup
       .open({
@@ -97,7 +101,7 @@ const CommunitiesPage = () => {
                 }}
               />
             </div>
-            <ProfileComponent />
+            <ProfileComponent onClick={() => goToMyProfile()} />
           </div>
 
           <SearchBarComponent

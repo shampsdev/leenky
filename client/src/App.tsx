@@ -8,9 +8,11 @@ import InitDataWrapper from "./utils/InitDataWrapper";
 import ProtectedRoute from "./utils/protectedRoute";
 import { AboutFirstPage, AboutSecondPage } from "./pages/about.page";
 import ChatPage from "./pages/community.page";
-import CurrentProfilePage from "./pages/currentProfile.page";
+import CurrentProfilePage from "./pages/communityCurrentProfile.page";
 import ProfilePage from "./pages/profile.page";
 import CommunitiesPage from "./pages/communities.page";
+import ProfileRedirection from "./utils/profileRedirection";
+import GeneralCurrentProfilePage from "./pages/generalCurrentProfile.page";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -21,7 +23,6 @@ const pageVariants = {
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
-
   const setBackButtonHandler = useCallback(() => {
     backButton.onClick(() => {
       navigate(-1);
@@ -52,9 +53,20 @@ function App() {
                 <Route path="/community/:communityId" element={<ChatPage />} />
                 <Route
                   path="/community/:communityId/member/:memberId"
-                  element={<ProfilePage />}
+                  element={
+                    <ProfileRedirection>
+                      <ProfilePage />
+                    </ProfileRedirection>
+                  }
                 />
-                <Route path="/profile" element={<CurrentProfilePage />} />
+                <Route
+                  path="/profile/current/:communityId"
+                  element={<CurrentProfilePage />}
+                />
+                <Route
+                  path="/profile/current/"
+                  element={<GeneralCurrentProfilePage />}
+                />
                 {/* <Route path="/profile/edit" element={<EditProfilePage />} /> */}
                 {/* <Route path="/invite" element={<InvitationPage />} /> */}
               </Route>

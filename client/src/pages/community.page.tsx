@@ -10,6 +10,7 @@ import { motion } from "motion/react";
 import NotFound from "../assets/notFound.svg";
 import useSearchMembers from "../hooks/members/search/useSearchMembers";
 import useCommunity from "../hooks/communities/fetchHooks/useСommunity";
+import ProfileComponent from "../components/profile.component";
 const containerVariants = {
   visible: {
     transition: {
@@ -33,6 +34,10 @@ const CommunityPage = () => {
 
   const goToProfile = (memberId: string) => {
     navigate(`/community/${communityId}/member/${memberId}`);
+  };
+
+  const goToMyProfile = () => {
+    navigate(`/profile/current/${communityId}`);
   };
 
   const { data: previewChatData, isSuccess } = useCommunity(communityId ?? "");
@@ -66,12 +71,17 @@ const CommunityPage = () => {
           className="max-w-[95%]  max-h-[100vh] overflow-auto scroll-container mx-auto px-4"
         >
           {isSuccess && (
-            <ChatPreviewComponent
-              chatData={previewChatData!}
-              view={true}
-              className=" mt-[25px]"
-              index={0}
-            />
+            <div className="flex relative items-center mt-[25px] justify-between gap-[15px] ">
+              <ChatPreviewComponent
+                chatData={previewChatData!}
+                view={true}
+                animated={true}
+                index={0}
+              />
+              <div className="absolute right-0">
+                <ProfileComponent onClick={() => goToMyProfile()} />
+              </div>
+            </div>
           )}
 
           <SearchBarComponent
