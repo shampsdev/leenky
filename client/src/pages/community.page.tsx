@@ -57,12 +57,6 @@ const CommunityPage = () => {
     return () => clearTimeout(timer);
   }, [isPending]);
 
-  useEffect(() => {
-    if (!isPending) {
-      setLoadedFirstTime(true);
-    }
-  }, [isPending]);
-
   return (
     <EBBComponent>
       <RequireMembershipComponent chatID={communityId}>
@@ -108,6 +102,7 @@ const CommunityPage = () => {
               {chatData?.map((user, index) => (
                 <ChatMemberCardComponent
                   animated
+                  onClick={() => goToProfile(user.user.id)}
                   index={index}
                   key={user.user.id}
                   member={user}

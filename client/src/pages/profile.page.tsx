@@ -8,10 +8,17 @@ import DevImage from "../assets/dev.png";
 import ButtonComponent from "../components/button.component";
 import TGWhite from "../assets/tg_white.svg";
 import useMember from "../hooks/members/fetchHooks/useMember";
+import { useExtractFields } from "../hooks/utils/extractFields";
 const ProfilePage = () => {
   const { communityId, memberId } = useParams();
-  const { data } = useMember(communityId ?? "", memberId ?? "");
-  const userData = data?.user;
+  const { data, isLoading } = useMember(communityId ?? "", memberId ?? "");
+
+  const { textInputs, textAreas } = useExtractFields(data?.config.fields);
+
+  if (isLoading || !data) return null;
+
+  const userData = data.user;
+
   return (
     <EBBComponent>
       <div className="w-[95%] mx-auto px-4 overflow-y-auto ">
@@ -44,14 +51,25 @@ const ProfilePage = () => {
         </div>
         <div className="rounded-lg mt-[15px] mx-auto">
           <InfoBlockComponent>
-            <InfoParagraphComponent title="Место работы" content={""} />
-            <InfoParagraphComponent title="Должность" content={""} />
+            {textInputs.map((field, index) => (
+              <InfoParagraphComponent
+                title={field.name}
+                content={field.value}
+                key={index}
+              />
+            ))}
           </InfoBlockComponent>
           <div className="px-[16px] text-hint mb-[8px] mt-[15px] text-[13px]">
             ПОДРОБНЕЕ
           </div>
           <InfoBlockComponent>
-            <InfoParagraphComponent title="Описание" content={""} />
+            {textAreas.map((field, index) => (
+              <InfoParagraphComponent
+                title={field.name}
+                content={field.value}
+                key={index}
+              />
+            ))}
           </InfoBlockComponent>
         </div>
       </div>

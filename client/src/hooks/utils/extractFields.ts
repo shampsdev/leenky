@@ -1,22 +1,35 @@
-// hooks/useExtractFields.js
 import { useState, useEffect } from "react";
 import { FieldValue } from "../../types/fields/fieldValue.interface";
 
-export const useExtractFields = (fields: Record<string, FieldValue>) => {
-  const [textInputs, setTextInputs] = useState<string[]>([]);
-  const [textAreas, setTextAreas] = useState<string[]>([]);
+export interface ExtractedField {
+  name: string;
+  value: string;
+}
+
+export const useExtractFields = (fields?: Record<string, FieldValue>) => {
+  const [textInputs, setTextInputs] = useState<ExtractedField[]>([]);
+  const [textAreas, setTextAreas] = useState<ExtractedField[]>([]);
 
   useEffect(() => {
-    const extractedTextInputs = Object.entries(fields)
-      .filter(([_, field]) => field.type === "textinput")
-      .map(([key, field]) => ({ key, ...field }));
+    if (!fields) {
+      setTextInputs([]);
+      setTextAreas([]);
+      return;
+    }
 
-    const extractedTextAreas = Object.entries(fields)
-      .filter(([_, field]) => field.type === "textarea")
-      .map(([key, field]) => ({ key, ...field }));
+    const inputs: ExtractedField[] = [];
+    const areas: ExtractedField[] = [];
 
-    setTextInputs(extractedTextInputs.map((field) => field.textinput!.value));
-    setTextAreas(extractedTextAreas.map((field) => field.textarea!.value));
+    for (const [name, field] of Object.entries(fields)) {
+      if (field.type === "textinput" && field.textinput) {
+        inputs.push({ name, value: field.textinput.value });
+      } else if (field.type === "textarea" && field.textarea) {
+        areas.push({ name, value: field.textarea.value });
+      }
+    }
+
+    setTextInputs(inputs);
+    setTextAreas(areas);
   }, [fields]);
 
   return { textInputs, textAreas };

@@ -63,7 +63,6 @@ const CommunitiesPage = () => {
   useEffect(() => {
     const timer = setTimeout(() => {
       if (scrollContainerRef.current) {
-        console.log(scroll);
         scrollContainerRef.current.scrollTo({
           top: scroll,
           behavior: "smooth",

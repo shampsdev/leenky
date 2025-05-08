@@ -5,7 +5,6 @@ import useInitDataStore from "../stores/InitData.store";
 const InitialPage = () => {
   const { initDataStartParam: startParam, initData } = useInitDataStore();
   const navigate = useNavigate();
-  console.log(initData);
   useEffect(() => {
     if (
       startParam !== undefined &&

@@ -59,7 +59,7 @@ const ChatPreviewComponent = (
             <div className="flex flex-col gap-[2px]">
               <p className="font-normal text-[17px]">{props.chatData.name}</p>
               <p className="text-hint font-light text-[15px]">
-                {props.chatData.membersCount} участников
+                {props.chatData.members.length} участников
               </p>
             </div>
           </div>

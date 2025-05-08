@@ -26,8 +26,15 @@ const ChatMemberCardComponent = (props: {
   member: Member;
 }) => {
   const fields = props.member.config.fields;
-
   const { textInputs, textAreas } = useExtractFields(fields);
+
+  const firstTextInput = textInputs[0]?.value || "";
+  const secondTextInput = textInputs[1]?.value || "";
+  const textArea = textAreas[0]?.value || "";
+
+  if (!fields) {
+    return null;
+  }
 
   if (props.animated) {
     return (
@@ -54,10 +61,10 @@ const ChatMemberCardComponent = (props: {
                 </p>
                 <div className="flex flex-col">
                   <p className="text-hint flex items-start gap-[4px] text-[13px]">
-                    {textInputs[0]}
+                    {firstTextInput}
                   </p>
                   <p className="text-hint flex items-start gap-[4px] text-[13px]">
-                    {textInputs[1]}
+                    {secondTextInput}
                   </p>
                 </div>
               </div>
@@ -66,9 +73,7 @@ const ChatMemberCardComponent = (props: {
           </div>
 
           <p className="text-hint font-light text-[13px] pt-[10px]">
-            {textAreas[0] && textAreas[0].length > 90
-              ? textAreas[0].slice(0, 90) + "..."
-              : textAreas[0]}
+            {textArea.length > 90 ? textArea.slice(0, 90) + "..." : textArea}
           </p>
         </div>
       </motion.li>
@@ -94,10 +99,10 @@ const ChatMemberCardComponent = (props: {
                 </p>
                 <div className="flex flex-col">
                   <p className="text-hint flex items-start gap-[4px] text-[13px]">
-                    {textInputs[0]}
+                    {firstTextInput}
                   </p>
                   <p className="text-hint flex items-start gap-[4px] text-[13px]">
-                    {textInputs[1]}
+                    {secondTextInput}
                   </p>
                 </div>
               </div>
@@ -106,14 +111,14 @@ const ChatMemberCardComponent = (props: {
           </div>
 
           <p className="text-hint font-light text-[13px] pt-[10px]">
-            {textAreas[0] && textAreas[0].length > 90
-              ? textAreas[0].slice(0, 90) + "..."
-              : textAreas[0]}
+            {textArea.length > 90 ? textArea.slice(0, 90) + "..." : textArea}
           </p>
         </div>
       </li>
     );
   }
+
+  return null;
 };
 
 export default ChatMemberCardComponent;
