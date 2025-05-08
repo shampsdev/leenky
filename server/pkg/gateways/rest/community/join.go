@@ -27,7 +27,7 @@ func Join(communityCase *usecase.Community) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)
 		communityID := c.Param("id")
-		var config *domain.MemberConfig
+		config := &domain.MemberConfig{}
 		err := c.ShouldBindJSON(config)
 		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to bind config") {
 			return
