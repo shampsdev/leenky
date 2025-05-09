@@ -70,11 +70,11 @@ const GeneralCurrentProfilePage = () => {
           <div className="pt-[40px] pb-[39px]"></div>
         </div>
       </div>
-      <FixedBottomButtonComponent
+      {/* <FixedBottomButtonComponent
         content="Редактировать"
         handleClick={goToEditProfilePage}
         state="active"
-      />
+      /> */}
     </EBBComponent>
   );
 };

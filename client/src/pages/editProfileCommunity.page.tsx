@@ -1,6 +1,4 @@
 import { useNavigate, useParams } from "react-router-dom";
-import useCommunityPreview from "../hooks/communities/fetchHooks/useCommunityPreview";
-import useJoinCommunity from "../hooks/communities/mutations/useJoinCommunity";
 import { MemberConfig } from "../types/member/memberConfig.interface";
 import DynamicForm from "../utils/dynamicForm";
 import { useCommunityProfileEditData } from "../hooks/utils/communityProfileEditData";
