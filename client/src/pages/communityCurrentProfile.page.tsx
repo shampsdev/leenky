@@ -20,7 +20,7 @@ const CommunityCurrentProfilePage = () => {
 
   const navigate = useNavigate();
   const goToEditProfilePage = () => {
-    navigate("/profile/edit");
+    navigate(`/profile/current/${communityId}/edit`);
   };
 
   if (!data || isLoading) return null;
