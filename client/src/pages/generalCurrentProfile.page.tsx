@@ -4,7 +4,7 @@ import EBBComponent from "../components/enableBackButtonComponent";
 import DevImage from "../assets/dev.png";
 // import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
 import useGetMe from "../hooks/users/fetchHooks/useGetMe";
-import FieldsComponent from "../components/fields.component";
+import ProfileCardComponent from "../components/profileCard.component";
 
 const GeneralCurrentProfilePage = () => {
   const { data, isLoading } = useGetMe();
@@ -39,7 +39,7 @@ const GeneralCurrentProfilePage = () => {
           </div>
           <div className="flex w-full flex-col gap-[15px]">
             {members?.map((member, index) => (
-              <FieldsComponent
+              <ProfileCardComponent
                 key={index}
                 fields={member.config.fields}
                 community={member.community}

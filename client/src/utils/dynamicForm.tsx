@@ -1,13 +1,10 @@
 import { useForm, Controller } from "react-hook-form";
-import DevImage from "../assets/notFound.svg";
 import { Field } from "../types/fields/field.interface";
 import { FieldValue } from "../types/fields/fieldValue.interface";
 import ButtonComponent from "../components/button.component";
 import EBBComponent from "../components/enableBackButtonComponent";
 import InputFieldComponent from "../components/inputField.component";
 import TextareaFieldComponent from "../components/textareaField.component";
-import useInitDataStore from "../stores/InitData.store";
-import { handleImageError } from "./imageErrorHandler";
 import { MemberConfig } from "../types/member/memberConfig.interface";
 
 type FormData = Record<string, string>;
@@ -18,9 +15,7 @@ interface DynamicFormProps {
   avatar?: string;
 }
 
-const DynamicForm = ({ fields, onSubmit, avatar }: DynamicFormProps) => {
-  const { initDataUser } = useInitDataStore();
-
+const DynamicForm = ({ fields, onSubmit }: DynamicFormProps) => {
   const {
     control,
     handleSubmit,
@@ -62,14 +57,6 @@ const DynamicForm = ({ fields, onSubmit, avatar }: DynamicFormProps) => {
   return (
     <EBBComponent>
       <div className="w-[95%] mx-auto py-4 px-4">
-        <div className="flex flex-col items-center gap-[17px]">
-          <img
-            className="w-[115px] h-[115px] rounded-full object-cover"
-            src={avatar || initDataUser?.photo_url || DevImage}
-            onError={handleImageError}
-          />
-        </div>
-
         <form
           className="w-full flex flex-col mt-[25px] gap-[12px] caret-[#20C86E]"
           onSubmit={handleSubmit(handleFormSubmit)}
