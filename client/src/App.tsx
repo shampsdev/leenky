@@ -13,6 +13,8 @@ import ProfilePage from "./pages/profile.page";
 import CommunitiesPage from "./pages/communities.page";
 import ProfileRedirection from "./utils/profileRedirection";
 import GeneralCurrentProfilePage from "./pages/generalCurrentProfile.page";
+import RegistrationPage from "./pages/registration.page";
+import InvitationPage from "./pages/invitation.page";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -68,12 +70,15 @@ function App() {
                   element={<GeneralCurrentProfilePage />}
                 />
                 {/* <Route path="/profile/edit" element={<EditProfilePage />} /> */}
-                {/* <Route path="/invite" element={<InvitationPage />} /> */}
+                <Route path="/invite" element={<InvitationPage />} />
+                <Route
+                  path="/registration/:communityId"
+                  element={<RegistrationPage />}
+                />
               </Route>
               <Route path="/" element={<InitialPage />} />
               <Route path="/about/1" element={<AboutFirstPage />} />
               <Route path="/about/2" element={<AboutSecondPage />} />
-              {/* <Route path="/registration" element={<RegistrationPage />} /> */}
             </Routes>
           </motion.div>
         </AnimatePresence>

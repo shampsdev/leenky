@@ -11,7 +11,6 @@ import { useExtractFields } from "../hooks/utils/extractFields";
 const CommunityCurrentProfilePage = () => {
   const { communityId } = useParams();
   const { data, isLoading } = useGetMe();
-  const userData = data?.user;
 
   const fields = data?.members.find(
     (member) => member.community.id === communityId
@@ -25,6 +24,9 @@ const CommunityCurrentProfilePage = () => {
   };
 
   if (!data || isLoading) return null;
+
+  const userData = data?.user;
+  console.log(userData.avatar);
   return (
     <EBBComponent>
       <div className="flex flex-col h-screen">

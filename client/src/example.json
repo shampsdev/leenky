@@ -1,0 +1,7 @@
+{
+  "fields": {
+    "Место работы": { "type": "textinput", "textinput": { "value": "fdsfs" } },
+    "Должность": { "type": "textinput", "textinput": { "value": "fdsf" } },
+    "Описание": { "type": "textarea", "textarea": { "value": "fdsf" } }
+  }
+}

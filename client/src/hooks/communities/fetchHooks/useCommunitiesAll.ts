@@ -13,8 +13,8 @@ const useCommunititesAll = () => {
 
       communities?.forEach((community: Community) => {
         queryClient.setQueryData(
-          [`/communities/${community.id}`, initData, community.id],
-          community,
+          [`/communities/${community.id}`, initData],
+          community
         );
       });
 

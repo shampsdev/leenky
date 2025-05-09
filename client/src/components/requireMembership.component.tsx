@@ -1,27 +1,33 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useInitDataStore from "../stores/InitData.store";
-import useCommunity from "../hooks/communities/fetchHooks/useСommunity";
+import useCommunityPreview from "../hooks/communities/fetchHooks/useCommunityPreview";
 
 interface RequireMembershipComponentProps {
   children: React.ReactNode;
   chatID?: string;
 }
+
 const RequireMembershipComponent = (props: RequireMembershipComponentProps) => {
   const navigate = useNavigate();
   const { initDataStartParam } = useInitDataStore();
 
   const chatID = props.chatID ?? initDataStartParam;
-  const { isPending, isSuccess } = useCommunity(chatID || "");
+  const { isSuccess, isPending, data, isRefetching } = useCommunityPreview(
+    chatID || ""
+  );
 
-  if (isPending) {
+  useEffect(() => {
+    if (!isRefetching && isSuccess && !data?.isMember) {
+      navigate("/invite");
+    }
+  }, [isSuccess, data]);
+
+  if (isPending || (data && !data.isMember)) {
     return null;
   }
 
-  if (!initDataStartParam || (initDataStartParam === chatID && isSuccess)) {
-    return <>{props.children}</>;
-  }
-
-  navigate("/invite");
+  return <>{props.children}</>;
 };
 
 export default RequireMembershipComponent;

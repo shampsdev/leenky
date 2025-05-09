@@ -70,13 +70,14 @@ export const getCommunity = async (
 
 export const joinCommunity = async (
   initData: string,
-  id: string
-): Promise<MemberConfig | null> => {
+  id: string,
+  memberConfig: MemberConfig
+): Promise<null> => {
   try {
-    const response = await api.post<MemberConfig>(`/communities/id/${id}`, {
+    await api.post<null>(`/communities/id/${id}/join`, memberConfig, {
       headers: { "X-Api-Token": initData },
     });
-    return response.data;
+    return null;
   } catch (error) {
     console.error("Ошибка при присоединении к сообществу:", error);
     return null;
@@ -88,10 +89,14 @@ export const leaveCommunity = async (
   id: string
 ): Promise<null> => {
   try {
-    const response = await api.post<null>(`/communities/id/${id}`, {
-      headers: { "X-Api-Token": initData },
-    });
-    return response.data;
+    await api.post(
+      `/communities/id/${id}/leave`,
+      {},
+      {
+        headers: { "X-Api-Token": initData },
+      }
+    );
+    return null;
   } catch (error) {
     console.error("Ошибка при выходе из сообщества:", error);
     return null;
