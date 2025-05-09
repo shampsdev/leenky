@@ -71,14 +71,14 @@ function App() {
                 />
                 {/* <Route path="/profile/edit" element={<EditProfilePage />} /> */}
                 <Route path="/invite" element={<InvitationPage />} />
+                <Route
+                  path="/registration/:communityId"
+                  element={<RegistrationPage />}
+                />
               </Route>
               <Route path="/" element={<InitialPage />} />
               <Route path="/about/1" element={<AboutFirstPage />} />
               <Route path="/about/2" element={<AboutSecondPage />} />
-              <Route
-                path="/registration/:communityId"
-                element={<RegistrationPage />}
-              />
             </Routes>
           </motion.div>
         </AnimatePresence>

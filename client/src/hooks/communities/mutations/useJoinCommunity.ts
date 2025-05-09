@@ -16,11 +16,13 @@ const useJoinCommunity = () => {
       communityId: string;
       memberConfig: MemberConfig;
     }) => joinCommunity(initData, communityId, memberConfig),
-    onSuccess: (_, communityId) => {
-      queryClient.invalidateQueries({ queryKey: ["/communities", initData] });
-      queryClient.invalidateQueries({
-        queryKey: [`/communities/${communityId}`, initData],
-      });
+    onSuccess: async (_, communityId) => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ["/communities", initData] }),
+        queryClient.refetchQueries({
+          queryKey: [`/communities/${communityId}`, initData],
+        }),
+      ]);
     },
   });
 };

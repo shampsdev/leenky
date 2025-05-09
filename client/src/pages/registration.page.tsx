@@ -18,8 +18,7 @@ const RegistrationPage = () => {
       communityId: communityId!,
       memberConfig: data,
     });
-    navigate(`/communities`, { replace: true });
-    navigate(`/community/${communityId}`);
+    navigate("/communities");
   };
 
   if (isPending) return null;

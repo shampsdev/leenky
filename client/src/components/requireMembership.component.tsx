@@ -13,13 +13,15 @@ const RequireMembershipComponent = (props: RequireMembershipComponentProps) => {
   const { initDataStartParam } = useInitDataStore();
 
   const chatID = props.chatID ?? initDataStartParam;
-  const { isPending, data } = useCommunityPreview(chatID || "");
+  const { isSuccess, isPending, data, isRefetching } = useCommunityPreview(
+    chatID || ""
+  );
 
   useEffect(() => {
-    if (!isPending && data && !data.isMember) {
+    if (!isRefetching && isSuccess && !data?.isMember) {
       navigate("/invite");
     }
-  }, [isPending, data, navigate]);
+  }, [isSuccess, data]);
 
   if (isPending || (data && !data.isMember)) {
     return null;
