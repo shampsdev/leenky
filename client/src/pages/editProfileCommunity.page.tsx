@@ -1,5 +1,4 @@
 import { useNavigate, useParams } from "react-router-dom";
-import { MemberConfig } from "../types/member/memberConfig.interface";
 import DynamicForm from "../utils/dynamicForm";
 import { useCommunityProfileEditData } from "../hooks/utils/communityProfileEditData";
 
@@ -11,7 +10,7 @@ const EditProfileCommunityPage = () => {
   const { fields, isPending, avatar } =
     useCommunityProfileEditData(communityId);
 
-  const handleSubmit = async (data: MemberConfig) => {
+  const handleSubmit = async () => {
     alert("АХХАХАХАХХАХА А РУЧКИ ТО НЕТУ))))");
     navigate("/communities");
   };

@@ -1,8 +1,8 @@
 import { handleImageError } from "../utils/imageErrorHandler";
-import { useNavigate } from "react-router-dom";
+// import { useNavigate } from "react-router-dom";
 import EBBComponent from "../components/enableBackButtonComponent";
 import DevImage from "../assets/dev.png";
-import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
+// import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
 import useGetMe from "../hooks/users/fetchHooks/useGetMe";
 import FieldsComponent from "../components/fields.component";
 
@@ -12,10 +12,10 @@ const GeneralCurrentProfilePage = () => {
 
   const members = data?.members;
 
-  const navigate = useNavigate();
-  const goToEditProfilePage = () => {
-    navigate("/profile/edit");
-  };
+  // const navigate = useNavigate();
+  // const goToEditProfilePage = () => {
+  //   navigate("/profile/edit");
+  // };
 
   if (!data || isLoading) return null;
   return (
