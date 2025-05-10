@@ -162,6 +162,17 @@ func (m *Community) JoinCommunity(ctx Context, communityID string, config *domai
 	})
 }
 
+func (m *Community) PatchMember(ctx Context, communityID string, member *domain.PatchMember) error {
+	if member.UserID != ctx.User.ID {
+		return fmt.Errorf("cannot patch other user's member")
+	}
+	if err := m.ensureUserIsMember(ctx, communityID); err != nil {
+		return fmt.Errorf("error ensuring user is member: %w", err)
+	}
+
+	return m.memberRepo.Patch(ctx, member)
+}
+
 func (m *Community) GetMember(ctx Context, communityID, memberID string) (*domain.Member, error) {
 	if err := m.ensureUserIsMember(ctx, communityID); err != nil {
 		return nil, fmt.Errorf("error ensuring user is member: %w", err)

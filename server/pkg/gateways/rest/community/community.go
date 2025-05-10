@@ -27,5 +27,6 @@ func Setup(r *gin.RouterGroup, cases usecase.Cases) {
 
 	g.Group("/id/:id/members").
 		GET("/search", SearchMembers(cases.Community, cases.Search)).
-		GET("/id/:member_id", GetMember(cases.Community))
+		GET("/id/:member_id", GetMember(cases.Community)).
+		PATCH("/id/:member_id", PatchMember(cases.Community))
 }
