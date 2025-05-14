@@ -368,6 +368,11 @@ paths:
         name: id
         required: true
         type: string
+      - description: Member ID
+        in: path
+        name: member_id
+        required: true
+        type: string
       - description: Community config
         in: body
         name: config

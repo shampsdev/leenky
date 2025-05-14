@@ -17,6 +17,7 @@ import (
 // @Produce json
 // @Schemes http https
 // @Param id path string true "Community ID"
+// @Param member_id path string true "Member ID"
 // @Param config body domain.PatchMember true "Community config"
 // @Success 200
 // @Failure 400 "Bad Request"
@@ -26,12 +27,15 @@ import (
 func PatchMember(communityCase *usecase.Community) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)
-		communityID := c.Param("id")
 		config := &domain.PatchMember{}
 		err := c.ShouldBindJSON(config)
 		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to bind config") {
 			return
 		}
+		communityID := c.Param("id")
+		config.CommunityID = communityID
+		memberID := c.Param("member_id")
+		config.UserID = memberID
 		err = communityCase.PatchMember(usecase.NewContext(c, user), communityID, config)
 		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to patch member") {
 			return
