@@ -36,7 +36,7 @@ func (r *MemberRepo) Create(ctx context.Context, member *domain.CreateMember) er
 }
 
 func (r *MemberRepo) Patch(ctx context.Context, member *domain.PatchMember) error {
-	s := r.psql.Update("members").
+	s := r.psql.Update("member").
 		Where(sq.Eq{"user_id": member.UserID, "id": member.CommunityID})
 
 	if member.IsAdmin != nil {
