@@ -68,7 +68,7 @@ const EditProfileCommunityPage = () => {
         userId: userData?.user.id ?? "",
       },
     };
-    console.log(JSON.stringify(newMemberData.newData));
+    console.log(JSON.stringify(newMemberData));
     await patchMemberMutation.mutateAsync(newMemberData);
   };
 

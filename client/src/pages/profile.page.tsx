@@ -10,6 +10,7 @@ import TGWhite from "../assets/tg_white.svg";
 import useMember from "../hooks/members/fetchHooks/useMember";
 import { useExtractFields } from "../hooks/utils/extractFields";
 import chunkArray from "../utils/chunkArray";
+
 const ProfilePage = () => {
   const { communityId, memberId } = useParams();
   const { data, isLoading } = useMember(communityId ?? "", memberId ?? "");
