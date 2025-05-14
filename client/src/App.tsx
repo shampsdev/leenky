@@ -16,6 +16,8 @@ import GeneralCurrentProfilePage from "./pages/generalCurrentProfile.page";
 import RegistrationPage from "./pages/registration.page";
 import InvitationPage from "./pages/invitation.page";
 import EditProfileCommunityPage from "./pages/editProfileCommunity.page";
+import CreateCommunityLayout from "./components/createLayout";
+import CreateCommunityInitial from "./pages/create_community/createCommunityInitial";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -54,6 +56,13 @@ function App() {
               <Route element={<ProtectedRoute />}>
                 <Route path="/communities" element={<CommunitiesPage />} />
                 <Route path="/community/:communityId" element={<ChatPage />} />
+                <Route
+                  path="/community/create"
+                  element={<CreateCommunityLayout />}
+                >
+                  <Route path="initial" element={<CreateCommunityInitial />} />
+                </Route>
+
                 <Route
                   path="/community/:communityId/member/:memberId"
                   element={

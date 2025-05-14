@@ -111,7 +111,7 @@ export const patchMember = async (
   data: PatchMember
 ): Promise<null> => {
   try {
-    await api.post(
+    await api.patch(
       `/communities/id/${communityId}/members/id/${memberId}`,
       data,
       {

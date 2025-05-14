@@ -4,7 +4,7 @@ import DevImage from "../assets/dev.png";
 import ButtonComponent from "../components/button.component";
 import InputFieldComponent from "../components/form/inputField.component";
 import TextareaFieldComponent from "../components/form/textareaField.component";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Member } from "../types/member/member.interface";
 import { useState } from "react";
 import { Field } from "../types/fields/field.interface";
@@ -19,6 +19,7 @@ import usePatchMember, {
 import { MemberConfig } from "../types/member/memberConfig.interface";
 
 const EditProfileCommunityPage = () => {
+  const navigate = useNavigate();
   const { communityId } = useParams();
   const { data: userData, isSuccess } = useGetMe();
 
@@ -70,6 +71,8 @@ const EditProfileCommunityPage = () => {
     };
     console.log(JSON.stringify(newMemberData));
     await patchMemberMutation.mutateAsync(newMemberData);
+
+    navigate(-1);
   };
 
   return (
