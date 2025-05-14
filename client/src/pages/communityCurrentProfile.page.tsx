@@ -7,6 +7,7 @@ import DevImage from "../assets/dev.png";
 import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
 import useGetMe from "../hooks/users/fetchHooks/useGetMe";
 import { useExtractFields } from "../hooks/utils/extractFields";
+import chunkArray from "../utils/chunkArray";
 
 const CommunityCurrentProfilePage = () => {
   const { communityId } = useParams();
@@ -16,8 +17,8 @@ const CommunityCurrentProfilePage = () => {
     (member) => member.community.id === communityId
   )?.config.fields;
 
-  const { textInputs, textAreas } = useExtractFields(fields);
-
+  const { extractedFields } = useExtractFields(fields);
+  const chunkedFields = chunkArray(extractedFields, 3);
   const navigate = useNavigate();
   const goToEditProfilePage = () => {
     navigate(`/profile/current/${communityId}/edit`);
@@ -26,7 +27,6 @@ const CommunityCurrentProfilePage = () => {
   if (!data || isLoading) return null;
 
   const userData = data?.user;
-  console.log(userData.avatar);
   return (
     <EBBComponent>
       <div className="flex flex-col h-screen">
@@ -48,25 +48,28 @@ const CommunityCurrentProfilePage = () => {
           </div>
 
           <div className="rounded-lg mt-4 mx-auto">
-            <InfoBlockComponent>
-              {textInputs.map((field, index) => (
+            {chunkedFields.map((chunk, index) => {
+              return (
+                <InfoBlockComponent key={index}>
+                  {chunk.map((field, index) => (
+                    <InfoParagraphComponent
+                      title={field.name}
+                      content={field.value}
+                      key={index}
+                    />
+                  ))}
+                </InfoBlockComponent>
+              );
+            })}
+            {/* <InfoBlockComponent>
+              {extractedFields.map((field, index) => (
                 <InfoParagraphComponent
                   title={field.name}
                   content={field.value}
                   key={index}
                 />
               ))}
-            </InfoBlockComponent>
-            <div className="px-4 text-hint mb-2 mt-4 text-sm">ПОДРОБНЕЕ</div>
-            <InfoBlockComponent>
-              {textAreas.map((field, index) => (
-                <InfoParagraphComponent
-                  title={field.name}
-                  content={field.value}
-                  key={index}
-                />
-              ))}
-            </InfoBlockComponent>
+            </InfoBlockComponent> */}
           </div>
           <div className="pt-[40px] pb-[39px]"></div>
         </div>

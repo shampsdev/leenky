@@ -7,30 +7,34 @@ export interface ExtractedField {
 }
 
 export const useExtractFields = (fields?: Record<string, FieldValue>) => {
-  const [textInputs, setTextInputs] = useState<ExtractedField[]>([]);
-  const [textAreas, setTextAreas] = useState<ExtractedField[]>([]);
-
+  const [extractedFields, setExtractedFields] = useState<ExtractedField[]>([]);
+  const [textInputs, setInputFields] = useState<ExtractedField[]>([]);
+  const [textAreas, setTextareaFields] = useState<ExtractedField[]>([]);
   useEffect(() => {
     if (!fields) {
-      setTextInputs([]);
-      setTextAreas([]);
+      setExtractedFields([]);
+      setInputFields([]);
+      setTextareaFields([]);
       return;
     }
 
+    const extractFields: ExtractedField[] = [];
     const inputs: ExtractedField[] = [];
-    const areas: ExtractedField[] = [];
-
+    const textareas: ExtractedField[] = [];
     for (const [name, field] of Object.entries(fields)) {
       if (field.type === "textinput" && field.textinput) {
         inputs.push({ name, value: field.textinput.value });
+        extractFields.push({ name, value: field.textinput.value });
       } else if (field.type === "textarea" && field.textarea) {
-        areas.push({ name, value: field.textarea.value });
+        textareas.push({ name, value: field.textarea.value });
+        extractFields.push({ name, value: field.textarea.value });
       }
     }
 
-    setTextInputs(inputs);
-    setTextAreas(areas);
+    setInputFields(inputs);
+    setTextareaFields(textareas);
+    setExtractedFields(extractFields);
   }, [fields]);
 
-  return { textInputs, textAreas };
+  return { textAreas, textInputs, extractedFields };
 };
