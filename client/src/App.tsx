@@ -16,7 +16,7 @@ import GeneralCurrentProfilePage from "./pages/generalCurrentProfile.page";
 import RegistrationPage from "./pages/registration.page";
 import InvitationPage from "./pages/invitation.page";
 import EditProfileCommunityPage from "./pages/editProfileCommunity.page";
-import CreateCommunityLayout from "./components/createLayout";
+import CreateCommunityLayout from "./pages/create_community/createLayout";
 import CreateCommunityInitial from "./pages/create_community/createCommunityInitial";
 import CreateCommunityWithChatLayout from "./pages/create_community/withChat/createCommunityWithChatLayout";
 import CreateCommunityWithoutChatLayout from "./pages/create_community/withoutChat/createCommunityWithoutChatLayout";

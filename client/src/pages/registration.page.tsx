@@ -4,16 +4,9 @@ import useGetMe from "../hooks/users/fetchHooks/useGetMe";
 import { handleImageError } from "../utils/imageErrorHandler";
 import DevImage from "../assets/dev.png";
 import { useState } from "react";
-import usePatchMember, {
-  PatchMemberArgs,
-} from "../hooks/members/mutations/usePatchMember";
-import {
-  fieldValuesToFields,
-  fieldsToFieldValues,
-} from "../mappers/FieldValues";
+import { fieldsToFieldValues } from "../mappers/FieldValues";
 import { Field } from "../types/fields/field.interface";
 import { MemberConfig } from "../types/member/memberConfig.interface";
-import fieldsAreEqual from "../utils/equalFields";
 import fieldsNotEmpty from "../utils/fieldsNotEmpty";
 import ButtonComponent from "../components/button.component";
 import InputFieldComponent from "../components/form/inputField.component";
