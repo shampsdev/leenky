@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState } from "react";
-import ProfileComponent from "../components/profile.component";
 import SearchBarComponent from "../components/searchBar.component";
-import { openTelegramLink, popup } from "@telegram-apps/sdk-react";
+import { popup } from "@telegram-apps/sdk-react";
 import ChatPreviewComponent from "../components/chatPreview.component";
 import DBBComponent from "../components/disableBackButton.component";
 import { Outlet, useNavigate } from "react-router-dom";
 import useChatsSearchStore from "../stores/chatsSearch.store";
-import { BOT_USERNAME } from "../shared/constants";
 import NotFound from "../assets/notFound.svg";
 import AddButton from "../assets/add_green.svg";
 import { motion } from "motion/react";
@@ -34,10 +32,6 @@ const CommunitiesPage = () => {
 
   const goToCommunity = (communityId: string) => {
     navigate(`/community/${communityId}`);
-  };
-
-  const goToMyProfile = () => {
-    navigate(`/profile/current/`);
   };
 
   const deleteHandler = async (chatPreviewData: Community) => {

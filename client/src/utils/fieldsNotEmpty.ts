@@ -1,7 +1,7 @@
 import { Field } from "../types/fields/field.interface";
 
 const fieldsNotEmpty = (a: Field[]) => {
-  return a.every((field, index) => {
+  return a.every((field) => {
     if (field.type === "textinput") {
       return field.textinput?.default.trim().length! > 0;
     }
