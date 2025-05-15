@@ -16,6 +16,11 @@ import GeneralCurrentProfilePage from "./pages/generalCurrentProfile.page";
 import RegistrationPage from "./pages/registration.page";
 import InvitationPage from "./pages/invitation.page";
 import EditProfileCommunityPage from "./pages/editProfileCommunity.page";
+import CreateCommunityLayout from "./components/createLayout";
+import CreateCommunityInitial from "./pages/create_community/createCommunityInitial";
+import CreateCommunityWithChatLayout from "./pages/create_community/withChat/createCommunityWithChatLayout";
+import CreateCommunityWithoutChatLayout from "./pages/create_community/withoutChat/createCommunityWithoutChatLayout";
+import CommunityWithoutChatDescriptionPage from "./pages/create_community/withoutChat/communityWithoutChatDescriptionPage";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -54,6 +59,32 @@ function App() {
               <Route element={<ProtectedRoute />}>
                 <Route path="/communities" element={<CommunitiesPage />} />
                 <Route path="/community/:communityId" element={<ChatPage />} />
+                <Route
+                  path="/community/create"
+                  element={<CreateCommunityLayout />}
+                >
+                  <Route path="initial" element={<CreateCommunityInitial />} />
+                  <Route
+                    path="with_chat"
+                    element={<CreateCommunityWithChatLayout />}
+                  >
+                    <Route
+                      path="description"
+                      element={<CommunityWithoutChatDescriptionPage />}
+                    />
+                  </Route>
+
+                  <Route
+                    path="without_chat"
+                    element={<CreateCommunityWithoutChatLayout />}
+                  >
+                    <Route
+                      path="description"
+                      element={<CommunityWithoutChatDescriptionPage />}
+                    />
+                  </Route>
+                </Route>
+
                 <Route
                   path="/community/:communityId/member/:memberId"
                   element={

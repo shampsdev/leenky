@@ -92,16 +92,15 @@ const CommunitiesPage = () => {
         >
           <div className="flex items-center mt-[25px] justify-between gap-[15px]  ">
             <div className="flex gap-[12px] items-center">
-              <h1 className="text-xl font-semibold">Чаты</h1>
+              <h1 className="text-xl font-semibold">Сообщества</h1>
               <img
                 className="w-[22px] h-[22px]"
                 src={AddButton}
                 onClick={() => {
-                  openTelegramLink(`https://t.me/${BOT_USERNAME}?startgroup=`);
+                  navigate(`/community/create/initial`);
                 }}
               />
             </div>
-            <ProfileComponent onClick={() => goToMyProfile()} />
           </div>
 
           <SearchBarComponent

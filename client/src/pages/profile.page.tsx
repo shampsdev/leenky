@@ -9,11 +9,14 @@ import ButtonComponent from "../components/button.component";
 import TGWhite from "../assets/tg_white.svg";
 import useMember from "../hooks/members/fetchHooks/useMember";
 import { useExtractFields } from "../hooks/utils/extractFields";
+import chunkArray from "../utils/chunkArray";
+
 const ProfilePage = () => {
   const { communityId, memberId } = useParams();
   const { data, isLoading } = useMember(communityId ?? "", memberId ?? "");
 
-  const { textInputs, textAreas } = useExtractFields(data?.config.fields);
+  const { extractedFields } = useExtractFields(data?.config.fields);
+  const chunkedFields = chunkArray(extractedFields, 3);
 
   if (isLoading || !data) return null;
 
@@ -50,7 +53,20 @@ const ProfilePage = () => {
           />
         </div>
         <div className="rounded-lg mt-[15px] mx-auto">
-          <InfoBlockComponent>
+          {chunkedFields.map((chunk, index) => {
+            return (
+              <InfoBlockComponent key={index}>
+                {chunk.map((field, index) => (
+                  <InfoParagraphComponent
+                    title={field.name}
+                    content={field.value}
+                    key={index}
+                  />
+                ))}
+              </InfoBlockComponent>
+            );
+          })}
+          {/* <InfoBlockComponent>
             {textInputs.map((field, index) => (
               <InfoParagraphComponent
                 title={field.name}
@@ -70,7 +86,7 @@ const ProfilePage = () => {
                 key={index}
               />
             ))}
-          </InfoBlockComponent>
+          </InfoBlockComponent> */}
         </div>
       </div>
     </EBBComponent>

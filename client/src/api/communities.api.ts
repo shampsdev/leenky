@@ -1,6 +1,7 @@
 import { Community } from "../types/community/community.interface";
 import { Member } from "../types/member/member.interface";
 import { MemberConfig } from "../types/member/memberConfig.interface";
+import { PatchMember } from "../types/member/patchMember.interface";
 import { CreateCommunity } from "../types/postApiTypes/createCommunity.interface";
 import { PatchCommunity } from "../types/postApiTypes/patchCommunity.interface";
 import { api } from "./api";
@@ -99,6 +100,27 @@ export const leaveCommunity = async (
     return null;
   } catch (error) {
     console.error("Ошибка при выходе из сообщества:", error);
+    return null;
+  }
+};
+
+export const patchMember = async (
+  initData: string,
+  communityId: string,
+  memberId: string,
+  data: PatchMember
+): Promise<null> => {
+  try {
+    await api.patch(
+      `/communities/id/${communityId}/members/id/${memberId}`,
+      data,
+      {
+        headers: { "X-Api-Token": initData },
+      }
+    );
+    return null;
+  } catch (error) {
+    console.error("Ошибка при обновлении пользователя:", error);
     return null;
   }
 };
