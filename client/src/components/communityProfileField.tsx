@@ -11,6 +11,8 @@ interface CommunityProfileFieldProps {
   isOpen: boolean;
   onOpen: () => void;
   onClose: () => void;
+  value: string;
+  onChange: (v: string) => void;
 }
 
 const CommunityProfileField = (props: CommunityProfileFieldProps) => {
@@ -36,6 +38,8 @@ const CommunityProfileField = (props: CommunityProfileFieldProps) => {
         style={{ touchAction: "none" }}
       >
         <input
+          value={props.value}
+          onChange={(e) => props.onChange(e.target.value)}
           className="outline-none w-[80%]"
           placeholder="Название поля"
           onTouchStart={preventTouch}

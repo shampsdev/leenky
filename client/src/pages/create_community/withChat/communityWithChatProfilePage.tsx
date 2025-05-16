@@ -21,17 +21,29 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import FixedBottomButtonComponent from "../../../components/fixedBottomButton.component";
 import { SortableItem } from "../../../components/sortableItem";
+import useCommunityInfoStore from "../../../stores/create_community/communityInfo.store";
+import {
+  fieldsToFieldsWithId,
+  fieldsWithIdToFields,
+} from "../../../mappers/fieldsToFieldsWithId";
 
-interface ExtendedField extends Field {
+export interface ExtendedField extends Field {
   id: string;
 }
-
 const CommunityWithChatProfilePage = () => {
+  const { fields: storeFields, setFields: setStoreFields } =
+    useCommunityInfoStore();
   const navigate = useNavigate();
   const [openedIndex, setOpenedIndex] = useState<number | null>(null);
-  const [fields, setFields] = useState<ExtendedField[]>([]);
+  const [fields, setFields] = useState<ExtendedField[]>(
+    fieldsToFieldsWithId(storeFields)
+  );
 
-  // Настройка сенсоров
+  const handleContinue = () => {
+    setStoreFields(fieldsWithIdToFields(fields));
+    navigate("/community/create/with_chat/connect_chat");
+  };
+
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
@@ -95,7 +107,7 @@ const CommunityWithChatProfilePage = () => {
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
-        modifiers={[restrictToVerticalAxis]} // Ограничиваем движение по оси Y
+        modifiers={[restrictToVerticalAxis]}
       >
         <SortableContext
           items={fields.map((field) => field.id)}
@@ -108,6 +120,12 @@ const CommunityWithChatProfilePage = () => {
             {fields.map((field, index) => (
               <SortableItem key={field.id} id={field.id}>
                 <CommunityProfileField
+                  value={field.title}
+                  onChange={(newValue) => {
+                    const updated = [...fields];
+                    updated[index] = { ...updated[index], title: newValue };
+                    setFields(updated);
+                  }}
                   isOpen={openedIndex === index}
                   onOpen={() => setOpenedIndex(index)}
                   onClose={() => setOpenedIndex(null)}
@@ -115,6 +133,7 @@ const CommunityWithChatProfilePage = () => {
                 />
               </SortableItem>
             ))}
+
             <div
               className="flex justify-center bg-[#F5F5F5] py-[20px] rounded-[14px]"
               onClick={addNewField}
@@ -128,7 +147,7 @@ const CommunityWithChatProfilePage = () => {
       <FixedBottomButtonComponent
         content="Продолжить"
         state={true ? "active" : "disabled"}
-        handleClick={() => navigate("/community/create/with_chat/connect_chat")}
+        handleClick={() => handleContinue()}
       />
       <div className="pb-[200px]"></div>
     </EBBComponent>
