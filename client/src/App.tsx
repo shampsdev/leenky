@@ -50,7 +50,7 @@ function App() {
     return backButton.offClick(() => {});
   }, []);
 
-  useEffect(() => setBackButtonHandler, []);
+  useEffect(() => setBackButtonHandler, [setBackButtonHandler]);
 
   const routes = (
     <Routes location={location}>

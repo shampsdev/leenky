@@ -97,7 +97,7 @@ const CommunityWithChatProfilePage = () => {
   return (
     <EBBComponent>
       <div className="mb-[32px] mt-[28px] px-[12px]">
-        <p className="font-semibold text-[20px]">Основная информация</p>
+        <p className="font-semibold text-[20px]">Профиль участника</p>
         <span className="text-[17px] text-[#707579]">
           Создайте поля для заполнения информации о приглашённых участниках и
           задайте их размер
