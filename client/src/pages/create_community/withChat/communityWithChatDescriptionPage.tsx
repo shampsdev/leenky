@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import ButtonComponent from "../../../components/button.component";
 import EBBComponent from "../../../components/enableBackButtonComponent";
 import TextareaFieldComponent from "../../../components/form/textareaField.component";
 import useCommunityInfoStore from "../../../stores/create_community/communityInfo.store";
