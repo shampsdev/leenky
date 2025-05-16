@@ -32,25 +32,20 @@ const CommunityProfileField = (props: CommunityProfileFieldProps) => {
   return (
     <div className="flex flex-row gap-[12px]">
       <div
-        className="flex relative flex-1 flex-row items-center justify-between border-[#F5F5F5] border-[2px] text-[#A2ACB0] px-[16px] py-[12px] rounded-[14px] gap-[10px]"
+        className="flex flex-1 relative flex-row items-center border-[#F5F5F5] border-[2px] text-[#A2ACB0] pl-[16px] py-[12px] rounded-[14px] gap-[10px]"
         style={{ touchAction: "none" }}
       >
         <input
-          className="outline-none"
+          className="outline-none w-[80%]"
           placeholder="Название поля"
           onTouchStart={preventTouch}
         />
-        <div
+        <img
+          className="absolute right-[18px]"
+          src={getFieldImage()}
           onClick={props.onOpen}
           onTouchStart={preventTouch}
-          className="flex items-center justify-center w-[32px] h-[32px] rounded-[8px] cursor-pointer"
-        >
-          <img
-            src={getFieldImage()}
-            alt="Тип поля"
-            className="w-[20px] h-[20px] object-contain"
-          />
-        </div>
+        />
         {props.isOpen && (
           <div className="flex flex-col gap-[12px] absolute right-0 translate-x-[2px] translate-y-[-2px] top-0 border-[#F5F5F5] z-10 border-[2px] text-[#A2ACB0] rounded-[14px] py-[12px] px-[16px] bg-white">
             {fieldType === "textarea" && (
