@@ -43,10 +43,14 @@ function App() {
   );
 
   const setBackButtonHandler = useCallback(() => {
-    backButton.onClick(() => navigate(-1));
-  }, [navigate]);
+    backButton.onClick(() => {
+      navigate(-1);
+    });
 
-  useEffect(setBackButtonHandler, [setBackButtonHandler]);
+    return backButton.offClick(() => {});
+  }, []);
+
+  useEffect(() => setBackButtonHandler, []);
 
   const routes = (
     <Routes location={location}>

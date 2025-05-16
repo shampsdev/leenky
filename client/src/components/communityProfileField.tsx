@@ -36,17 +36,20 @@ const CommunityProfileField = (props: CommunityProfileFieldProps) => {
         style={{ touchAction: "none" }}
       >
         <input
-          className="outline-none flex-1"
+          className="outline-none"
           placeholder="Название поля"
           onTouchStart={preventTouch}
         />
         <div
-          onClick={() => {
-            props.onOpen();
-          }}
+          onClick={props.onOpen}
           onTouchStart={preventTouch}
+          className="flex items-center justify-center w-[32px] h-[32px] rounded-[8px] cursor-pointer"
         >
-          <img src={getFieldImage()} alt="Field icon" />
+          <img
+            src={getFieldImage()}
+            alt="Тип поля"
+            className="w-[20px] h-[20px] object-contain"
+          />
         </div>
         {props.isOpen && (
           <div className="flex flex-col gap-[12px] absolute right-0 translate-x-[2px] translate-y-[-2px] top-0 border-[#F5F5F5] z-10 border-[2px] text-[#A2ACB0] rounded-[14px] py-[12px] px-[16px] bg-white">

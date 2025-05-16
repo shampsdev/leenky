@@ -4,6 +4,7 @@ import Plus from "../../../assets/plus.svg";
 import { useState } from "react";
 import { Field } from "../../../types/fields/field.interface";
 import CommunityProfileField from "../../../components/communityProfileField";
+import { restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import {
   DndContext,
   closestCenter,
@@ -45,10 +46,9 @@ const CommunityWithChatProfilePage = () => {
     })
   );
 
-  // Обработка перетаскивания
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
-    console.log("Drag event:", { active, over }); // Для отладки
+    console.log("Drag event:", { active, over });
 
     if (active.id !== over?.id) {
       setFields((items) => {
@@ -95,6 +95,7 @@ const CommunityWithChatProfilePage = () => {
         sensors={sensors}
         collisionDetection={closestCenter}
         onDragEnd={handleDragEnd}
+        modifiers={[restrictToVerticalAxis]} // Ограничиваем движение по оси Y
       >
         <SortableContext
           items={fields.map((field) => field.id)}
