@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import EBBComponent from "../../../components/enableBackButtonComponent";
-import FixedBottomButtonComponent from "../../../components/fixedBottomButton.component";
 import Plus from "../../../assets/plus.svg";
 import { useState } from "react";
 import { Field } from "../../../types/fields/field.interface";
@@ -11,40 +10,54 @@ import {
   useSensor,
   useSensors,
   PointerSensor,
-  DragEndEvent,
+  TouchSensor,
 } from "@dnd-kit/core";
 import {
+  arrayMove,
   SortableContext,
   verticalListSortingStrategy,
-  arrayMove,
 } from "@dnd-kit/sortable";
 import { v4 as uuidv4 } from "uuid";
+import FixedBottomButtonComponent from "../../../components/fixedBottomButton.component";
+import { SortableItem } from "../../../components/sortableItem";
 
-export type FieldWithId = Field & { id: string };
+interface ExtendedField extends Field {
+  id: string;
+}
 
 const CommunityWithChatProfilePage = () => {
   const navigate = useNavigate();
   const [openedIndex, setOpenedIndex] = useState<number | null>(null);
-  const [fields, setFields] = useState<FieldWithId[]>([]);
+  const [fields, setFields] = useState<ExtendedField[]>([]);
 
+  // Настройка сенсоров
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
         distance: 8,
       },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 150,
+        tolerance: 10,
+      },
     })
   );
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  // Обработка перетаскивания
+  const handleDragEnd = (event: any) => {
     const { active, over } = event;
+    console.log("Drag event:", { active, over }); // Для отладки
 
-    if (over && active.id !== over.id) {
-      const oldIndex = fields.findIndex((field) => field.id === active.id);
-      const newIndex = fields.findIndex((field) => field.id === over.id);
-
-      if (oldIndex !== -1 && newIndex !== -1) {
-        const newFields = arrayMove(fields, oldIndex, newIndex);
-        setFields(newFields);
+    if (active.id !== over?.id) {
+      setFields((items) => {
+        const oldIndex = items.findIndex((item) => item.id === active.id);
+        const newIndex = items.findIndex((item) => item.id === over.id);
+        return arrayMove(items, oldIndex, newIndex);
+      });
+      if (openedIndex !== null) {
+        setOpenedIndex(null);
       }
     }
   };
@@ -59,6 +72,13 @@ const CommunityWithChatProfilePage = () => {
         type: "textinput",
       },
     ]);
+  };
+
+  const handleDelete = (index: number) => {
+    const updated = [...fields];
+    updated.splice(index, 1);
+    setFields(updated);
+    if (openedIndex === index) setOpenedIndex(null);
   };
 
   return (
@@ -85,25 +105,20 @@ const CommunityWithChatProfilePage = () => {
               <p>Имя, фамилия</p>
             </div>
             {fields.map((field, index) => (
-              <CommunityProfileField
-                key={field.id}
-                id={field.id}
-                index={index}
-                isOpen={openedIndex === index}
-                onOpen={() => setOpenedIndex(index)}
-                onClose={() => setOpenedIndex(null)}
-                handleDelete={() => {
-                  const updated = fields.filter((_, i) => i !== index);
-                  setFields(updated);
-                  if (openedIndex === index) setOpenedIndex(null);
-                }}
-              />
+              <SortableItem key={field.id} id={field.id}>
+                <CommunityProfileField
+                  isOpen={openedIndex === index}
+                  onOpen={() => setOpenedIndex(index)}
+                  onClose={() => setOpenedIndex(null)}
+                  handleDelete={() => handleDelete(index)}
+                />
+              </SortableItem>
             ))}
             <div
               className="flex justify-center bg-[#F5F5F5] py-[20px] rounded-[14px]"
               onClick={addNewField}
             >
-              <img className="" src={Plus} alt="Добавить поле" />
+              <img className="" src={Plus} />
             </div>
           </div>
         </SortableContext>

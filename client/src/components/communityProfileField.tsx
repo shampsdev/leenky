@@ -5,12 +5,8 @@ import TextinputIconDeactivate from "../assets/fieldIcons/textinput_deactivate.s
 import TextareaIconActivate from "../assets/fieldIcons/textarea_activate.svg";
 import TextinputIconActivate from "../assets/fieldIcons/textinput_activate.svg";
 import TextareaIconDeactivate from "../assets/fieldIcons/textarea_deactivate.svg";
-import { useSortable } from "@dnd-kit/sortable";
-import { CSS } from "@dnd-kit/utilities";
 
 interface CommunityProfileFieldProps {
-  id: string;
-  index: number;
   handleDelete: () => void;
   isOpen: boolean;
   onOpen: () => void;
@@ -20,44 +16,37 @@ interface CommunityProfileFieldProps {
 const CommunityProfileField = (props: CommunityProfileFieldProps) => {
   const [fieldType, setFieldType] = useState<FieldType>("textinput");
 
-  const { attributes, listeners, setNodeRef, transform, transition } =
-    useSortable({
-      id: props.id,
-    });
-
-  const style = {
-    transform: CSS.Transform.toString(transform),
-    transition,
-  };
-
   const getFieldImage = () => {
     switch (fieldType) {
       case "textinput":
         return TextinputIconDeactivate;
       case "textarea":
         return TextareaIconDeactivate;
-      default:
-        return TextinputIconDeactivate;
     }
   };
 
+  const preventTouch = (e: React.TouchEvent) => {
+    e.stopPropagation();
+  };
+
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      {...attributes}
-      {...listeners}
-      className="flex flex-row gap-[12px]"
-    >
-      <div className="flex relative flex-1 flex-row items-center justify-between border-[#F5F5F5] border-[2px] text-[#A2ACB0] px-[16px] py-[12px] rounded-[14px] gap-[10px]">
-        <input className="outline-none flex-1" placeholder="Название поля" />
+    <div className="flex flex-row gap-[12px]">
+      <div
+        className="flex relative flex-1 flex-row items-center justify-between border-[#F5F5F5] border-[2px] text-[#A2ACB0] px-[16px] py-[12px] rounded-[14px] gap-[10px]"
+        style={{ touchAction: "none" }}
+      >
+        <input
+          className="outline-none flex-1"
+          placeholder="Название поля"
+          onTouchStart={preventTouch}
+        />
         <div
-          onClick={(e) => {
-            e.stopPropagation();
+          onClick={() => {
             props.onOpen();
           }}
+          onTouchStart={preventTouch}
         >
-          <img src={getFieldImage()} alt="Иконка поля" />
+          <img src={getFieldImage()} alt="Field icon" />
         </div>
         {props.isOpen && (
           <div className="flex flex-col gap-[12px] absolute right-0 translate-x-[2px] translate-y-[-2px] top-0 border-[#F5F5F5] z-10 border-[2px] text-[#A2ACB0] rounded-[14px] py-[12px] px-[16px] bg-white">
@@ -69,9 +58,10 @@ const CommunityProfileField = (props: CommunityProfileFieldProps) => {
                     setFieldType("textarea");
                     props.onClose();
                   }}
+                  onTouchStart={preventTouch}
                 >
                   абзац
-                  <img src={TextareaIconActivate} alt="Активный абзац" />
+                  <img src={TextareaIconActivate} alt="Textarea active" />
                 </div>
                 <div
                   className="flex flex-row gap-[12px] items-center"
@@ -79,9 +69,13 @@ const CommunityProfileField = (props: CommunityProfileFieldProps) => {
                     setFieldType("textinput");
                     props.onClose();
                   }}
+                  onTouchStart={preventTouch}
                 >
                   строка
-                  <img src={TextinputIconDeactivate} alt="Неактивная строка" />
+                  <img
+                    src={TextinputIconDeactivate}
+                    alt="Textinput deactivate"
+                  />
                 </div>
               </>
             )}
@@ -93,9 +87,10 @@ const CommunityProfileField = (props: CommunityProfileFieldProps) => {
                     setFieldType("textinput");
                     props.onClose();
                   }}
+                  onTouchStart={preventTouch}
                 >
                   строка
-                  <img src={TextinputIconActivate} alt="Активная строка" />
+                  <img src={TextinputIconActivate} alt="Textinput active" />
                 </div>
                 <div
                   className="flex flex-row gap-[12px] items-center justify-end"
@@ -103,16 +98,20 @@ const CommunityProfileField = (props: CommunityProfileFieldProps) => {
                     setFieldType("textarea");
                     props.onClose();
                   }}
+                  onTouchStart={preventTouch}
                 >
                   абзац
-                  <img src={TextareaIconDeactivate} alt="Неактивный абзац" />
+                  <img src={TextareaIconDeactivate} alt="Textarea deactivate" />
                 </div>
               </>
             )}
           </div>
         )}
       </div>
-      <div className="bg-[#F34338] px-[16px] py-[14px] rounded-[14px]">
+      <div
+        className="bg-[#F34338] px-[16px] py-[14px] rounded-[14px]"
+        onTouchStart={preventTouch}
+      >
         <img src={TrashBin} alt="Удалить" onClick={props.handleDelete} />
       </div>
     </div>
