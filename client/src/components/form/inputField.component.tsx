@@ -7,6 +7,8 @@ export interface InputFieldComponentProps {
   maxLength: number;
   onFocus?: () => void;
   onBlur?: () => void;
+  fillNotRequired?: boolean;
+  resizable?: boolean;
 }
 
 const InputFieldComponent = (props: InputFieldComponentProps) => {
@@ -17,7 +19,7 @@ const InputFieldComponent = (props: InputFieldComponentProps) => {
       <fieldset
         className={`border-2 rounded-xl px-3 relative transition-all duration-100 
           ${
-            isEmpty
+            isEmpty && !props.fillNotRequired
               ? "border-[#E53935] text-[#E53935]"
               : "border-gray-300 text-gray-400 focus-within:border-[#20C86E] focus-within:text-[#20C86E]"
           } 
