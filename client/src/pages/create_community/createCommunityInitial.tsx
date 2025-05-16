@@ -13,7 +13,7 @@ const CreateCommunityInitial = () => {
           <div
             className="bg-[#F5F5F5] flex flex-row items-center justify-between px-[24px] py-[24px] rounded-[20px]"
             onClick={() => {
-              navigate("/community/create/with_chat");
+              navigate("/community/create/with_chat/description");
             }}
           >
             <div className="flex max-w-[90%] flex-row gap-[18px] items-center">
@@ -30,7 +30,7 @@ const CreateCommunityInitial = () => {
 
           <div
             onClick={() => {
-              navigate("/community/create/without_chat");
+              navigate("/community/create/without_chat/description");
             }}
             className="bg-[#F5F5F5] flex flex-row items-center justify-between px-[24px] py-[24px] rounded-[20px]"
           >
