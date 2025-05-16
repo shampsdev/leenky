@@ -26,6 +26,7 @@ import {
   fieldsToFieldsWithId,
   fieldsWithIdToFields,
 } from "../../../mappers/fieldsToFieldsWithId";
+import { FieldType } from "../../../types/fields/field.type";
 
 export interface ExtendedField extends Field {
   id: string;
@@ -126,10 +127,16 @@ const CommunityWithChatProfilePage = () => {
                     updated[index] = { ...updated[index], title: newValue };
                     setFields(updated);
                   }}
+                  type={field.type}
                   isOpen={openedIndex === index}
                   onOpen={() => setOpenedIndex(index)}
                   onClose={() => setOpenedIndex(null)}
                   handleDelete={() => handleDelete(index)}
+                  onTypeChange={(type: FieldType) => {
+                    const updated = [...fields];
+                    updated[index] = { ...updated[index], type: type };
+                    setFields(updated);
+                  }}
                 />
               </SortableItem>
             ))}

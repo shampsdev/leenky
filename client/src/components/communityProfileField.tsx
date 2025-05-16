@@ -13,10 +13,12 @@ interface CommunityProfileFieldProps {
   onClose: () => void;
   value: string;
   onChange: (v: string) => void;
+  type: FieldType;
+  onTypeChange: (type: FieldType) => void;
 }
 
 const CommunityProfileField = (props: CommunityProfileFieldProps) => {
-  const [fieldType, setFieldType] = useState<FieldType>("textinput");
+  const [fieldType, setFieldType] = useState<FieldType>(props.type);
 
   const getFieldImage = () => {
     switch (fieldType) {
@@ -58,6 +60,7 @@ const CommunityProfileField = (props: CommunityProfileFieldProps) => {
                   className="flex flex-row items-center justify-end gap-[12px] text-black"
                   onClick={() => {
                     setFieldType("textarea");
+                    props.onTypeChange("textarea");
                     props.onClose();
                   }}
                   onTouchStart={preventTouch}
@@ -69,6 +72,8 @@ const CommunityProfileField = (props: CommunityProfileFieldProps) => {
                   className="flex flex-row gap-[12px] items-center"
                   onClick={() => {
                     setFieldType("textinput");
+
+                    props.onTypeChange("textinput");
                     props.onClose();
                   }}
                   onTouchStart={preventTouch}
@@ -87,6 +92,8 @@ const CommunityProfileField = (props: CommunityProfileFieldProps) => {
                   className="flex flex-row gap-[12px] text-black items-center justify-end"
                   onClick={() => {
                     setFieldType("textinput");
+
+                    props.onTypeChange("textinput");
                     props.onClose();
                   }}
                   onTouchStart={preventTouch}
@@ -98,6 +105,7 @@ const CommunityProfileField = (props: CommunityProfileFieldProps) => {
                   className="flex flex-row gap-[12px] items-center justify-end"
                   onClick={() => {
                     setFieldType("textarea");
+                    props.onTypeChange("textarea");
                     props.onClose();
                   }}
                   onTouchStart={preventTouch}
