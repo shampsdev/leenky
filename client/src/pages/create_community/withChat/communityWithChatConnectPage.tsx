@@ -11,7 +11,6 @@ import { useNavigate } from "react-router-dom";
 const CommunityWithChatConnectPage = () => {
   const { communityId } = useCommunityWithChatInfoStore();
   const [command] = useState<string>(`/connect ${communityId}`);
-  const navigate = useNavigate();
 
   return (
     <EBBComponent>

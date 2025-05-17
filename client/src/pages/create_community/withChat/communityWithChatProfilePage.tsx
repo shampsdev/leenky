@@ -28,22 +28,16 @@ import {
 } from "../../../mappers/fieldsToFieldsWithId";
 import { FieldType } from "../../../types/fields/field.type";
 import useCreateCommunity from "../../../hooks/communities/mutations/useCreateCommunity";
-import usePatchMember from "../../../hooks/members/mutations/usePatchMember";
-import { fieldsToFieldValues } from "../../../mappers/FieldValues";
-import useUserStore from "../../../stores/user.store";
 
 export interface ExtendedField extends Field {
   id: string;
 }
 const CommunityWithChatProfilePage = () => {
   const createCommunityMutation = useCreateCommunity();
-  const { userData } = useUserStore();
-  const patchMemberMutation = usePatchMember();
   const {
     fields: storeFields,
     setFields: setStoreFields,
     description,
-    communityId,
     setCommunityId,
   } = useCommunityWithChatInfoStore();
   const navigate = useNavigate();
@@ -60,7 +54,7 @@ const CommunityWithChatProfilePage = () => {
           communityData: {
             avatar: "",
             config: {
-              fields: fields,
+              fields: fields.filter((field) => field.title.length > 0),
             },
             description: description,
             name: "",
@@ -98,7 +92,6 @@ const CommunityWithChatProfilePage = () => {
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
-    console.log("Drag event:", { active, over });
 
     if (active.id !== over?.id) {
       setFields((items) => {
@@ -125,8 +118,6 @@ const CommunityWithChatProfilePage = () => {
         },
       },
     ]);
-
-    console.log(storeFields);
   };
 
   const handleDelete = (index: number) => {
@@ -176,17 +167,13 @@ const CommunityWithChatProfilePage = () => {
                   handleDelete={() => handleDelete(index)}
                   onTypeChange={(type: FieldType) => {
                     const updated = [...fields];
-                    console.log(updated[index]);
                     updated[index] = {
                       ...updated[index],
                       type: type,
                       [type]: { default: "" },
                     };
 
-                    console.log(updated[index]);
-                    console.log(updated);
                     setFields([...updated]);
-                    console.log(fields);
                   }}
                 />
               </SortableItem>

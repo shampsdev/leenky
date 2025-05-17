@@ -27,22 +27,56 @@ import {
 } from "../../../mappers/fieldsToFieldsWithId";
 import { FieldType } from "../../../types/fields/field.type";
 import useCommunityWithoutChatInfoStore from "../../../stores/create_community/communityWithoutChatInfo.store";
+import useCreateCommunity from "../../../hooks/communities/mutations/useCreateCommunity";
+import useSetCommunityAvatar from "../../../hooks/communities/mutations/usePostAvatarCommunity";
 
 export interface ExtendedField extends Field {
   id: string;
 }
 const CommunityWithoutChatProfilePage = () => {
-  const { fields: storeFields, setFields: setStoreFields } =
-    useCommunityWithoutChatInfoStore();
+  const {
+    fields: storeFields,
+    setFields: setStoreFields,
+    description,
+    avatar,
+    name,
+  } = useCommunityWithoutChatInfoStore();
   const navigate = useNavigate();
   const [openedIndex, setOpenedIndex] = useState<number | null>(null);
   const [fields, setFields] = useState<ExtendedField[]>(
     fieldsToFieldsWithId(storeFields)
   );
+  const [communityId, setCommunityId] = useState<string | null>(null);
+  const createCommunityMutation = useCreateCommunity();
+  const setCommunityAvatarMutation = useSetCommunityAvatar();
+  const handleContinue = async () => {
+    try {
+      const community = await createCommunityMutation.mutateAsync({
+        communityData: {
+          avatar: "",
+          config: {
+            fields: fields.filter((field) => field.title.length > 0),
+          },
+          description: description,
+          name: name,
+        },
+      });
 
-  const handleContinue = () => {
-    setStoreFields(fieldsWithIdToFields(fields));
-    navigate("/community/create/with_chat/connect_chat");
+      if (community) {
+        setCommunityId(community.id);
+        if (avatar) {
+          await setCommunityAvatarMutation.mutateAsync({
+            communityId: community.id,
+            avatar,
+          });
+        }
+
+        setStoreFields(fieldsWithIdToFields(fields));
+        // navigate("/community/create/with_chat/connect_chat");
+      }
+    } catch (error) {
+      alert("Произошла ошибка при создании сообщества или загрузке аватара");
+    }
   };
 
   const sensors = useSensors(

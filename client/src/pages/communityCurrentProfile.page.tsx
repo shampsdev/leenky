@@ -8,17 +8,19 @@ import FixedBottomButtonComponent from "../components/fixedBottomButton.componen
 import useGetMe from "../hooks/users/fetchHooks/useGetMe";
 import { useExtractFields } from "../hooks/utils/extractFields";
 import chunkArray from "../utils/chunkArray";
+import useCommunity from "../hooks/communities/fetchHooks/useСommunity";
 
 const CommunityCurrentProfilePage = () => {
   const { communityId } = useParams();
   const { data, isLoading } = useGetMe();
 
-  const fields = data?.members.find(
+  const { data: communityData } = useCommunity(communityId!);
+
+  const fieldsData = data?.members.find(
     (member) => member.community.id === communityId
   )?.config.fields;
+  const orderedFieldsPattern = communityData?.config.fields;
 
-  const { extractedFields } = useExtractFields(fields);
-  const chunkedFields = chunkArray(extractedFields, 3);
   const navigate = useNavigate();
   const goToEditProfilePage = () => {
     navigate(`/profile/current/${communityId}/edit`);
@@ -48,28 +50,20 @@ const CommunityCurrentProfilePage = () => {
           </div>
 
           <div className="rounded-lg mt-4 mx-auto">
-            {chunkedFields.map((chunk, index) => {
-              return (
-                <InfoBlockComponent key={index}>
-                  {chunk.map((field, index) => (
+            <InfoBlockComponent>
+              {orderedFieldsPattern &&
+                orderedFieldsPattern.map((field, index) => {
+                  return (
                     <InfoParagraphComponent
-                      title={field.name}
-                      content={field.value}
+                      title={field.title}
+                      content={
+                        fieldsData![field.title][field.type]?.value || ""
+                      }
                       key={index}
                     />
-                  ))}
-                </InfoBlockComponent>
-              );
-            })}
-            {/* <InfoBlockComponent>
-              {extractedFields.map((field, index) => (
-                <InfoParagraphComponent
-                  title={field.name}
-                  content={field.value}
-                  key={index}
-                />
-              ))}
-            </InfoBlockComponent> */}
+                  );
+                })}
+            </InfoBlockComponent>
           </div>
           <div className="pt-[40px] pb-[39px]"></div>
         </div>

@@ -12,7 +12,6 @@ import CurrentProfilePage from "./pages/communityCurrentProfile.page";
 import ProfilePage from "./pages/profile.page";
 import CommunitiesPage from "./pages/communities.page";
 import ProfileRedirection from "./utils/profileRedirection";
-import GeneralCurrentProfilePage from "./pages/generalCurrentProfile.page";
 import RegistrationPage from "./pages/registration.page";
 import InvitationPage from "./pages/invitation.page";
 import EditProfileCommunityPage from "./pages/editProfileCommunity.page";
@@ -25,6 +24,8 @@ import CommunityWithChatProfilePage from "./pages/create_community/withChat/comm
 import CommunityWithChatDescriptionPage from "./pages/create_community/withChat/communityWithChatDescriptionPage";
 import CommunityWithChatConnectPage from "./pages/create_community/withChat/communityWithChatConnectPage";
 import CommunityWithoutChatProfilePage from "./pages/create_community/withoutChat/communityWithoutChatProfilePage";
+import useCommunityWithChatInfoStore from "./stores/create_community/communityWithChatInfo.store";
+import useCommunityWithoutChatInfoStore from "./stores/create_community/communityWithoutChatInfo.store";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -35,7 +36,9 @@ const pageVariants = {
 function App() {
   const navigate = useNavigate();
   const location = useLocation();
-
+  const { resetStore: resetWithChatStore } = useCommunityWithChatInfoStore();
+  const { resetStore: resetWithoutChatStore } =
+    useCommunityWithoutChatInfoStore();
   const disableAnimation = useMemo(
     () =>
       location.pathname.startsWith("/community/create/with_chat") ||
@@ -50,6 +53,13 @@ function App() {
   }, []);
 
   useEffect(() => setBackButtonHandler(), [setBackButtonHandler]);
+
+  useEffect(() => {
+    if (!location.pathname.startsWith("/community/create")) {
+      resetWithChatStore();
+      resetWithoutChatStore();
+    }
+  }, [location.pathname]);
 
   const routes = (
     <Routes location={location}>
@@ -103,11 +113,6 @@ function App() {
           path="/profile/current/:communityId/edit"
           element={<EditProfileCommunityPage />}
         />
-        <Route
-          path="/profile/current/"
-          element={<GeneralCurrentProfilePage />}
-        />
-
         <Route path="/invite" element={<InvitationPage />} />
         <Route
           path="/registration/:communityId"
