@@ -7,11 +7,6 @@ import TextareaFieldComponent from "../components/form/textareaField.component";
 import { useNavigate, useParams } from "react-router-dom";
 import { Member } from "../types/member/member.interface";
 import { useState } from "react";
-import { Field } from "../types/fields/field.interface";
-import {
-  fieldsToFieldValues,
-  fieldValuesToFields,
-} from "../mappers/FieldValues";
 import fieldsAreEqual from "../utils/equalFields";
 import usePatchMember, {
   PatchMemberArgs,

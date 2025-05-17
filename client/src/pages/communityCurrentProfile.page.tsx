@@ -6,8 +6,6 @@ import EBBComponent from "../components/enableBackButtonComponent";
 import DevImage from "../assets/dev.png";
 import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
 import useGetMe from "../hooks/users/fetchHooks/useGetMe";
-import { useExtractFields } from "../hooks/utils/extractFields";
-import chunkArray from "../utils/chunkArray";
 import useCommunity from "../hooks/communities/fetchHooks/useСommunity";
 
 const CommunityCurrentProfilePage = () => {
@@ -50,20 +48,22 @@ const CommunityCurrentProfilePage = () => {
           </div>
 
           <div className="rounded-lg mt-4 mx-auto">
-            <InfoBlockComponent>
-              {orderedFieldsPattern &&
-                orderedFieldsPattern.map((field, index) => {
-                  return (
-                    <InfoParagraphComponent
-                      title={field.title}
-                      content={
-                        fieldsData![field.title][field.type]?.value || ""
-                      }
-                      key={index}
-                    />
-                  );
-                })}
-            </InfoBlockComponent>
+            {orderedFieldsPattern && orderedFieldsPattern.length > 0 && (
+              <InfoBlockComponent>
+                {orderedFieldsPattern &&
+                  orderedFieldsPattern.map((field, index) => {
+                    return (
+                      <InfoParagraphComponent
+                        title={field.title}
+                        content={
+                          fieldsData![field.title][field.type]?.value || ""
+                        }
+                        key={index}
+                      />
+                    );
+                  })}
+              </InfoBlockComponent>
+            )}
           </div>
           <div className="pt-[40px] pb-[39px]"></div>
         </div>

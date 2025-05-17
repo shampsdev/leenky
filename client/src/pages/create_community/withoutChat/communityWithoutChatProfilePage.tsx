@@ -21,10 +21,7 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import FixedBottomButtonComponent from "../../../components/fixedBottomButton.component";
 import { SortableItem } from "../../../components/sortableItem";
-import {
-  fieldsToFieldsWithId,
-  fieldsWithIdToFields,
-} from "../../../mappers/fieldsToFieldsWithId";
+import { fieldsToFieldsWithId } from "../../../mappers/fieldsToFieldsWithId";
 import { FieldType } from "../../../types/fields/field.type";
 import useCommunityWithoutChatInfoStore from "../../../stores/create_community/communityWithoutChatInfo.store";
 import useCreateCommunity from "../../../hooks/communities/mutations/useCreateCommunity";
@@ -36,7 +33,6 @@ export interface ExtendedField extends Field {
 const CommunityWithoutChatProfilePage = () => {
   const {
     fields: storeFields,
-    setFields: setStoreFields,
     description,
     avatar,
     name,
@@ -46,7 +42,6 @@ const CommunityWithoutChatProfilePage = () => {
   const [fields, setFields] = useState<ExtendedField[]>(
     fieldsToFieldsWithId(storeFields)
   );
-  const [communityId, setCommunityId] = useState<string | null>(null);
   const createCommunityMutation = useCreateCommunity();
   const setCommunityAvatarMutation = useSetCommunityAvatar();
   const handleContinue = async () => {
@@ -63,7 +58,6 @@ const CommunityWithoutChatProfilePage = () => {
       });
 
       if (community) {
-        setCommunityId(community.id);
         if (avatar) {
           await setCommunityAvatarMutation.mutateAsync({
             communityId: community.id,
@@ -71,7 +65,10 @@ const CommunityWithoutChatProfilePage = () => {
           });
         }
 
-        setStoreFields(fieldsWithIdToFields(fields));
+        navigate(`/communities`, { replace: true });
+        navigate(`/community/${community.id}`);
+        navigate(`/community/${community.id}/links`);
+
         // navigate("/community/create/with_chat/connect_chat");
       }
     } catch (error) {

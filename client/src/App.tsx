@@ -26,6 +26,7 @@ import CommunityWithChatConnectPage from "./pages/create_community/withChat/comm
 import CommunityWithoutChatProfilePage from "./pages/create_community/withoutChat/communityWithoutChatProfilePage";
 import useCommunityWithChatInfoStore from "./stores/create_community/communityWithChatInfo.store";
 import useCommunityWithoutChatInfoStore from "./stores/create_community/communityWithoutChatInfo.store";
+import CommunityLinksPage from "./pages/create_community/communityLinksPage";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -67,6 +68,10 @@ function App() {
         <Route path="/communities" element={<CommunitiesPage />} />
         <Route path="/community/:communityId" element={<ChatPage />} />
 
+        <Route
+          path="/community/:communityId/links"
+          element={<CommunityLinksPage />}
+        />
         <Route path="/community/create" element={<CreateCommunityLayout />}>
           <Route path="initial" element={<CreateCommunityInitial />} />
           <Route path="with_chat" element={<CreateCommunityWithChatLayout />}>

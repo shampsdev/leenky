@@ -52,18 +52,20 @@ const ProfilePage = () => {
           />
         </div>
         <div className="rounded-lg mt-[15px] mx-auto">
-          <InfoBlockComponent>
-            {orderedFieldsPattern &&
-              orderedFieldsPattern.map((field, index) => {
-                return (
-                  <InfoParagraphComponent
-                    title={field.title}
-                    content={fieldsData[field.title][field.type]?.value || ""}
-                    key={index}
-                  />
-                );
-              })}
-          </InfoBlockComponent>
+          {orderedFieldsPattern && orderedFieldsPattern?.length > 0 && (
+            <InfoBlockComponent>
+              {orderedFieldsPattern &&
+                orderedFieldsPattern.map((field, index) => {
+                  return (
+                    <InfoParagraphComponent
+                      title={field.title}
+                      content={fieldsData[field.title][field.type]?.value || ""}
+                      key={index}
+                    />
+                  );
+                })}
+            </InfoBlockComponent>
+          )}
         </div>
       </div>
     </EBBComponent>

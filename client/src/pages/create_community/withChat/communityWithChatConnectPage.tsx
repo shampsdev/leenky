@@ -1,17 +1,18 @@
 import EBBComponent from "../../../components/enableBackButtonComponent";
 import StepComponent from "../../../components/step.component";
 import Plus from "../../../assets/plus_white.svg";
-import CopyIcon from "../../../assets/copy_icon.svg";
 import { openTelegramLink } from "@telegram-apps/sdk-react";
 import { BOT_USERNAME } from "../../../shared/constants";
 import { useState } from "react";
 import FixedBottomButtonComponent from "../../../components/fixedBottomButton.component";
 import useCommunityWithChatInfoStore from "../../../stores/create_community/communityWithChatInfo.store";
 import { useNavigate } from "react-router-dom";
+import CopyFieldComponent from "../../../components/copyField.component";
 const CommunityWithChatConnectPage = () => {
   const { communityId } = useCommunityWithChatInfoStore();
   const [command] = useState<string>(`/connect ${communityId}`);
 
+  const navigate = useNavigate();
   return (
     <EBBComponent>
       <div className="mb-[28px] mt-[28px] px-[12px]">
@@ -24,17 +25,8 @@ const CommunityWithChatConnectPage = () => {
             stepNumber={1}
             value="Скопируйте команду с вашим ChatID"
           />
-          <div className="flex flex-row gap-[10px] py-[12px] px-[16px] border-[2px] rounded-[14px] border-[#F5F5F5] text-black text-[17px]">
-            <p className="flex-1">{command}</p>
-            <img
-              src={CopyIcon}
-              alt=""
-              className="cursor-pointer"
-              onClick={() => {
-                navigator.clipboard.writeText(command);
-              }}
-            />
-          </div>
+
+          <CopyFieldComponent content={command} />
         </div>
 
         <div className="flex flex-col gap-[24px]">
@@ -73,7 +65,11 @@ const CommunityWithChatConnectPage = () => {
       <FixedBottomButtonComponent
         content="Продолжить"
         state={true ? "active" : "disabled"}
-        handleClick={() => {}}
+        handleClick={() => {
+          navigate(`/communities`, { replace: true });
+          navigate(`/profile/current/${communityId}/edit`);
+          navigate(`/community/${communityId}/links`);
+        }}
       />
       <div className="pb-[200px]"></div>
     </EBBComponent>
