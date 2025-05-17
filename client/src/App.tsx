@@ -24,6 +24,7 @@ import CommunityWithoutChatDescriptionPage from "./pages/create_community/withou
 import CommunityWithChatProfilePage from "./pages/create_community/withChat/communityWithChatProfilePage";
 import CommunityWithChatDescriptionPage from "./pages/create_community/withChat/communityWithChatDescriptionPage";
 import CommunityWithChatConnectPage from "./pages/create_community/withChat/communityWithChatConnectPage";
+import CommunityWithoutChatProfilePage from "./pages/create_community/withoutChat/communityWithoutChatProfilePage";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -76,6 +77,11 @@ function App() {
             <Route
               path="description"
               element={<CommunityWithoutChatDescriptionPage />}
+            />
+
+            <Route
+              path="profile"
+              element={<CommunityWithoutChatProfilePage />}
             />
           </Route>
         </Route>

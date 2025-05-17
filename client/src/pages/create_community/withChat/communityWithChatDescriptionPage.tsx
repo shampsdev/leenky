@@ -1,13 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import EBBComponent from "../../../components/enableBackButtonComponent";
 import TextareaFieldComponent from "../../../components/form/textareaField.component";
-import useCommunityInfoStore from "../../../stores/create_community/communityInfo.store";
+import useCommunityWithChatInfoStore from "../../../stores/create_community/communityWithChatInfo.store";
 import FixedBottomButtonComponent from "../../../components/fixedBottomButton.component";
 
 const CommunityWithChatDescriptionPage = () => {
   const navigate = useNavigate();
 
-  const { setDescription, description } = useCommunityInfoStore();
+  const { setDescription, description } = useCommunityWithChatInfoStore();
   return (
     <EBBComponent>
       <div className="mb-[32px] mt-[28px]">
