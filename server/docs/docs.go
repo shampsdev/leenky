@@ -459,6 +459,48 @@ const docTemplate = `{
                 }
             }
         },
+        "/communities/id/{id}/set_avatar": {
+            "post": {
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "communities"
+                ],
+                "summary": "Set avatar for community",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Image data",
+                        "name": "file",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "A url to the stored image",
+                        "schema": {
+                            "$ref": "#/definitions/community.SetAvatarResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request"
+                    },
+                    "500": {
+                        "description": "Internal Server Error"
+                    }
+                }
+            }
+        },
         "/communities/search": {
             "get": {
                 "security": [
@@ -642,6 +684,14 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "community.SetAvatarResponse": {
+            "type": "object",
+            "properties": {
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
         "domain.Community": {
             "type": "object",
             "properties": {
