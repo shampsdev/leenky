@@ -478,6 +478,13 @@ const docTemplate = `{
                 "summary": "Set avatar for community",
                 "parameters": [
                     {
+                        "type": "string",
+                        "description": "Community ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
                         "type": "file",
                         "description": "Image data",
                         "name": "file",

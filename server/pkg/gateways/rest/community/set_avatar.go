@@ -20,6 +20,7 @@ type SetAvatarResponse struct {
 // @Accept json
 // @Produce json
 // @Schemes http https
+// @Param id path string true "Community ID"
 // @Param file formData file true "Image data"
 // @Success 200 {object} SetAvatarResponse "A url to the stored image"
 // @Failure 400 "Bad Request"
