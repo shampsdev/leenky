@@ -27,23 +27,59 @@ import {
   fieldsWithIdToFields,
 } from "../../../mappers/fieldsToFieldsWithId";
 import { FieldType } from "../../../types/fields/field.type";
+import useCreateCommunity from "../../../hooks/communities/mutations/useCreateCommunity";
+import usePatchMember from "../../../hooks/members/mutations/usePatchMember";
+import { fieldsToFieldValues } from "../../../mappers/FieldValues";
+import useUserStore from "../../../stores/user.store";
 
 export interface ExtendedField extends Field {
   id: string;
 }
 const CommunityWithChatProfilePage = () => {
-  const { fields: storeFields, setFields: setStoreFields } =
-    useCommunityWithChatInfoStore();
-  console.log(storeFields);
+  const createCommunityMutation = useCreateCommunity();
+  const { userData } = useUserStore();
+  const patchMemberMutation = usePatchMember();
+  const {
+    fields: storeFields,
+    setFields: setStoreFields,
+    description,
+    communityId,
+    setCommunityId,
+  } = useCommunityWithChatInfoStore();
   const navigate = useNavigate();
   const [openedIndex, setOpenedIndex] = useState<number | null>(null);
+
   const [fields, setFields] = useState<ExtendedField[]>(
     fieldsToFieldsWithId(storeFields)
   );
 
   const handleContinue = () => {
+    const createCommunity = async () => {
+      try {
+        const community = await createCommunityMutation.mutateAsync({
+          communityData: {
+            avatar: "",
+            config: {
+              fields: fields,
+            },
+            description: description,
+            name: "",
+          },
+        });
+
+        if (community) {
+          setCommunityId(community.id);
+          navigate("/community/create/with_chat/connect_chat");
+        } else {
+          alert("Произошла ошибка при создании сообщества");
+        }
+      } catch (error) {
+        alert("Произошла ошибка при создании сообщества");
+      }
+    };
+
     setStoreFields(fieldsWithIdToFields(fields));
-    navigate("/community/create/with_chat/connect_chat");
+    createCommunity();
   };
 
   const sensors = useSensors(
@@ -167,9 +203,11 @@ const CommunityWithChatProfilePage = () => {
       </DndContext>
 
       <FixedBottomButtonComponent
-        content="Продолжить"
+        content="Cоздать сообщество"
         state={true ? "active" : "disabled"}
-        handleClick={() => handleContinue()}
+        handleClick={() => {
+          handleContinue();
+        }}
       />
       <div className="pb-[150px]"></div>
     </EBBComponent>

@@ -5,12 +5,12 @@ interface CommunityInfoStore {
   description: string;
   fields: Field[];
   chatRequired: boolean;
-  chatId: string;
+  communityId: string;
 
   setDescription: (v: string) => void;
   setFields: (fields: Field[]) => void;
   setChatRequired: (v: boolean) => void;
-  setChatId: (v: string) => void;
+  setCommunityId: (communityId: string) => void;
 
   resetStore: () => void;
 }
@@ -20,18 +20,19 @@ const useCommunityWithChatInfoStore = create<CommunityInfoStore>((set) => ({
   fields: [],
   chatRequired: false,
   chatId: "",
+  communityId: "",
 
   setDescription: (v) => set({ description: v }),
   setFields: (fields) => set({ fields }),
   setChatRequired: (v) => set({ chatRequired: v }),
-  setChatId: (v) => set({ chatId: v }),
+  setCommunityId: (communityId: string) => set({ communityId: communityId }),
 
   resetStore: () =>
     set({
       description: "",
       fields: [],
       chatRequired: false,
-      chatId: "",
+      communityId: "",
     }),
 }));
 

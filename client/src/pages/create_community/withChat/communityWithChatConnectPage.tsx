@@ -4,51 +4,14 @@ import Plus from "../../../assets/plus_white.svg";
 import CopyIcon from "../../../assets/copy_icon.svg";
 import { openTelegramLink } from "@telegram-apps/sdk-react";
 import { BOT_USERNAME } from "../../../shared/constants";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import FixedBottomButtonComponent from "../../../components/fixedBottomButton.component";
-import useCreateCommunity from "../../../hooks/communities/mutations/useCreateCommunity";
 import useCommunityWithChatInfoStore from "../../../stores/create_community/communityWithChatInfo.store";
 import { useNavigate } from "react-router-dom";
 const CommunityWithChatConnectPage = () => {
-  const { fields, setChatId, chatId, description } =
-    useCommunityWithChatInfoStore();
-  const [command] = useState<string>(`/connect ${chatId}`);
-  const createCommunityMutation = useCreateCommunity();
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+  const { communityId } = useCommunityWithChatInfoStore();
+  const [command] = useState<string>(`/connect ${communityId}`);
   const navigate = useNavigate();
-  useEffect(() => {
-    const createCommunity = async () => {
-      try {
-        setIsLoading(true);
-        console.log(fields);
-        const community = await createCommunityMutation.mutateAsync({
-          communityData: {
-            avatar: "",
-            config: {
-              fields: fields,
-            },
-            description: description,
-            name: "",
-          },
-        });
-
-        if (community) {
-          setChatId(community.id);
-        } else {
-          alert("Уупс, произошла ошибка");
-          navigate(-1);
-        }
-      } catch (error) {
-        console.error("Ошибка создания сообщества:", error);
-        alert("Произошла ошибка при создании сообщества");
-        navigate(-1);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    createCommunity();
-  }, []);
 
   return (
     <EBBComponent>
@@ -62,23 +25,17 @@ const CommunityWithChatConnectPage = () => {
             stepNumber={1}
             value="Скопируйте команду с вашим ChatID"
           />
-          {isLoading ? (
-            <div className="animate-pulse flex flex-row gap-[10px] py-[12px] px-[16px] border-[2px] rounded-[14px] border-[#F5F5F5]">
-              <div className="flex-1 h-[20px] bg-[#E5E5E5] rounded-[4px]"></div>
-            </div>
-          ) : (
-            <div className="flex flex-row gap-[10px] py-[12px] px-[16px] border-[2px] rounded-[14px] border-[#F5F5F5] text-black text-[17px]">
-              <p className="flex-1">{command}</p>
-              <img
-                src={CopyIcon}
-                alt=""
-                className="cursor-pointer"
-                onClick={() => {
-                  navigator.clipboard.writeText(command);
-                }}
-              />
-            </div>
-          )}
+          <div className="flex flex-row gap-[10px] py-[12px] px-[16px] border-[2px] rounded-[14px] border-[#F5F5F5] text-black text-[17px]">
+            <p className="flex-1">{command}</p>
+            <img
+              src={CopyIcon}
+              alt=""
+              className="cursor-pointer"
+              onClick={() => {
+                navigator.clipboard.writeText(command);
+              }}
+            />
+          </div>
         </div>
 
         <div className="flex flex-col gap-[24px]">
