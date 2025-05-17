@@ -283,6 +283,7 @@ func (m *Community) ConnectCommunityWithTGChat(ctx context.Context, actorID int6
 	if tgChat.Photo != nil {
 		community.Avatar, err = m.downloadTGChatAvatar(ctx, m.bot, m.storage, tgChat.Photo.SmallFileID, tgChatID)
 	}
+	community.Name = tgChat.Title
 	if err != nil {
 		return fmt.Errorf("error downloading avatar: %w", err)
 	}
@@ -291,6 +292,7 @@ func (m *Community) ConnectCommunityWithTGChat(ctx context.Context, actorID int6
 		ID:       communityID,
 		TGChatID: &tgChatID,
 		Avatar:   &community.Avatar,
+		Name:     &community.Name,
 	})
 	if err != nil {
 		return fmt.Errorf("error updating community: %w", err)
