@@ -23,7 +23,8 @@ func Setup(r *gin.RouterGroup, cases usecase.Cases) {
 		PATCH("", Patch(cases.Community)).
 		POST("/join", Join(cases.Community)).
 		POST("/leave", Leave(cases.Community)).
-		GET("/preview", GetPreview(cases.Community))
+		GET("/preview", GetPreview(cases.Community)).
+		POST("/set_avatar", SetAvatar(cases.Community))
 
 	g.Group("/id/:id/members").
 		GET("/search", SearchMembers(cases.Community, cases.Search)).

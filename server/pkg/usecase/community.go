@@ -6,6 +6,7 @@ import (
 	"fmt"
 
 	"github.com/go-telegram/bot"
+	"github.com/google/uuid"
 	"github.com/shampsdev/tglinked/server/pkg/domain"
 	"github.com/shampsdev/tglinked/server/pkg/repo"
 	"github.com/shampsdev/tglinked/server/pkg/usecase/names"
@@ -145,16 +146,16 @@ func (c *Community) MigrateTGChatID(ctx context.Context, oldTGID, newTGID int64)
 	return nil
 }
 
-func (m *Community) JoinCommunity(ctx Context, communityID string, config *domain.MemberConfig) error {
-	community, err := m.GetPreviewByID(ctx, communityID)
+func (c *Community) JoinCommunity(ctx Context, communityID string, config *domain.MemberConfig) error {
+	community, err := c.GetPreviewByID(ctx, communityID)
 	if err != nil {
 		return fmt.Errorf("error getting community: %w", err)
 	}
-	err = m.validateConfig(community.Config, config)
+	err = c.validateConfig(community.Config, config)
 	if err != nil {
 		return fmt.Errorf("error validating config: %w", err)
 	}
-	return m.memberRepo.Create(ctx, &domain.CreateMember{
+	return c.memberRepo.Create(ctx, &domain.CreateMember{
 		UserID:      ctx.User.ID,
 		CommunityID: communityID,
 		IsAdmin:     false,
@@ -162,23 +163,23 @@ func (m *Community) JoinCommunity(ctx Context, communityID string, config *domai
 	})
 }
 
-func (m *Community) PatchMember(ctx Context, communityID string, member *domain.PatchMember) error {
+func (c *Community) PatchMember(ctx Context, communityID string, member *domain.PatchMember) error {
 	if member.UserID != ctx.User.ID {
 		return fmt.Errorf("cannot patch other user's member")
 	}
-	if err := m.ensureUserIsMember(ctx, communityID); err != nil {
+	if err := c.ensureUserIsMember(ctx, communityID); err != nil {
 		return fmt.Errorf("error ensuring user is member: %w", err)
 	}
 
-	return m.memberRepo.Patch(ctx, member)
+	return c.memberRepo.Patch(ctx, member)
 }
 
-func (m *Community) GetMember(ctx Context, communityID, memberID string) (*domain.Member, error) {
-	if err := m.ensureUserIsMember(ctx, communityID); err != nil {
+func (c *Community) GetMember(ctx Context, communityID, memberID string) (*domain.Member, error) {
+	if err := c.ensureUserIsMember(ctx, communityID); err != nil {
 		return nil, fmt.Errorf("error ensuring user is member: %w", err)
 	}
 
-	member, err := repo.First(m.memberRepo.Filter)(ctx, &domain.FilterMember{
+	member, err := repo.First(c.memberRepo.Filter)(ctx, &domain.FilterMember{
 		UserID:           &memberID,
 		CommunityID:      &communityID,
 		IncludeCommunity: true,
@@ -190,15 +191,15 @@ func (m *Community) GetMember(ctx Context, communityID, memberID string) (*domai
 	return member, nil
 }
 
-func (m *Community) ensureUserIsMember(ctx Context, communityID string) error {
-	_, err := repo.First(m.memberRepo.Filter)(ctx, &domain.FilterMember{
+func (c *Community) ensureUserIsMember(ctx Context, communityID string) error {
+	_, err := repo.First(c.memberRepo.Filter)(ctx, &domain.FilterMember{
 		UserID:      &ctx.User.ID,
 		CommunityID: &communityID,
 	})
 	return err
 }
 
-func (m *Community) validateConfig(config *domain.CommunityConfig, filled *domain.MemberConfig) error {
+func (c *Community) validateConfig(config *domain.CommunityConfig, filled *domain.MemberConfig) error {
 	configFields := make(map[string]*domain.Field)
 	for _, f := range config.Fields {
 		configFields[f.Title] = f
@@ -230,12 +231,12 @@ func (m *Community) validateConfig(config *domain.CommunityConfig, filled *domai
 	return nil
 }
 
-func (m *Community) LeaveCommunity(ctx Context, communityID string) error {
-	return m.memberRepo.Delete(ctx, ctx.User.ID, communityID)
+func (c *Community) LeaveCommunity(ctx Context, communityID string) error {
+	return c.memberRepo.Delete(ctx, ctx.User.ID, communityID)
 }
 
-func (m *Community) IsMember(ctx Context, communityID string) (bool, error) {
-	_, err := repo.First(m.memberRepo.Filter)(ctx, &domain.FilterMember{
+func (c *Community) IsMember(ctx Context, communityID string) (bool, error) {
+	_, err := repo.First(c.memberRepo.Filter)(ctx, &domain.FilterMember{
 		UserID:      &ctx.User.ID,
 		CommunityID: &communityID,
 	})
@@ -248,31 +249,26 @@ func (m *Community) IsMember(ctx Context, communityID string) (bool, error) {
 	return true, nil
 }
 
-func (m *Community) ConnectCommunityWithTGChat(ctx context.Context, actorID int64, communityID string, tgChatID int64) error {
-	actor, err := repo.First(m.userRepo.Filter)(ctx, &domain.FilterUser{
-		TelegramID: &actorID,
+func (c *Community) ConnectCommunityWithTGChat(ctx context.Context, actorTGID int64, communityID string, tgChatID int64) error {
+	actor, err := repo.First(c.userRepo.Filter)(ctx, &domain.FilterUser{
+		TelegramID: &actorTGID,
 	})
 	if err != nil {
 		return fmt.Errorf("error getting actor: %w", err)
 	}
 
-	_, err = repo.First(m.memberRepo.Filter)(ctx, &domain.FilterMember{
-		CommunityID: &communityID,
-		UserID:      &actor.ID,
-		IsAdmin:     ptrTo(true),
-	})
-	if err != nil {
-		return fmt.Errorf("error getting admin: %w", err)
+	if err := c.ensureAdmin(ctx, communityID, actor.ID); err != nil {
+		return err
 	}
 
-	community, err := repo.First(m.communityRepo.Filter)(ctx, &domain.FilterCommunity{
+	community, err := repo.First(c.communityRepo.Filter)(ctx, &domain.FilterCommunity{
 		ID: &communityID,
 	})
 	if err != nil {
 		return fmt.Errorf("error getting community: %w", err)
 	}
 
-	tgChat, err := m.bot.GetChat(ctx, &bot.GetChatParams{
+	tgChat, err := c.bot.GetChat(ctx, &bot.GetChatParams{
 		ChatID: tgChatID,
 	})
 	if err != nil {
@@ -281,14 +277,14 @@ func (m *Community) ConnectCommunityWithTGChat(ctx context.Context, actorID int6
 
 	community.TGChatID = &tgChatID
 	if tgChat.Photo != nil {
-		community.Avatar, err = m.downloadTGChatAvatar(ctx, m.bot, m.storage, tgChat.Photo.SmallFileID, tgChatID)
+		community.Avatar, err = c.downloadTGChatAvatar(ctx, c.bot, c.storage, tgChat.Photo.SmallFileID, tgChatID)
 	}
 	community.Name = tgChat.Title
 	if err != nil {
 		return fmt.Errorf("error downloading avatar: %w", err)
 	}
 
-	err = m.communityRepo.Patch(ctx, &domain.PatchCommunity{
+	err = c.communityRepo.Patch(ctx, &domain.PatchCommunity{
 		ID:       communityID,
 		TGChatID: &tgChatID,
 		Avatar:   &community.Avatar,
@@ -296,6 +292,38 @@ func (m *Community) ConnectCommunityWithTGChat(ctx context.Context, actorID int6
 	})
 	if err != nil {
 		return fmt.Errorf("error updating community: %w", err)
+	}
+	return nil
+}
+
+func (c *Community) SetAvatar(ctx Context, communityID string, avatar []byte) (string, error) {
+	if err := c.ensureAdmin(ctx, communityID, ctx.User.ID); err != nil {
+		return "", err
+	}
+
+	url, err := c.storage.SaveImageByBytes(ctx, avatar, names.ForCommunityAvatar(communityID, uuid.New().String()))
+	if err != nil {
+		return "", fmt.Errorf("error saving avatar: %w", err)
+	}
+
+	err = c.communityRepo.Patch(ctx, &domain.PatchCommunity{
+		ID:     communityID,
+		Avatar: &url,
+	})
+	if err != nil {
+		return "", fmt.Errorf("error updating community: %w", err)
+	}
+	return url, nil
+}
+
+func (c *Community) ensureAdmin(ctx context.Context, communityID, userID string) error {
+	_, err := repo.First(c.memberRepo.Filter)(ctx, &domain.FilterMember{
+		CommunityID: &communityID,
+		UserID:      &userID,
+		IsAdmin:     ptrTo(true),
+	})
+	if err != nil {
+		return fmt.Errorf("error getting admin: %w", err)
 	}
 	return nil
 }

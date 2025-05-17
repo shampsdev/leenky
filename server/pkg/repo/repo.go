@@ -29,4 +29,5 @@ type Member interface {
 
 type ImageStorage interface {
 	SaveImageByURL(ctx context.Context, url, key string) (string, error)
+	SaveImageByBytes(ctx context.Context, bytes []byte, key string) (string, error)
 }
