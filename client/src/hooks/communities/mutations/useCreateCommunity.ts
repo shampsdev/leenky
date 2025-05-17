@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import useInitDataStore from "../../../stores/InitData.store";
-import { createCommunity, joinCommunity } from "../../../api/communities.api";
+import { createCommunity } from "../../../api/communities.api";
 import { CreateCommunity } from "../../../types/postApiTypes/createCommunity.interface";
 
 const useCreateCommunity = () => {
