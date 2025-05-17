@@ -21,20 +21,19 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import FixedBottomButtonComponent from "../../../components/fixedBottomButton.component";
 import { SortableItem } from "../../../components/sortableItem";
-import useCommunityWithChatInfoStore from "../../../stores/create_community/communityWithChatInfo.store";
 import {
   fieldsToFieldsWithId,
   fieldsWithIdToFields,
 } from "../../../mappers/fieldsToFieldsWithId";
 import { FieldType } from "../../../types/fields/field.type";
+import useCommunityWithoutChatInfoStore from "../../../stores/create_community/communityWithoutChatInfo.store";
 
 export interface ExtendedField extends Field {
   id: string;
 }
-const CommunityWithChatProfilePage = () => {
+const CommunityWithoutChatProfilePage = () => {
   const { fields: storeFields, setFields: setStoreFields } =
-    useCommunityWithChatInfoStore();
-  console.log(storeFields);
+    useCommunityWithoutChatInfoStore();
   const navigate = useNavigate();
   const [openedIndex, setOpenedIndex] = useState<number | null>(null);
   const [fields, setFields] = useState<ExtendedField[]>(
@@ -84,13 +83,8 @@ const CommunityWithChatProfilePage = () => {
         description: "",
         title: "",
         type: "textinput",
-        textinput: {
-          default: "",
-        },
       },
     ]);
-
-    console.log(storeFields);
   };
 
   const handleDelete = (index: number) => {
@@ -140,17 +134,8 @@ const CommunityWithChatProfilePage = () => {
                   handleDelete={() => handleDelete(index)}
                   onTypeChange={(type: FieldType) => {
                     const updated = [...fields];
-                    console.log(updated[index]);
-                    updated[index] = {
-                      ...updated[index],
-                      type: type,
-                      [type]: { default: "" },
-                    };
-
-                    console.log(updated[index]);
-                    console.log(updated);
-                    setFields([...updated]);
-                    console.log(fields);
+                    updated[index] = { ...updated[index], type: type };
+                    setFields(updated);
                   }}
                 />
               </SortableItem>
@@ -171,9 +156,9 @@ const CommunityWithChatProfilePage = () => {
         state={true ? "active" : "disabled"}
         handleClick={() => handleContinue()}
       />
-      <div className="pb-[150px]"></div>
+      <div className="pb-[200px]"></div>
     </EBBComponent>
   );
 };
 
-export default CommunityWithChatProfilePage;
+export default CommunityWithoutChatProfilePage;
