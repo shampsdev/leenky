@@ -27,23 +27,53 @@ import {
   fieldsWithIdToFields,
 } from "../../../mappers/fieldsToFieldsWithId";
 import { FieldType } from "../../../types/fields/field.type";
+import useCreateCommunity from "../../../hooks/communities/mutations/useCreateCommunity";
 
 export interface ExtendedField extends Field {
   id: string;
 }
 const CommunityWithChatProfilePage = () => {
-  const { fields: storeFields, setFields: setStoreFields } =
-    useCommunityWithChatInfoStore();
-  console.log(storeFields);
+  const createCommunityMutation = useCreateCommunity();
+  const {
+    fields: storeFields,
+    setFields: setStoreFields,
+    description,
+    setCommunityId,
+  } = useCommunityWithChatInfoStore();
   const navigate = useNavigate();
   const [openedIndex, setOpenedIndex] = useState<number | null>(null);
+
   const [fields, setFields] = useState<ExtendedField[]>(
     fieldsToFieldsWithId(storeFields)
   );
 
   const handleContinue = () => {
+    const createCommunity = async () => {
+      try {
+        const community = await createCommunityMutation.mutateAsync({
+          communityData: {
+            avatar: "",
+            config: {
+              fields: fields.filter((field) => field.title.length > 0),
+            },
+            description: description,
+            name: "",
+          },
+        });
+
+        if (community) {
+          setCommunityId(community.id);
+          navigate("/community/create/with_chat/connect_chat");
+        } else {
+          alert("Произошла ошибка при создании сообщества");
+        }
+      } catch (error) {
+        alert("Произошла ошибка при создании сообщества");
+      }
+    };
+
     setStoreFields(fieldsWithIdToFields(fields));
-    navigate("/community/create/with_chat/connect_chat");
+    createCommunity();
   };
 
   const sensors = useSensors(
@@ -62,7 +92,6 @@ const CommunityWithChatProfilePage = () => {
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
-    console.log("Drag event:", { active, over });
 
     if (active.id !== over?.id) {
       setFields((items) => {
@@ -89,8 +118,6 @@ const CommunityWithChatProfilePage = () => {
         },
       },
     ]);
-
-    console.log(storeFields);
   };
 
   const handleDelete = (index: number) => {
@@ -140,17 +167,13 @@ const CommunityWithChatProfilePage = () => {
                   handleDelete={() => handleDelete(index)}
                   onTypeChange={(type: FieldType) => {
                     const updated = [...fields];
-                    console.log(updated[index]);
                     updated[index] = {
                       ...updated[index],
                       type: type,
                       [type]: { default: "" },
                     };
 
-                    console.log(updated[index]);
-                    console.log(updated);
                     setFields([...updated]);
-                    console.log(fields);
                   }}
                 />
               </SortableItem>
@@ -167,9 +190,11 @@ const CommunityWithChatProfilePage = () => {
       </DndContext>
 
       <FixedBottomButtonComponent
-        content="Продолжить"
+        content="Cоздать сообщество"
         state={true ? "active" : "disabled"}
-        handleClick={() => handleContinue()}
+        handleClick={() => {
+          handleContinue();
+        }}
       />
       <div className="pb-[150px]"></div>
     </EBBComponent>

@@ -39,6 +39,11 @@ const InvitationPage = () => {
               Число участников: {chatData?.membersCount}
             </p>
           </div>
+          <div className="mt-[17px] text-[15px] text-[#707579]">
+            {chatData!.description.length > 90
+              ? chatData?.description.slice(0, 90) + "..."
+              : chatData?.description}
+          </div>
         </div>
 
         <div className="flex justify-center">

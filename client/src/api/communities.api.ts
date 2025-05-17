@@ -1,3 +1,4 @@
+import { AvatarCommunity } from "../types/community/avatar.community.interface";
 import { Community } from "../types/community/community.interface";
 import { Member } from "../types/member/member.interface";
 import { MemberConfig } from "../types/member/memberConfig.interface";
@@ -50,6 +51,39 @@ export const patchCommunity = async (
     return response.data;
   } catch (error) {
     console.error("Ошибка при патче сообщества:", error);
+    return null;
+  }
+};
+
+// export const setCommunityAvatar = async (initData: string, communityId: string, avatar: File): Promise<AvatarCommunity | null> => {
+//   try{
+//     const response = await api.post<AvatarCommunity>(`/communities/id/${communityId}/setAvatar`),
+//   }
+// }
+
+export const setCommunityAvatar = async (
+  initData: string,
+  communityId: string,
+  avatar: File
+): Promise<AvatarCommunity | null> => {
+  try {
+    const formData = new FormData();
+    formData.append("file", avatar);
+
+    const response = await api.post<AvatarCommunity>(
+      `/communities/id/${communityId}/set_avatar`,
+      formData,
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          "X-Api-Token": initData,
+        },
+      }
+    );
+
+    return response.data;
+  } catch (error) {
+    console.error("Ошибка при загрузке аватара сообщества:", error);
     return null;
   }
 };

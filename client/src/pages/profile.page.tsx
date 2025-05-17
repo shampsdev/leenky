@@ -8,19 +8,18 @@ import DevImage from "../assets/dev.png";
 import ButtonComponent from "../components/button.component";
 import TGWhite from "../assets/tg_white.svg";
 import useMember from "../hooks/members/fetchHooks/useMember";
-import { useExtractFields } from "../hooks/utils/extractFields";
-import chunkArray from "../utils/chunkArray";
+import useCommunity from "../hooks/communities/fetchHooks/useСommunity";
 
 const ProfilePage = () => {
   const { communityId, memberId } = useParams();
   const { data, isLoading } = useMember(communityId ?? "", memberId ?? "");
-
-  const { extractedFields } = useExtractFields(data?.config.fields);
-  const chunkedFields = chunkArray(extractedFields, 3);
+  const { data: communityData } = useCommunity(communityId!);
 
   if (isLoading || !data) return null;
 
   const userData = data.user;
+  const fieldsData = data.config.fields;
+  const orderedFieldsPattern = communityData?.config.fields;
 
   return (
     <EBBComponent>
@@ -53,40 +52,20 @@ const ProfilePage = () => {
           />
         </div>
         <div className="rounded-lg mt-[15px] mx-auto">
-          {chunkedFields.map((chunk, index) => {
-            return (
-              <InfoBlockComponent key={index}>
-                {chunk.map((field, index) => (
-                  <InfoParagraphComponent
-                    title={field.name}
-                    content={field.value}
-                    key={index}
-                  />
-                ))}
-              </InfoBlockComponent>
-            );
-          })}
-          {/* <InfoBlockComponent>
-            {textInputs.map((field, index) => (
-              <InfoParagraphComponent
-                title={field.name}
-                content={field.value}
-                key={index}
-              />
-            ))}
-          </InfoBlockComponent>
-          <div className="px-[16px] text-hint mb-[8px] mt-[15px] text-[13px]">
-            ПОДРОБНЕЕ
-          </div>
-          <InfoBlockComponent>
-            {textAreas.map((field, index) => (
-              <InfoParagraphComponent
-                title={field.name}
-                content={field.value}
-                key={index}
-              />
-            ))}
-          </InfoBlockComponent> */}
+          {orderedFieldsPattern && orderedFieldsPattern?.length > 0 && (
+            <InfoBlockComponent>
+              {orderedFieldsPattern &&
+                orderedFieldsPattern.map((field, index) => {
+                  return (
+                    <InfoParagraphComponent
+                      title={field.title}
+                      content={fieldsData[field.title][field.type]?.value || ""}
+                      key={index}
+                    />
+                  );
+                })}
+            </InfoBlockComponent>
+          )}
         </div>
       </div>
     </EBBComponent>

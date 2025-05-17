@@ -21,28 +21,59 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import FixedBottomButtonComponent from "../../../components/fixedBottomButton.component";
 import { SortableItem } from "../../../components/sortableItem";
-import {
-  fieldsToFieldsWithId,
-  fieldsWithIdToFields,
-} from "../../../mappers/fieldsToFieldsWithId";
+import { fieldsToFieldsWithId } from "../../../mappers/fieldsToFieldsWithId";
 import { FieldType } from "../../../types/fields/field.type";
 import useCommunityWithoutChatInfoStore from "../../../stores/create_community/communityWithoutChatInfo.store";
+import useCreateCommunity from "../../../hooks/communities/mutations/useCreateCommunity";
+import useSetCommunityAvatar from "../../../hooks/communities/mutations/usePostAvatarCommunity";
 
 export interface ExtendedField extends Field {
   id: string;
 }
 const CommunityWithoutChatProfilePage = () => {
-  const { fields: storeFields, setFields: setStoreFields } =
-    useCommunityWithoutChatInfoStore();
+  const {
+    fields: storeFields,
+    description,
+    avatar,
+    name,
+  } = useCommunityWithoutChatInfoStore();
   const navigate = useNavigate();
   const [openedIndex, setOpenedIndex] = useState<number | null>(null);
   const [fields, setFields] = useState<ExtendedField[]>(
     fieldsToFieldsWithId(storeFields)
   );
+  const createCommunityMutation = useCreateCommunity();
+  const setCommunityAvatarMutation = useSetCommunityAvatar();
+  const handleContinue = async () => {
+    try {
+      const community = await createCommunityMutation.mutateAsync({
+        communityData: {
+          avatar: "",
+          config: {
+            fields: fields.filter((field) => field.title.length > 0),
+          },
+          description: description,
+          name: name,
+        },
+      });
 
-  const handleContinue = () => {
-    setStoreFields(fieldsWithIdToFields(fields));
-    navigate("/community/create/with_chat/connect_chat");
+      if (community) {
+        if (avatar) {
+          await setCommunityAvatarMutation.mutateAsync({
+            communityId: community.id,
+            avatar,
+          });
+        }
+
+        navigate(`/communities`, { replace: true });
+        navigate(`/community/${community.id}`);
+        navigate(`/community/${community.id}/links`);
+
+        // navigate("/community/create/with_chat/connect_chat");
+      }
+    } catch (error) {
+      alert("Произошла ошибка при создании сообщества или загрузке аватара");
+    }
   };
 
   const sensors = useSensors(
