@@ -237,7 +237,7 @@ func (b *Bot) handleCommandConnect(ctx context.Context, _ *bot.Bot, update *mode
 		log.With(slogx.Err(err)).Error("error connecting chat")
 		_, err = b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: msg.Chat.ID,
-			Text: `Не удалось подключить чат 😢.
+			Text: `Не удалось подключить чат к вашему комьюнити 😢
 - Может быть вы не администратор?
 - А может чат уже подключен?`,
 		})
@@ -247,6 +247,14 @@ func (b *Bot) handleCommandConnect(ctx context.Context, _ *bot.Bot, update *mode
 		return
 	}
 	log.Info("chat connected")
+
+	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: msg.Chat.ID,
+		Text:   "Чат подключен к вашему комьюнити 🎉",
+	})
+	if err != nil {
+		log.With(slogx.Err(err)).Error("error sending message")
+	}
 	err = b.registerChat(ctx, msg.Chat.ID)
 	if err != nil {
 		log.With(slogx.Err(err)).Error("error sending message")
