@@ -6,6 +6,7 @@ interface aboutComponentProps {
   politics?: boolean;
   cancelButtonText?: string;
   handleCancelButtonClick?: () => void;
+  onPolicyClick?: () => void;
 }
 
 const AboutComponent = (props: aboutComponentProps) => {
@@ -25,21 +26,24 @@ const AboutComponent = (props: aboutComponentProps) => {
 
           {props.politics && (
             <div className="mt-[16px] text-center text-[#707579]">
-              выбирая вариант «Принимаю»,вы соглашаетесь с положениями
-              <a className="" href="#">
+              выбирая вариант «Принимаю»,вы соглашаетесь с положениями{" "}
+              <a
+                onClick={props.onPolicyClick}
+                className="font-semibold underline cursor-pointer"
+              >
                 политики конфиденциальности
               </a>
             </div>
           )}
         </div>
 
-        <div className="flex w-[100vw] h-[100px] absolute right-0 bottom-0 left-0 text-center items-center justify-center">
-          {props.politics && (
+        <div className="flex w-[100vw] h-[100px] absolute right-0 bottom-0 left-0 text-center items-center justify-evenly">
+          {props.cancelButtonText && (
             <button
               onClick={props.handleCancelButtonClick}
               className="px-[30px] bg-[#F5F5F5] py-[12px] z-10 bg-[#] rounded-[30px] text-black font-semibold"
             >
-              {props.buttonText}
+              {props.cancelButtonText}
             </button>
           )}
           <button

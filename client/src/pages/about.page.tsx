@@ -5,7 +5,9 @@ import AboutSecond from "../assets/about_2.png";
 import DBBComponent from "../components/disableBackButton.component";
 import EBBComponent from "../components/enableBackButtonComponent";
 import useCreateMe from "../hooks/users/mutations/useCreateMe";
-
+import AboutDecline from "../assets/about_decline.png";
+import AboutThird from "../assets/about_third.png";
+import useInitDataStore from "../stores/InitData.store";
 export const AboutFirstPage = () => {
   const navigate = useNavigate();
   const goToNextPage = () => {
@@ -25,13 +27,13 @@ export const AboutFirstPage = () => {
 
 export const AboutSecondPage = () => {
   const navigate = useNavigate();
-  const goToRegistration = () => {
-    navigate("/registration");
+  const goToNextPage = () => {
+    navigate("/about/3", { replace: true });
   };
   return (
     <EBBComponent>
       <AboutComponent
-        handleButtonClick={goToRegistration}
+        handleButtonClick={goToNextPage}
         imageSrc={AboutSecond}
         contentText={
           "Рассказывайте о себе и узнавайте больше о других участниках чата"
@@ -48,7 +50,7 @@ export const AboutThirdPage = () => {
 
   const registerUser = async () => {
     try {
-      const response = await createMeMutation.mutateAsync();
+      await createMeMutation.mutateAsync();
       navigate("/");
     } catch (error) {
       alert("Произошла ошибка при регистрации");
@@ -57,53 +59,60 @@ export const AboutThirdPage = () => {
   };
 
   const goToDeclinePage = () => {
-    navigate("/registration/decline");
+    navigate("/about/decline", { replace: true });
+  };
+
+  const goToPolicy = () => {
+    navigate("/policy");
   };
   return (
-    <EBBComponent>
+    <DBBComponent>
       <AboutComponent
         handleButtonClick={registerUser}
-        imageSrc={AboutSecond}
+        imageSrc={AboutThird}
         contentText={"Небольшая формальность прежде, чем мы начнём"}
         politics
         cancelButtonText="Отмена"
         handleCancelButtonClick={goToDeclinePage}
         buttonText={"Принимаю"}
+        onPolicyClick={goToPolicy}
       />
-    </EBBComponent>
+    </DBBComponent>
   );
 };
 
 export const AboutDeclinePolicy = () => {
   const navigate = useNavigate();
-  const goToRegistration = () => {
-    navigate("/registration");
-  };
 
+  const { initData } = useInitDataStore();
   const createMeMutation = useCreateMe();
 
   const registerUser = async () => {
+    console.log(initData);
     try {
-      const response = await createMeMutation.mutateAsync();
+      await createMeMutation.mutateAsync();
       navigate("/");
     } catch (error) {
       alert("Произошла ошибка при регистрации");
       console.error("Произошла ошибка при создании пользователя:", error);
     }
   };
-
-  const decline = () => {};
+  const goToPolicy = () => {
+    navigate("/policy");
+  };
   return (
-    <EBBComponent>
+    <DBBComponent>
       <AboutComponent
-        handleButtonClick={goToRegistration}
-        imageSrc={AboutSecond}
+        handleButtonClick={registerUser}
+        imageSrc={AboutDecline}
         politics
         contentText={
           "В таком случае вы не сможете перейти к приложению... уверены, что хотите выйти?"
         }
+        handleCancelButtonClick={() => {}}
+        onPolicyClick={goToPolicy}
         buttonText={"Принимаю"}
       />
-    </EBBComponent>
+    </DBBComponent>
   );
 };

@@ -15,9 +15,11 @@ const ProtectedRoute = () => {
 
   if (isPending) return null;
 
-  if (isError) return <Navigate to="/about/1" />;
+  if (data?.user.id) return <Outlet />;
+  else return <Navigate to="/about/1" />;
 
-  return <Outlet />;
+  // if (!data?.user) return <Navigate to="/about/1" />
+  // else  (isSuccess) return <Outlet />;
 };
 
 export default ProtectedRoute;

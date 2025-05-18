@@ -17,7 +17,7 @@ export const getMe = async (initData: string): Promise<UserProfile | null> => {
 
 export const updateMe = async (
   initData: string,
-  newData: PatchMe,
+  newData: PatchMe
 ): Promise<User | null> => {
   try {
     const response = await api.put<User>(`/users/me`, newData, {
