@@ -52,7 +52,7 @@ const CommunitySettingsProfilePage = () => {
           description: description!,
           name: name!,
           id: communityId!,
-          tgChatID: tgChatId!,
+          tgChatID: tgChatId,
         },
       });
 
@@ -173,8 +173,8 @@ const CommunitySettingsProfilePage = () => {
         </DndContext>
 
         <FixedBottomButtonComponent
-          content="Продолжить"
-          state={true ? "active" : "disabled"}
+          content="Подтвердить"
+          state={"active"}
           handleClick={() => handleContinue()}
         />
         <div className="pb-[300px]"></div>

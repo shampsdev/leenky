@@ -83,9 +83,6 @@ const CommunityPage = () => {
                 index={0}
                 onClick={() => goToCommunitySettings()}
               />
-              <div className="absolute right-0">
-                <ProfileComponent onClick={() => goToMyProfile()} />
-              </div>
             </div>
           )}
 

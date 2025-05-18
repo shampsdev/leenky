@@ -6,5 +6,5 @@ export interface PatchCommunity {
   description: string;
   id: string;
   name: string;
-  tgChatID: number;
+  tgChatID?: number;
 }

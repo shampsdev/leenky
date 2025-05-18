@@ -34,6 +34,7 @@ import CommunitySettingsDescriptionPage from "./pages/community_settings/communi
 import CommunitySettingsLinksPage from "./pages/community_settings/communitySettingsLinksPage";
 import CommunityWithChatSettingsDescriptionEditPage from "./pages/community_settings/communityWithChatSettingsDescriptionEditPage";
 import CommunityWithoutChatSettingsDescriptionEditPage from "./pages/community_settings/communityWithoutChatSettingsDescriptionEditPage";
+import useInitDataStore from "./stores/InitData.store";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -68,6 +69,9 @@ function App() {
       resetWithoutChatStore();
     }
   }, [location.pathname]);
+
+  const { initData } = useInitDataStore();
+  console.log(initData);
 
   const routes = (
     <Routes location={location}>

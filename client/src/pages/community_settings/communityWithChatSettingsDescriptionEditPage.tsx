@@ -28,7 +28,7 @@ const CommunityWithChatSettingsDescriptionEditPage = () => {
           description: description,
           id: communityData?.id!,
           name: communityData?.name!,
-          tgChatID: communityData?.tgChatID!,
+          tgChatID: communityData?.tgChatID,
         },
       });
       navigate(-1);
@@ -57,7 +57,7 @@ const CommunityWithChatSettingsDescriptionEditPage = () => {
 
         <div className="flex w-full justify-center pt-[20px]">
           <FixedBottomButtonComponent
-            content="Готово"
+            content="Подтвердить"
             state={
               description !== communityData?.description ? "active" : "disabled"
             }

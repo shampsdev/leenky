@@ -55,7 +55,7 @@ const CommunitySettingsLinksPage = () => {
         </div>
       )}
       <FixedBottomButtonComponent
-        content={isQrShowing ? "Назад" : "К профилю"}
+        content={"Назад"}
         state={isQrShowing ? "disabled" : "active"}
         handleClick={() => {
           if (isQrShowing) {
