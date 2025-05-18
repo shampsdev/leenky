@@ -40,6 +40,10 @@ const CommunityPage = () => {
     navigate(`/profile/current/${communityId}`);
   };
 
+  const goToCommunitySettings = () => {
+    navigate(`/community/${communityId}/settings`);
+  };
+
   const { data: previewChatData, isSuccess } = useCommunity(communityId ?? "");
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
@@ -77,6 +81,7 @@ const CommunityPage = () => {
                 view={true}
                 animated={true}
                 index={0}
+                onClick={() => goToCommunitySettings()}
               />
               <div className="absolute right-0">
                 <ProfileComponent onClick={() => goToMyProfile()} />

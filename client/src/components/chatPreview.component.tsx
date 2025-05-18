@@ -45,7 +45,10 @@ const ChatPreviewComponent = (
           props.className
         }
       >
-        <div className="chat-content flex items-center gap-[7px] w-full transition-transform duration-300">
+        <div
+          className="chat-content flex items-center gap-[7px] w-full transition-transform duration-300"
+          onClick={props.onClick}
+        >
           <img
             src={props.chatData.avatar || DevImage}
             onError={handleImageError}
