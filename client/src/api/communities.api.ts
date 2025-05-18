@@ -55,12 +55,6 @@ export const patchCommunity = async (
   }
 };
 
-// export const setCommunityAvatar = async (initData: string, communityId: string, avatar: File): Promise<AvatarCommunity | null> => {
-//   try{
-//     const response = await api.post<AvatarCommunity>(`/communities/id/${communityId}/setAvatar`),
-//   }
-// }
-
 export const setCommunityAvatar = async (
   initData: string,
   communityId: string,

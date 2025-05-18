@@ -20,7 +20,6 @@ import FixedBottomButtonComponent from "../components/fixedBottomButton.componen
 const EditProfileCommunityPage = () => {
   const navigate = useNavigate();
   const { initData } = useInitDataStore();
-  console.log(initData);
   const { communityId } = useParams();
   const { data: userData, isSuccess } = useGetMe();
   const { data: communityData } = useCommunity(communityId ?? "");
@@ -59,7 +58,9 @@ const EditProfileCommunityPage = () => {
         newData: {
           config: config,
           id: communityId ?? "",
-          isAdmin: false,
+          isAdmin: communityData?.members.find(
+            (member) => member.user.id == userData?.user.id
+          )?.isAdmin!,
           userId: userData?.user.id ?? "",
         },
       };

@@ -34,7 +34,6 @@ const RegistrationPage = () => {
     const updatedFields: Record<string, FieldValue> = structuredClone(fields);
     updatedFields[title][type]!.value = value;
     setIsChanged(!fieldsAreEqual(updatedFields, baseValues));
-    console.log(isChanged);
     setFields(updatedFields);
   };
 

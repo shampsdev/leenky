@@ -28,6 +28,10 @@ import useCommunityWithChatInfoStore from "./stores/create_community/communityWi
 import useCommunityWithoutChatInfoStore from "./stores/create_community/communityWithoutChatInfo.store";
 import CommunityLinksPage from "./pages/create_community/communityLinksPage";
 import CommunitySettingsPage from "./pages/community_settings/communitySettingsPage";
+import CommunitySettingsProfilePage from "./pages/community_settings/communitySettingsProfilePage";
+import CommunitySettingsChatPage from "./pages/community_settings/communitySettingsChatPage";
+import CommunitySettingsDescriptionPage from "./pages/community_settings/communitySettingsDescriptionPage";
+import CommunitySettingsLinksPage from "./pages/community_settings/communitySettingsLinksPage";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -71,6 +75,22 @@ function App() {
         <Route
           path="/community/:communityId/settings"
           element={<CommunitySettingsPage />}
+        />
+        <Route
+          path="/community/:communityId/settings/profile"
+          element={<CommunitySettingsProfilePage />}
+        />
+        <Route
+          path="/community/:communityId/settings/chat"
+          element={<CommunitySettingsChatPage />}
+        />
+        <Route
+          path="/community/:communityId/settings/links"
+          element={<CommunitySettingsLinksPage />}
+        />
+        <Route
+          path="/community/:communityId/settings/description"
+          element={<CommunitySettingsDescriptionPage />}
         />
         <Route
           path="/community/:communityId/links"
