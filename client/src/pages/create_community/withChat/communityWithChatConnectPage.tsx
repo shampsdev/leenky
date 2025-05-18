@@ -67,6 +67,7 @@ const CommunityWithChatConnectPage = () => {
         state={true ? "active" : "disabled"}
         handleClick={() => {
           navigate(`/communities`, { replace: true });
+          navigate(`/profile/current/${communityId}`);
           navigate(`/profile/current/${communityId}/edit`);
           navigate(`/community/${communityId}/links`);
         }}

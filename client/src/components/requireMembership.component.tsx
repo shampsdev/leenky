@@ -19,7 +19,7 @@ const RequireMembershipComponent = (props: RequireMembershipComponentProps) => {
 
   useEffect(() => {
     if (!isRefetching && isSuccess && !data?.isMember) {
-      navigate("/invite");
+      navigate("/invite", { replace: true });
     }
   }, [isSuccess, data]);
 

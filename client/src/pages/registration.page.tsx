@@ -13,6 +13,9 @@ import InputFieldComponent from "../components/form/inputField.component";
 import TextareaFieldComponent from "../components/form/textareaField.component";
 import useJoinCommunity from "../hooks/communities/mutations/useJoinCommunity";
 import { useNavigate } from "react-router-dom";
+import { FieldType } from "../types/fields/field.type";
+import { FieldValue } from "../types/fields/fieldValue.interface";
+import fieldsAreEqual from "../utils/equalFields";
 
 const RegistrationPage = () => {
   const { initDataStartParam: communityId } = useInitDataStore();
@@ -23,42 +26,35 @@ const RegistrationPage = () => {
 
   if (isPending || isLoading) return null;
 
-  const fields = communityData?.config.fields;
-
-  const [stateFields, setStateFields] = useState<Field[]>(fields ?? []);
+  const orderedFieldsPattern = communityData?.config.fields;
+  const baseValues = fieldsToFieldValues(orderedFieldsPattern!);
+  const [fields, setFields] = useState<Record<string, FieldValue>>(baseValues);
 
   const [isChanged, setIsChanged] = useState<boolean>(false);
 
-  const handleFieldChange = (index: number, value: string) => {
-    const updatedFields = [...stateFields];
-    if (
-      updatedFields[index].type === "textinput" &&
-      updatedFields[index].textinput
-    ) {
-      updatedFields[index].textinput.default = value;
-    } else if (
-      updatedFields[index].type === "textarea" &&
-      updatedFields[index].textarea
-    ) {
-      updatedFields[index].textarea.default = value;
-    }
-    setStateFields(updatedFields);
-    setIsChanged(fieldsNotEmpty(fields ?? []));
+  const handleFieldChange = (title: string, value: string, type: FieldType) => {
+    const updatedFields: Record<string, FieldValue> = structuredClone(fields);
+    updatedFields[title][type]!.value = value;
+    setIsChanged(!fieldsAreEqual(updatedFields, baseValues));
+    console.log(isChanged);
+    setFields(updatedFields);
   };
 
   const joinCommunityMutation = useJoinCommunity();
   const navigate = useNavigate();
   const handleSubmit = async () => {
-    const config: MemberConfig = {
-      fields: fieldsToFieldValues(stateFields),
-    };
+    if (isChanged) {
+      const config: MemberConfig = {
+        fields: fields,
+      };
 
-    await joinCommunityMutation.mutateAsync({
-      communityId: communityId ?? "",
-      memberConfig: config,
-    });
-    navigate(`/communities`, { replace: true });
-    navigate(`/community/${communityId}`);
+      await joinCommunityMutation.mutateAsync({
+        communityId: communityId ?? "",
+        memberConfig: config,
+      });
+      navigate(`/communities`, { replace: true });
+      navigate(`/community/${communityId}`);
+    }
   };
 
   return (
@@ -81,32 +77,36 @@ const RegistrationPage = () => {
             e.preventDefault();
           }}
         >
-          {stateFields.map((field, index) => {
-            if (field.type === "textarea")
-              return (
-                <TextareaFieldComponent
-                  key={index}
-                  title={field.title}
-                  value={field.textarea?.default || ""}
-                  maxLength={230}
-                  onChangeFunction={(val: string) =>
-                    handleFieldChange(index, val)
-                  }
-                />
-              );
-            else if (field.type === "textinput")
-              return (
-                <InputFieldComponent
-                  key={index}
-                  title={field.title}
-                  value={field.textinput?.default || ""}
-                  maxLength={40}
-                  onChangeFunction={(val: string) =>
-                    handleFieldChange(index, val)
-                  }
-                />
-              );
-          })}
+          {orderedFieldsPattern &&
+            orderedFieldsPattern.map((field, index) => {
+              if (field.type === "textarea") {
+                return (
+                  <TextareaFieldComponent
+                    key={index}
+                    title={field.title}
+                    value={fields[field.title][field.type]?.value || ""}
+                    maxLength={230}
+                    onChangeFunction={(val: string) =>
+                      handleFieldChange(field.title, val, field.type)
+                    }
+                  />
+                );
+              }
+
+              if (field.type === "textinput") {
+                return (
+                  <InputFieldComponent
+                    key={index}
+                    title={field.title}
+                    value={fields[field.title][field.type]?.value || ""}
+                    maxLength={40}
+                    onChangeFunction={(val: string) =>
+                      handleFieldChange(field.title, val, field.type)
+                    }
+                  />
+                );
+              }
+            })}
 
           <div className="flex w-full justify-center pt-[20px]">
             <ButtonComponent
