@@ -230,14 +230,16 @@ func (b *Bot) handleMyChatMember(ctx context.Context, _ *bot.Bot, update *models
 
 func (b *Bot) handleCommandConnect(ctx context.Context, _ *bot.Bot, update *models.Update) {
 	msg := update.Message
-	log := slogx.FromCtx(ctx).With("tg_chat_id", msg.Chat.ID)
+	log := slogx.FromCtx(ctx).With("tg_chat_id", msg.Chat.ID, "tg_chat_title", msg.Chat.Title)
 	communityID := strings.TrimPrefix(msg.Text, "/connect ")
 	err := b.cases.Community.ConnectCommunityWithTGChat(ctx, msg.From.ID, communityID, msg.Chat.ID)
 	if err != nil {
 		log.With(slogx.Err(err)).Error("error connecting chat")
 		_, err = b.SendMessage(ctx, &bot.SendMessageParams{
 			ChatID: msg.Chat.ID,
-			Text:   "Не получилось подключить чат",
+			Text: `Не удалось подключить чат 😢.
+- Может быть вы не администратор?
+- А может чат уже подключен?`,
 		})
 		if err != nil {
 			log.With(slogx.Err(err)).Error("error sending message")
@@ -245,10 +247,7 @@ func (b *Bot) handleCommandConnect(ctx context.Context, _ *bot.Bot, update *mode
 		return
 	}
 	log.Info("chat connected")
-	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
-		ChatID: msg.Chat.ID,
-		Text:   "Чат подключен!",
-	})
+	err = b.registerChat(ctx, msg.Chat.ID)
 	if err != nil {
 		log.With(slogx.Err(err)).Error("error sending message")
 	}
