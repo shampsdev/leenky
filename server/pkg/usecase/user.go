@@ -53,6 +53,7 @@ func (u *User) Create(ctx context.Context, userTGData *domain.UserTGData) (*doma
 			TelegramUsername: userTGData.TelegramUsername,
 			FirstName:        userTGData.FirstName,
 			LastName:         userTGData.LastName,
+			Avatar:           userTGData.Avatar,
 		},
 	}
 
