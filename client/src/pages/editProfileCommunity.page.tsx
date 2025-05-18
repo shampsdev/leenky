@@ -14,12 +14,10 @@ import { MemberConfig } from "../types/member/memberConfig.interface";
 import { FieldValue } from "../types/fields/fieldValue.interface";
 import { FieldType } from "../types/fields/field.type";
 import useCommunity from "../hooks/communities/fetchHooks/useСommunity";
-import useInitDataStore from "../stores/InitData.store";
 import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
 
 const EditProfileCommunityPage = () => {
   const navigate = useNavigate();
-  const { initData } = useInitDataStore();
   const { communityId } = useParams();
   const { data: userData, isSuccess } = useGetMe();
   const { data: communityData } = useCommunity(communityId ?? "");

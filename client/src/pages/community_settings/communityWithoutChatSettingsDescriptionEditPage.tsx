@@ -73,11 +73,8 @@ const CommunityWithoutChatSettingsDescriptionEditPage = () => {
           communityId: communityId!,
           avatar: avatar!,
         });
-        console.log("updatedAvatar", avatar);
       }
       navigate(-1);
-
-      console.log("updatedAvatar", avatar);
     } catch (error) {
       alert("Произошла ошибка при обновлении сообщества");
       console.error("Ошибка при патче сообщества:", error);

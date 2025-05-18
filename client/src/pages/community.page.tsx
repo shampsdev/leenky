@@ -10,7 +10,6 @@ import { motion } from "motion/react";
 import NotFound from "../assets/notFound.svg";
 import useSearchMembers from "../hooks/members/search/useSearchMembers";
 import useCommunity from "../hooks/communities/fetchHooks/useСommunity";
-import ProfileComponent from "../components/profile.component";
 const containerVariants = {
   visible: {
     transition: {
@@ -34,10 +33,6 @@ const CommunityPage = () => {
 
   const goToProfile = (memberId: string) => {
     navigate(`/community/${communityId}/member/${memberId}`);
-  };
-
-  const goToMyProfile = () => {
-    navigate(`/profile/current/${communityId}`);
   };
 
   const goToCommunitySettings = () => {

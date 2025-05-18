@@ -5,17 +5,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import useCommunity from "../../hooks/communities/fetchHooks/useСommunity";
 import useUserStore from "../../stores/user.store";
 import FixedBottomButtonComponent from "../../components/fixedBottomButton.component";
-import { openTelegramLink } from "@telegram-apps/sdk-react";
-import ButtonComponent from "../../components/button.component";
 import { handleImageError } from "../../utils/imageErrorHandler";
-import TGWhite from "../../assets/tg_white.svg";
 import DevImage from "../../assets/dev.png";
 import useCommunityPreview from "../../hooks/communities/fetchHooks/useCommunityPreview";
 const CommunitySettingsDescriptionPage = () => {
   const { communityId } = useParams();
   const { data: communityData, isPending } = useCommunity(communityId!);
-  const { data: communityPreviewData, isPending: isPreviewPending } =
-    useCommunityPreview(communityId!);
+  const { isPending: isPreviewPending } = useCommunityPreview(communityId!);
   const { userData } = useUserStore();
   const navigate = useNavigate();
 
@@ -29,7 +25,6 @@ const CommunitySettingsDescriptionPage = () => {
   const goToEditDescription = () => {
     if (isAdmin) {
       if (chatId && chatId !== 0) {
-        console.log("chatId");
         navigate(
           `/community/${communityId}/settings/description/edit/with_chat`
         );
