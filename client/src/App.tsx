@@ -6,7 +6,12 @@ import InitialPage from "./pages/initial.page";
 import { AnimatePresence, motion } from "framer-motion";
 import InitDataWrapper from "./utils/InitDataWrapper";
 import ProtectedRoute from "./utils/protectedRoute";
-import { AboutFirstPage, AboutSecondPage } from "./pages/about.page";
+import {
+  AboutDeclinePolicy,
+  AboutFirstPage,
+  AboutSecondPage,
+  AboutThirdPage,
+} from "./pages/about.page";
 import ChatPage from "./pages/community.page";
 import CurrentProfilePage from "./pages/communityCurrentProfile.page";
 import ProfilePage from "./pages/profile.page";
@@ -34,6 +39,7 @@ import CommunitySettingsDescriptionPage from "./pages/community_settings/communi
 import CommunitySettingsLinksPage from "./pages/community_settings/communitySettingsLinksPage";
 import CommunityWithChatSettingsDescriptionEditPage from "./pages/community_settings/communityWithChatSettingsDescriptionEditPage";
 import CommunityWithoutChatSettingsDescriptionEditPage from "./pages/community_settings/communityWithoutChatSettingsDescriptionEditPage";
+import PolicyPage from "./pages/policy.page";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -165,6 +171,9 @@ function App() {
       <Route path="/" element={<InitialPage />} />
       <Route path="/about/1" element={<AboutFirstPage />} />
       <Route path="/about/2" element={<AboutSecondPage />} />
+      <Route path="/about/3" element={<AboutThirdPage />} />
+      <Route path="/about/decline" element={<AboutDeclinePolicy />} />
+      <Route path="/policy" element={<PolicyPage />} />
     </Routes>
   );
 
