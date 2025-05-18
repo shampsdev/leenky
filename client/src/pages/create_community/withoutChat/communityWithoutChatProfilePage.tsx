@@ -66,7 +66,8 @@ const CommunityWithoutChatProfilePage = () => {
         }
 
         navigate(`/communities`, { replace: true });
-        navigate(`/community/${community.id}`);
+        navigate(`/profile/current/${community.id}`);
+        navigate(`/profile/current/${community.id}/edit`);
         navigate(`/community/${community.id}/links`);
 
         // navigate("/community/create/with_chat/connect_chat");
