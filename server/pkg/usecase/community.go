@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"strings"
 
 	"github.com/go-telegram/bot"
 	"github.com/google/uuid"
@@ -261,8 +262,24 @@ func (c *Community) ConnectCommunityWithTGChat(ctx context.Context, actorTGID in
 		return err
 	}
 
+	err = c.communityRepo.Patch(ctx, &domain.PatchCommunity{
+		ID:       communityID,
+		TGChatID: &tgChatID,
+	})
+	if err != nil {
+		return fmt.Errorf("error updating community: %w", err)
+	}
+
+	if err := c.SyncCommunityWithTGChat(ctx, tgChatID); err != nil {
+		return fmt.Errorf("error syncing community with tg chat: %w", err)
+	}
+
+	return nil
+}
+
+func (c *Community) SyncCommunityWithTGChat(ctx context.Context, tgChatID int64) error {
 	community, err := repo.First(c.communityRepo.Filter)(ctx, &domain.FilterCommunity{
-		ID: &communityID,
+		TGChatID: &tgChatID,
 	})
 	if err != nil {
 		return fmt.Errorf("error getting community: %w", err)
@@ -276,7 +293,8 @@ func (c *Community) ConnectCommunityWithTGChat(ctx context.Context, actorTGID in
 	}
 
 	community.TGChatID = &tgChatID
-	if tgChat.Photo != nil {
+	if tgChat.Photo != nil &&
+		!strings.Contains(community.Avatar, names.ForChatAvatar(tgChatID, tgChat.Photo.SmallFileID)) {
 		community.Avatar, err = c.downloadTGChatAvatar(ctx, c.bot, c.storage, tgChat.Photo.SmallFileID, tgChatID)
 	}
 	community.Name = tgChat.Title
@@ -285,7 +303,7 @@ func (c *Community) ConnectCommunityWithTGChat(ctx context.Context, actorTGID in
 	}
 
 	err = c.communityRepo.Patch(ctx, &domain.PatchCommunity{
-		ID:       communityID,
+		ID:       community.ID,
 		TGChatID: &tgChatID,
 		Avatar:   &community.Avatar,
 		Name:     &community.Name,

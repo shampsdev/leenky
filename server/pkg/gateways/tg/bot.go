@@ -79,6 +79,11 @@ func (b *Bot) Run(ctx context.Context) {
 		return update.Message != nil && update.Message.MigrateFromChatID != 0
 	}, b.handleMigrate)
 
+	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
+		return update.Message != nil &&
+			(len(update.Message.NewChatPhoto) != 0 || update.Message.NewChatTitle != "" || update.Message.DeleteChatPhoto)
+	}, b.handleChatChanged)
+
 	b.Start(ctx)
 }
 
@@ -270,6 +275,22 @@ func (b *Bot) handleMigrate(ctx context.Context, _ *bot.Bot, update *models.Upda
 		slogx.FromCtxWithErr(ctx, err).Error("error changing chat telegram id")
 	}
 	slogx.Info(ctx, "chat migrated", "from", fromChatID, "to", toChatID)
+}
+
+func (b *Bot) handleChatChanged(ctx context.Context, _ *bot.Bot, update *models.Update) {
+	err := b.cases.Community.SyncCommunityWithTGChat(ctx, update.Message.Chat.ID)
+	if err != nil {
+		slogx.FromCtxWithErr(ctx, err).Error("error syncing community with tg chat")
+		return
+	}
+
+	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: update.Message.Chat.ID,
+		Text:   "О, у вас тут перемены? Запомнил 😉",
+	})
+	if err != nil {
+		slogx.FromCtxWithErr(ctx, err).Error("error sending message")
+	}
 }
 
 func (b *Bot) registerChat(ctx context.Context, chatID int64) error {
