@@ -14,7 +14,6 @@ const InvitationPage = () => {
   };
 
   const { data: chatData } = useCommunityPreview(communityId ?? "");
-
   return (
     <EBBComponent>
       <div className="flex flex-col justify-center text-center max-w-[90%] mx-auto h-full gap-[40px]">

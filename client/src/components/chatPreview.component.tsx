@@ -45,24 +45,45 @@ const ChatPreviewComponent = (
           props.className
         }
       >
-        <div className="chat-content flex items-center gap-[7px] w-full transition-transform duration-300">
-          <img
-            src={props.chatData.avatar || DevImage}
-            onError={handleImageError}
-            className="w-[60px] h-[60px] rounded-full aspect-square object-cover"
-          />
+        <div className="flex flex-col  w-full">
           <div
             className={
-              "flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px]"
+              props.chatData.description.length > 0
+                ? "chat-content flex items-center gap-[7px] w-full transition-transform duration-300 mb-[16px]"
+                : "chat-content flex items-center gap-[7px] w-full transition-transform duration-300"
             }
+            onClick={props.onClick}
           >
-            <div className="flex flex-col gap-[2px]">
-              <p className="font-normal text-[17px]">{props.chatData.name}</p>
-              <p className="text-hint font-light text-[15px]">
-                {props.chatData.membersCount} участников
-              </p>
+            <img
+              src={props.chatData.avatar || DevImage}
+              onError={handleImageError}
+              className="w-[60px] h-[60px] rounded-full aspect-square object-cover"
+            />
+            <div
+              className={
+                "flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px]"
+              }
+            >
+              <div className="flex flex-col gap-[2px]">
+                <p className="font-normal text-[17px]">
+                  {props.chatData.name.length > 20
+                    ? props.chatData.name.slice(0, 20) + "..."
+                    : props.chatData.name}
+                </p>
+                <p className="text-hint font-light text-[15px]">
+                  {props.chatData.membersCount} участников
+                </p>
+              </div>
             </div>
           </div>
+          {props.chatData.description.length > 0 && (
+            <>
+              <div className="h-[1px] bg-[#D9D9D9]" />
+              <p className="mt-[16px] text-[17px] text-[#707579]">
+                {props.chatData.description ?? ""}
+              </p>
+            </>
+          )}
         </div>
       </motion.li>
     );
@@ -93,7 +114,11 @@ const ChatPreviewComponent = (
                 className={`flex flex-col gap-[2px]`}
                 onClick={props.onClick}
               >
-                <p className="font-normal text-[17px]">{props.chatData.name}</p>
+                <p className="font-normal text-[17px]">
+                  {props.chatData.name.length > 20
+                    ? props.chatData.name.slice(0, 20) + "..."
+                    : props.chatData.name}
+                </p>
                 <p className="text-hint font-light text-[15px]">
                   {props.chatData.membersCount} участников
                 </p>
@@ -131,7 +156,11 @@ const ChatPreviewComponent = (
                 className={`flex flex-col gap-[2px]`}
                 onClick={props.onClick}
               >
-                <p className="font-normal text-[17px]">{props.chatData.name}</p>
+                <p className="font-normal text-[17px]">
+                  {props.chatData.name.length > 20
+                    ? props.chatData.name.slice(0, 20) + "..."
+                    : props.chatData.name}
+                </p>
                 <p className="text-hint font-light text-[15px]">
                   {props.chatData.membersCount} участников
                 </p>

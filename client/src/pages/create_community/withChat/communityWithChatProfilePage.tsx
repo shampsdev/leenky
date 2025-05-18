@@ -57,7 +57,7 @@ const CommunityWithChatProfilePage = () => {
               fields: fields.filter((field) => field.title.length > 0),
             },
             description: description,
-            name: "",
+            name: "Без названия",
           },
         });
 

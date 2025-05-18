@@ -3,9 +3,8 @@ import { useNavigate } from "react-router-dom";
 import useInitDataStore from "../stores/InitData.store";
 
 const InitialPage = () => {
-  const { initDataStartParam: startParam, initData } = useInitDataStore();
+  const { initDataStartParam: startParam } = useInitDataStore();
   const navigate = useNavigate();
-  console.log(initData);
   useEffect(() => {
     if (
       startParam !== undefined &&

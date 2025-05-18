@@ -93,7 +93,6 @@ const CommunityWithoutChatProfilePage = () => {
 
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
-    console.log("Drag event:", { active, over });
 
     if (active.id !== over?.id) {
       setFields((items) => {

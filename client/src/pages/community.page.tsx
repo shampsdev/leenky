@@ -10,7 +10,6 @@ import { motion } from "motion/react";
 import NotFound from "../assets/notFound.svg";
 import useSearchMembers from "../hooks/members/search/useSearchMembers";
 import useCommunity from "../hooks/communities/fetchHooks/useСommunity";
-import ProfileComponent from "../components/profile.component";
 const containerVariants = {
   visible: {
     transition: {
@@ -36,8 +35,8 @@ const CommunityPage = () => {
     navigate(`/community/${communityId}/member/${memberId}`);
   };
 
-  const goToMyProfile = () => {
-    navigate(`/profile/current/${communityId}`);
+  const goToCommunitySettings = () => {
+    navigate(`/community/${communityId}/settings`);
   };
 
   const { data: previewChatData, isSuccess } = useCommunity(communityId ?? "");
@@ -77,10 +76,8 @@ const CommunityPage = () => {
                 view={true}
                 animated={true}
                 index={0}
+                onClick={() => goToCommunitySettings()}
               />
-              <div className="absolute right-0">
-                <ProfileComponent onClick={() => goToMyProfile()} />
-              </div>
             </div>
           )}
 

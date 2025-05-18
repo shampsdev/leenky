@@ -1,7 +1,6 @@
 import useGetMe from "../hooks/users/fetchHooks/useGetMe";
 import { handleImageError } from "../utils/imageErrorHandler";
 import DevImage from "../assets/dev.png";
-import ButtonComponent from "../components/button.component";
 import InputFieldComponent from "../components/form/inputField.component";
 import TextareaFieldComponent from "../components/form/textareaField.component";
 import { useNavigate, useParams } from "react-router-dom";
@@ -15,12 +14,10 @@ import { MemberConfig } from "../types/member/memberConfig.interface";
 import { FieldValue } from "../types/fields/fieldValue.interface";
 import { FieldType } from "../types/fields/field.type";
 import useCommunity from "../hooks/communities/fetchHooks/useСommunity";
-import useInitDataStore from "../stores/InitData.store";
+import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
 
 const EditProfileCommunityPage = () => {
   const navigate = useNavigate();
-  const { initData } = useInitDataStore();
-  console.log(initData);
   const { communityId } = useParams();
   const { data: userData, isSuccess } = useGetMe();
   const { data: communityData } = useCommunity(communityId ?? "");
@@ -59,7 +56,9 @@ const EditProfileCommunityPage = () => {
         newData: {
           config: config,
           id: communityId ?? "",
-          isAdmin: false,
+          isAdmin: communityData?.members.find(
+            (member) => member.user.id == userData?.user.id
+          )?.isAdmin!,
           userId: userData?.user.id ?? "",
         },
       };
@@ -85,6 +84,8 @@ const EditProfileCommunityPage = () => {
 
       <div className="w-[95%] mx-auto py-4 px-4">
         <form
+          autoComplete="off"
+          spellCheck={false}
           className="w-full flex flex-col mt-[25px] gap-[12px] caret-[#20C86E]"
           onSubmit={(e) => {
             e.preventDefault();
@@ -120,13 +121,11 @@ const EditProfileCommunityPage = () => {
                 );
               }
             })}
-          <div className="flex w-full justify-center pt-[20px]">
-            <ButtonComponent
-              content="Готово"
-              state={isChanged ? "active" : "disabled"}
-              handleClick={() => handleSubmit()}
-            />
-          </div>
+          <FixedBottomButtonComponent
+            content="Готово"
+            state={isChanged ? "active" : "disabled"}
+            handleClick={() => handleSubmit()}
+          />
         </form>
       </div>
     </div>

@@ -6,7 +6,6 @@ import DevImage from "../assets/dev.png";
 import { useState } from "react";
 import { fieldsToFieldValues } from "../mappers/FieldValues";
 import { MemberConfig } from "../types/member/memberConfig.interface";
-import ButtonComponent from "../components/button.component";
 import InputFieldComponent from "../components/form/inputField.component";
 import TextareaFieldComponent from "../components/form/textareaField.component";
 import useJoinCommunity from "../hooks/communities/mutations/useJoinCommunity";
@@ -14,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 import { FieldType } from "../types/fields/field.type";
 import { FieldValue } from "../types/fields/fieldValue.interface";
 import fieldsAreEqual from "../utils/equalFields";
+import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
 
 const RegistrationPage = () => {
   const { initDataStartParam: communityId } = useInitDataStore();
@@ -34,7 +34,6 @@ const RegistrationPage = () => {
     const updatedFields: Record<string, FieldValue> = structuredClone(fields);
     updatedFields[title][type]!.value = value;
     setIsChanged(!fieldsAreEqual(updatedFields, baseValues));
-    console.log(isChanged);
     setFields(updatedFields);
   };
 
@@ -70,6 +69,8 @@ const RegistrationPage = () => {
       </div>
       <div className="w-[95%] mx-auto py-4 px-4">
         <form
+          autoComplete="off"
+          spellCheck={false}
           className="w-full flex flex-col mt-[25px] gap-[12px] caret-[#20C86E]"
           onSubmit={(e) => {
             e.preventDefault();
@@ -106,13 +107,11 @@ const RegistrationPage = () => {
               }
             })}
 
-          <div className="flex w-full justify-center pt-[20px]">
-            <ButtonComponent
-              content="Готово"
-              state={isChanged ? "active" : "disabled"}
-              handleClick={() => handleSubmit()}
-            />
-          </div>
+          <FixedBottomButtonComponent
+            content="Готово"
+            state={isChanged ? "active" : "disabled"}
+            handleClick={() => handleSubmit()}
+          />
         </form>
       </div>
     </div>

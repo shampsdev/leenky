@@ -27,6 +27,13 @@ import CommunityWithoutChatProfilePage from "./pages/create_community/withoutCha
 import useCommunityWithChatInfoStore from "./stores/create_community/communityWithChatInfo.store";
 import useCommunityWithoutChatInfoStore from "./stores/create_community/communityWithoutChatInfo.store";
 import CommunityLinksPage from "./pages/create_community/communityLinksPage";
+import CommunitySettingsPage from "./pages/community_settings/communitySettingsPage";
+import CommunitySettingsProfilePage from "./pages/community_settings/communitySettingsProfilePage";
+import CommunitySettingsChatPage from "./pages/community_settings/communitySettingsChatPage";
+import CommunitySettingsDescriptionPage from "./pages/community_settings/communitySettingsDescriptionPage";
+import CommunitySettingsLinksPage from "./pages/community_settings/communitySettingsLinksPage";
+import CommunityWithChatSettingsDescriptionEditPage from "./pages/community_settings/communityWithChatSettingsDescriptionEditPage";
+import CommunityWithoutChatSettingsDescriptionEditPage from "./pages/community_settings/communityWithoutChatSettingsDescriptionEditPage";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -67,6 +74,36 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route path="/communities" element={<CommunitiesPage />} />
         <Route path="/community/:communityId" element={<ChatPage />} />
+        <Route
+          path="/community/:communityId/settings"
+          element={<CommunitySettingsPage />}
+        />
+        <Route
+          path="/community/:communityId/settings/profile"
+          element={<CommunitySettingsProfilePage />}
+        />
+        <Route
+          path="/community/:communityId/settings/chat"
+          element={<CommunitySettingsChatPage />}
+        />
+        <Route
+          path="/community/:communityId/settings/links"
+          element={<CommunitySettingsLinksPage />}
+        />
+        <Route
+          path="/community/:communityId/settings/description"
+          element={<CommunitySettingsDescriptionPage />}
+        />
+
+        <Route
+          path="/community/:communityId/settings/description/edit/with_chat"
+          element={<CommunityWithChatSettingsDescriptionEditPage />}
+        />
+
+        <Route
+          path="/community/:communityId/settings/description/edit/without_chat"
+          element={<CommunityWithoutChatSettingsDescriptionEditPage />}
+        />
 
         <Route
           path="/community/:communityId/links"
