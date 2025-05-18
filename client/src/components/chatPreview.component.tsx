@@ -60,7 +60,11 @@ const ChatPreviewComponent = (
             }
           >
             <div className="flex flex-col gap-[2px]">
-              <p className="font-normal text-[17px]">{props.chatData.name}</p>
+              <p className="font-normal text-[17px]">
+                {props.chatData.name.length > 20
+                  ? props.chatData.name.slice(0, 20) + "..."
+                  : props.chatData.name}
+              </p>
               <p className="text-hint font-light text-[15px]">
                 {props.chatData.membersCount} участников
               </p>
@@ -96,7 +100,11 @@ const ChatPreviewComponent = (
                 className={`flex flex-col gap-[2px]`}
                 onClick={props.onClick}
               >
-                <p className="font-normal text-[17px]">{props.chatData.name}</p>
+                <p className="font-normal text-[17px]">
+                  {props.chatData.name.length > 20
+                    ? props.chatData.name.slice(0, 20) + "..."
+                    : props.chatData.name}
+                </p>
                 <p className="text-hint font-light text-[15px]">
                   {props.chatData.membersCount} участников
                 </p>
@@ -134,7 +142,11 @@ const ChatPreviewComponent = (
                 className={`flex flex-col gap-[2px]`}
                 onClick={props.onClick}
               >
-                <p className="font-normal text-[17px]">{props.chatData.name}</p>
+                <p className="font-normal text-[17px]">
+                  {props.chatData.name.length > 20
+                    ? props.chatData.name.slice(0, 20) + "..."
+                    : props.chatData.name}
+                </p>
                 <p className="text-hint font-light text-[15px]">
                   {props.chatData.membersCount} участников
                 </p>

@@ -32,6 +32,8 @@ import CommunitySettingsProfilePage from "./pages/community_settings/communitySe
 import CommunitySettingsChatPage from "./pages/community_settings/communitySettingsChatPage";
 import CommunitySettingsDescriptionPage from "./pages/community_settings/communitySettingsDescriptionPage";
 import CommunitySettingsLinksPage from "./pages/community_settings/communitySettingsLinksPage";
+import CommunityWithChatSettingsDescriptionEditPage from "./pages/community_settings/communityWithChatSettingsDescriptionEditPage";
+import CommunityWithoutChatSettingsDescriptionEditPage from "./pages/community_settings/communityWithoutChatSettingsDescriptionEditPage";
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -92,6 +94,17 @@ function App() {
           path="/community/:communityId/settings/description"
           element={<CommunitySettingsDescriptionPage />}
         />
+
+        <Route
+          path="/community/:communityId/settings/description/edit/with_chat"
+          element={<CommunityWithChatSettingsDescriptionEditPage />}
+        />
+
+        <Route
+          path="/community/:communityId/settings/description/edit/without_chat"
+          element={<CommunityWithoutChatSettingsDescriptionEditPage />}
+        />
+
         <Route
           path="/community/:communityId/links"
           element={<CommunityLinksPage />}
