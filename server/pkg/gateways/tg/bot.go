@@ -76,7 +76,7 @@ func (b *Bot) Run(ctx context.Context) {
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/connect", bot.MatchTypePrefix, b.handleCommandConnect)
 
 	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
-		return update.Message != nil && update.Message.MigrateFromChatID != 0
+		return update.Message != nil && update.Message.MigrateToChatID != 0
 	}, b.handleMigrate)
 
 	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
@@ -267,8 +267,8 @@ func (b *Bot) handleCommandConnect(ctx context.Context, _ *bot.Bot, update *mode
 }
 
 func (b *Bot) handleMigrate(ctx context.Context, _ *bot.Bot, update *models.Update) {
-	fromChatID := update.Message.MigrateFromChatID
-	toChatID := update.Message.Chat.ID
+	fromChatID := update.Message.From.ID
+	toChatID := update.Message.MigrateToChatID
 
 	err := b.cases.Community.MigrateTGChatID(ctx, fromChatID, toChatID)
 	if err != nil {
