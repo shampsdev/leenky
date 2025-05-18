@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import DevImage from "../assets/dev.png";
 import useInitDataStore from "../stores/InitData.store";
 import useCommunityPreview from "../hooks/communities/fetchHooks/useCommunityPreview";
+import { useState } from "react";
 
 const InvitationPage = () => {
   const navigate = useNavigate();
@@ -14,7 +15,6 @@ const InvitationPage = () => {
   };
 
   const { data: chatData } = useCommunityPreview(communityId ?? "");
-
   return (
     <EBBComponent>
       <div className="flex flex-col justify-center text-center max-w-[90%] mx-auto h-full gap-[40px]">

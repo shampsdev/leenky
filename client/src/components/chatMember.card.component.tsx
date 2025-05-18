@@ -48,7 +48,13 @@ const ChatMemberCardComponent = (props: {
         onAnimationComplete={props.onAnimationComplete}
       >
         <div className="bg-form flex flex-col px-[10px] rounded-[12px] divide-y divide-[#D9D9D9] w-full py-[15px]">
-          <div className="flex w-full gap-[10px] items-center justify-between flex-row pb-[10px]">
+          <div
+            className={
+              textArea.length > 0
+                ? `flex w-full gap-[10px] items-center justify-between flex-row pb-[10px]`
+                : `flex w-full gap-[10px] items-center justify-between flex-row `
+            }
+          >
             <img
               src={props.member.user.avatar || DevImage}
               onError={handleImageError}
@@ -72,9 +78,11 @@ const ChatMemberCardComponent = (props: {
             <img src={NavImage} />
           </div>
 
-          <p className="text-hint font-light text-[13px] pt-[10px]">
-            {textArea.length > 90 ? textArea.slice(0, 90) + "..." : textArea}
-          </p>
+          {textArea.length > 0 && (
+            <p className="text-hint font-light text-[13px] pt-[10px]">
+              {textArea.length > 90 ? textArea.slice(0, 90) + "..." : textArea}
+            </p>
+          )}
         </div>
       </motion.li>
     );
@@ -86,7 +94,13 @@ const ChatMemberCardComponent = (props: {
         onClick={props.onClick}
       >
         <div className="bg-form flex flex-col px-[10px] rounded-[12px] divide-y divide-[#D9D9D9] w-full py-[15px]">
-          <div className="flex w-full gap-[10px] items-center justify-between flex-row pb-[10px]">
+          <div
+            className={
+              textArea.length > 0
+                ? `flex w-full gap-[10px] items-center justify-between flex-row pb-[10px]`
+                : `flex w-full gap-[10px] items-center justify-between flex-row `
+            }
+          >
             <img
               src={props.member.user.avatar || DevImage}
               onError={handleImageError}
@@ -110,9 +124,11 @@ const ChatMemberCardComponent = (props: {
             <img src={NavImage} />
           </div>
 
-          <p className="text-hint font-light text-[13px] pt-[10px]">
-            {textArea.length > 90 ? textArea.slice(0, 90) + "..." : textArea}
-          </p>
+          {textArea.length > 0 && (
+            <p className="text-hint font-light text-[13px] pt-[10px]">
+              {textArea.length > 90 ? textArea.slice(0, 90) + "..." : textArea}
+            </p>
+          )}
         </div>
       </li>
     );
