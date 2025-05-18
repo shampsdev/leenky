@@ -32,11 +32,15 @@ export const updateMe = async (
 
 export const createMe = async (initData: string): Promise<User | null> => {
   try {
-    const response = await api.post<User>("/users/me", {
-      headers: {
-        "X-Api-Token": initData,
-      },
-    });
+    const response = await api.post<User>(
+      "/users/me",
+      {},
+      {
+        headers: {
+          "X-Api-Token": initData,
+        },
+      }
+    );
     return response.data;
   } catch (error) {
     console.error("Ошибка при содании профиля", error);

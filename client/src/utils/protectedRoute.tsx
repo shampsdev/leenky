@@ -5,7 +5,7 @@ import useUserStore from "../stores/user.store";
 
 const ProtectedRoute = () => {
   const userStore = useUserStore();
-  const { isPending, data, isSuccess, isError } = useGetMe();
+  const { isPending, data, isSuccess, isLoading } = useGetMe();
 
   useEffect(() => {
     if (isSuccess && data) {
@@ -13,13 +13,10 @@ const ProtectedRoute = () => {
     }
   }, [isSuccess, data]);
 
-  if (isPending) return null;
+  if (isPending || isLoading) return null;
 
   if (data?.user.id) return <Outlet />;
   else return <Navigate to="/about/1" />;
-
-  // if (!data?.user) return <Navigate to="/about/1" />
-  // else  (isSuccess) return <Outlet />;
 };
 
 export default ProtectedRoute;

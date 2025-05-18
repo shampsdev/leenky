@@ -50,12 +50,12 @@ export const AboutThirdPage = () => {
 
   const registerUser = async () => {
     try {
-      await createMeMutation.mutateAsync();
-      navigate("/");
+      await createMeMutation.mutateAsync().finally(() => navigate("/"));
     } catch (error) {
       alert("Произошла ошибка при регистрации");
       console.error("Произошла ошибка при создании пользователя:", error);
     }
+    navigate("/");
   };
 
   const goToDeclinePage = () => {
@@ -90,8 +90,7 @@ export const AboutDeclinePolicy = () => {
   const registerUser = async () => {
     console.log(initData);
     try {
-      await createMeMutation.mutateAsync();
-      navigate("/");
+      await createMeMutation.mutateAsync().finally(() => navigate("/"));
     } catch (error) {
       alert("Произошла ошибка при регистрации");
       console.error("Произошла ошибка при создании пользователя:", error);
