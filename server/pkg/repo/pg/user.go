@@ -28,7 +28,8 @@ func (r *UserRepo) Create(ctx context.Context, user *domain.CreateUser) (string,
 	err := r.db.QueryRow(
 		ctx,
 		`INSERT INTO "user" (telegram_id, telegram_username, first_name, last_name, avatar)
-		VALUES ($1, $2, $3, $4, $5)`,
+		VALUES ($1, $2, $3, $4, $5)
+		RETURNING id`,
 		user.TelegramID,
 		user.TelegramUsername,
 		user.FirstName,
