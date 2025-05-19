@@ -14,15 +14,6 @@ const ProtectedRoute = () => {
     }
   }, [isSuccess, data]);
 
-  console.log({
-    isPending,
-    isLoading,
-    isSuccess,
-    isError,
-    data,
-    userStore: userStore.userData,
-  });
-
   if (isPending || isLoading) return <Loader />;
   else if (data?.user?.id || isSuccess) return <Outlet />;
   else return <Navigate to="/about/1" />;
