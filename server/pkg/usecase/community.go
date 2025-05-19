@@ -61,6 +61,53 @@ func (c *Community) Patch(ctx Context, community *domain.PatchCommunity) (*domai
 	if !member.IsAdmin {
 		return nil, fmt.Errorf("only admins can patch community")
 	}
+
+	// TODO: clean up
+	if community.Config != nil {
+		newCfg := community.Config
+		members, err := c.memberRepo.Filter(ctx, &domain.FilterMember{CommunityID: &community.ID})
+		if err != nil {
+			return nil, fmt.Errorf("failed to get members: %w", err)
+		}
+
+		newTypes := map[string]domain.FieldType{}
+		for _, f := range newCfg.Fields {
+			newTypes[f.Title] = f.Type
+		}
+
+		for _, member := range members {
+			changed := false
+			for title, newType := range newTypes {
+				oldType := member.Config.Fields[title].Type
+				if newType != oldType {
+					switch newType {
+					case domain.FieldTypeTextinput:
+						member.Config.Fields[title] = domain.FieldValue{
+							Type:      newType,
+							Textinput: &domain.FieldValueTextinput{Value: member.Config.Fields[title].String()},
+						}
+					case domain.FieldTypeTextarea:
+						member.Config.Fields[title] = domain.FieldValue{
+							Type:     newType,
+							Textarea: &domain.FieldValueTextarea{Value: member.Config.Fields[title].String()},
+						}
+					}
+					changed = true
+				}
+			}
+			if changed {
+				err = c.memberRepo.Patch(ctx, &domain.PatchMember{
+					UserID:      member.User.ID,
+					CommunityID: member.Community.ID,
+					Config:      member.Config,
+				})
+				if err != nil {
+					return nil, fmt.Errorf("failed to patch member: %w", err)
+				}
+			}
+		}
+	}
+
 	err = c.communityRepo.Patch(ctx, community)
 	if err != nil {
 		return nil, fmt.Errorf("failed to patch community: %w", err)

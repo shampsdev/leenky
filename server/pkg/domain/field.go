@@ -37,3 +37,14 @@ type FieldValueTextarea struct {
 type FieldValueTextinput struct {
 	Value string `json:"value"`
 }
+
+func (v FieldValue) String() string {
+	switch v.Type {
+	case FieldTypeTextinput:
+		return v.Textinput.Value
+	case FieldTypeTextarea:
+		return v.Textarea.Value
+	default:
+		return ""
+	}
+}
