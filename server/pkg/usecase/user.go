@@ -149,6 +149,7 @@ func (u *User) GetProfile(ctx Context, userID string) (*domain.UserProfile, erro
 	}
 	for _, member := range members {
 		member.User = ctx.User
+		member.Config = processConfig(member.Community.Config, member.Config)
 	}
 	return &domain.UserProfile{
 		User:    user,
