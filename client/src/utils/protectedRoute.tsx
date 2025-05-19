@@ -10,7 +10,6 @@ const ProtectedRoute = () => {
 
   useEffect(() => {
     if (isSuccess && data) {
-      console.log("✅ Данные получены:", data);
       userStore.setUserData(data.user);
     }
   }, [isSuccess, data]);
@@ -25,7 +24,7 @@ const ProtectedRoute = () => {
   });
 
   if (isPending || isLoading) return <Loader />;
-  else if (data?.user?.id) return <Outlet />;
+  else if (userStore.userData.id) return <Outlet />;
   else return <Navigate to="/about/1" />;
 };
 

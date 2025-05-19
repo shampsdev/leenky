@@ -92,11 +92,12 @@ export const AboutDeclinePolicy = () => {
   const registerUser = async () => {
     console.log(initData);
     try {
-      await createMeMutation.mutateAsync().finally(() => navigate("/"));
+      await createMeMutation.mutateAsync();
     } catch (error) {
       alert("Произошла ошибка при регистрации");
       console.error("Произошла ошибка при создании пользователя:", error);
     }
+    navigate("/");
   };
   const goToPolicy = () => {
     navigate("/policy");
