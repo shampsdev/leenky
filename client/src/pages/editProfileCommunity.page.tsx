@@ -39,6 +39,7 @@ const EditProfileCommunityPage = () => {
   const handleFieldChange = (title: string, value: string, type: FieldType) => {
     const updatedFields: Record<string, FieldValue> = structuredClone(fields);
     updatedFields[title][type]!.value = value;
+
     setIsChanged(!fieldsAreEqual(updatedFields, fieldValues!));
     setFields(updatedFields);
   };
