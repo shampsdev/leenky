@@ -75,6 +75,7 @@ const CommunitySettingsLinksPage = () => {
           />
         </div>
       )}
+      <div className="pb-[200px]"></div>
       <FixedBottomButtonComponent
         content={"Назад"}
         state={isQrShowing ? "disabled" : "active"}

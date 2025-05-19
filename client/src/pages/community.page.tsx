@@ -39,7 +39,11 @@ const CommunityPage = () => {
     navigate(`/community/${communityId}/settings`);
   };
 
-  const { data: previewChatData, isSuccess } = useCommunity(communityId ?? "");
+  const {
+    data: previewChatData,
+    isSuccess,
+    isPending: isCommunityPending,
+  } = useCommunity(communityId ?? "");
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const handleScroll = () => {
@@ -61,6 +65,7 @@ const CommunityPage = () => {
     return () => clearTimeout(timer);
   }, [isPending]);
 
+  if (isPending || isCommunityPending) return null;
   return (
     <EBBComponent>
       <RequireMembershipComponent chatID={communityId}>
@@ -87,41 +92,29 @@ const CommunityPage = () => {
             placeholder="Поиск участников"
             className="mt-[20px]"
           />
-          {loadedFirstTime && (
-            <ul className="flex flex-col gap-[12px] mt-[25px]">
-              {chatData?.map((user, index) => (
-                <ChatMemberCardComponent
-                  onClick={() => goToProfile(user.user.id)}
-                  index={index}
-                  key={user.user.id}
-                  member={user}
-                />
-              ))}
-            </ul>
-          )}
-          {!loadedFirstTime && (
-            <motion.ul
-              className="flex flex-col gap-[12px] mt-[25px]"
-              initial="hidden"
-              animate="visible"
-              variants={containerVariants}
-            >
-              {chatData?.map((user, index) => (
-                <ChatMemberCardComponent
-                  animated
-                  onClick={() => goToProfile(user.user.id)}
-                  index={index}
-                  key={user.user.id}
-                  member={user}
-                  onAnimationComplete={
-                    index === chatData.length - 1
-                      ? () => setLoadedFirstTime(true)
-                      : undefined
-                  }
-                />
-              ))}
-            </motion.ul>
-          )}
+
+          <motion.ul
+            className="flex flex-col gap-[12px] mt-[25px]"
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+          >
+            {chatData?.map((user, index) => (
+              <ChatMemberCardComponent
+                animated
+                onClick={() => goToProfile(user.user.id)}
+                index={index}
+                key={index}
+                member={user}
+                onAnimationComplete={
+                  index === chatData.length - 1
+                    ? () => setLoadedFirstTime(true)
+                    : undefined
+                }
+              />
+            ))}
+          </motion.ul>
+
           {!chatData && !isPending && (
             <div className="flex w-full flex-col items-center text-center mt-[120px] gap-[20px]">
               <img src={NotFound} />
