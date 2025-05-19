@@ -2,6 +2,7 @@ package tg
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"log/slog"
 	"strings"
@@ -11,6 +12,7 @@ import (
 	"github.com/go-telegram/bot/models"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/shampsdev/tglinked/server/cmd/config"
+	"github.com/shampsdev/tglinked/server/pkg/repo"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
 	"github.com/shampsdev/tglinked/server/pkg/utils/slogx"
 )
@@ -22,6 +24,8 @@ type Bot struct {
 
 	botUrl    string
 	webAppUrl string
+
+	supergroupDelay time.Duration
 }
 
 func NewBot(ctx context.Context, cfg *config.Config, pool *pgxpool.Pool) (*Bot, error) {
@@ -40,6 +44,8 @@ func NewBot(ctx context.Context, cfg *config.Config, pool *pgxpool.Pool) (*Bot, 
 		Bot:   tgb,
 		cases: cases,
 		log:   slogx.FromCtx(ctx),
+
+		supergroupDelay: 5 * time.Second,
 	}
 
 	me, err := b.GetMe(context.Background())

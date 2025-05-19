@@ -37,14 +37,14 @@ func main() {
 	pgConfig := cfg.PGXConfig()
 	pool, err := pgxpool.NewWithConfig(ctx, pgConfig)
 	if err != nil {
-		log.Error("can't create new database pool")
+		log.Error("can't create new database pool", slogx.Err(err))
 		os.Exit(1)
 	}
 	defer pool.Close()
 
 	tgbot, err := bot.New(cfg.TG.BotToken)
 	if err != nil {
-		log.Error("can't create new telegram bot")
+		log.Error("can't create new telegram bot", slogx.Err(err))
 		os.Exit(1)
 	}
 

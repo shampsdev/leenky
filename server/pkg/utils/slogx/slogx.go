@@ -28,16 +28,16 @@ func Fatal(logger *slog.Logger, msg string, args ...any) {
 	os.Exit(1)
 }
 
-func ErrAttr(err error) slog.Attr {
+func Err(err error) slog.Attr {
 	return slog.Any("error", err)
 }
 
 func WithErr(logger *slog.Logger, err error) *slog.Logger {
-	return logger.With(ErrAttr(err))
+	return logger.With(Err(err))
 }
 
 func FromCtxWithErr(ctx context.Context, err error) *slog.Logger {
-	return FromCtx(ctx).With(ErrAttr(err))
+	return FromCtx(ctx).With(Err(err))
 }
 
 func Error(ctx context.Context, msg string, args ...any) {
@@ -46,6 +46,10 @@ func Error(ctx context.Context, msg string, args ...any) {
 
 func Info(ctx context.Context, msg string, args ...any) {
 	FromCtx(ctx).Info(msg, args...)
+}
+
+func Debug(ctx context.Context, msg string, args ...any) {
+	FromCtx(ctx).Debug(msg, args...)
 }
 
 func InjectGin(c *gin.Context, logger *slog.Logger) {

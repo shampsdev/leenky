@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"net/http"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -93,6 +94,11 @@ func (u *User) GetByTGData(ctx context.Context, tgData *domain.UserTGData) (*dom
 		return nil, err
 	}
 
+	tgData.Avatar, err = u.telegramAvatarLocation(tgData.Avatar)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get user avatar: %w", err)
+	}
+
 	needUpdate := false
 	if tgData.TelegramUsername != user.TelegramUsername {
 		needUpdate = true
@@ -149,6 +155,25 @@ func (u *User) GetProfile(ctx Context, userID string) (*domain.UserProfile, erro
 		User:    user,
 		Members: members,
 	}, nil
+}
+
+func (u *User) telegramAvatarLocation(userpicURL string) (string, error) {
+	httpCli := &http.Client{
+		CheckRedirect: func(_ *http.Request, _ []*http.Request) error {
+			return http.ErrUseLastResponse
+		},
+	}
+	resp, err := httpCli.Head(userpicURL)
+	if err != nil {
+		return "", fmt.Errorf("failed to get userpic: %w", err)
+	}
+	defer resp.Body.Close()
+
+	location := resp.Header.Get("Location")
+	if location == "" {
+		return userpicURL, nil
+	}
+	return location, nil
 }
 
 func (u *User) cacheCleaner(ctx context.Context) {
