@@ -79,6 +79,7 @@ const CommunityLinksPage = () => {
           />
         </div>
       )}
+      <div className="pb-[200px]"></div>
       <FixedBottomButtonComponent
         content={isQrShowing ? "Назад" : "К профилю"}
         state={isQrShowing ? "disabled" : "active"}

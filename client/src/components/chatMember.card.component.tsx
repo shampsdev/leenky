@@ -7,11 +7,11 @@ import { useExtractFields } from "../hooks/utils/extractFields";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: (index: number) => ({
+  visible: () => ({
     opacity: 1,
     y: 0,
     transition: {
-      delay: index > 10 ? index * 0.01 : 11 * 0.01,
+      delay: 11 * 0.01,
       duration: 0.4,
       ease: "easeOut",
     },

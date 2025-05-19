@@ -3,7 +3,7 @@ import EBBComponent from "../components/enableBackButtonComponent";
 import RequireMembershipComponent from "../components/requireMembership.component";
 import SearchBarComponent from "../components/searchBar.component";
 import ChatPreviewComponent from "../components/chatPreview.component";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import useChatSearchStore from "../stores/chatSearch.store";
 import ChatMemberCardComponent from "../components/chatMember.card.component";
 import { motion } from "motion/react";
@@ -21,7 +21,6 @@ const CommunityPage = () => {
   const navigate = useNavigate();
 
   const { communityId } = useParams();
-  const [loadedFirstTime, setLoadedFirstTime] = useState<boolean>(false);
 
   const { getScroll, saveScroll, getSearchQuery, saveSearchQuery } =
     useChatSearchStore();
@@ -39,7 +38,11 @@ const CommunityPage = () => {
     navigate(`/community/${communityId}/settings`);
   };
 
-  const { data: previewChatData, isSuccess } = useCommunity(communityId ?? "");
+  const {
+    data: previewChatData,
+    isSuccess,
+    isPending: isCommunityPending,
+  } = useCommunity(communityId ?? "");
 
   const scrollContainerRef = useRef<HTMLDivElement | null>(null);
   const handleScroll = () => {
@@ -61,6 +64,7 @@ const CommunityPage = () => {
     return () => clearTimeout(timer);
   }, [isPending]);
 
+  if (isPending || isCommunityPending) return null;
   return (
     <EBBComponent>
       <RequireMembershipComponent chatID={communityId}>
@@ -87,41 +91,24 @@ const CommunityPage = () => {
             placeholder="Поиск участников"
             className="mt-[20px]"
           />
-          {loadedFirstTime && (
-            <ul className="flex flex-col gap-[12px] mt-[25px]">
-              {chatData?.map((user, index) => (
-                <ChatMemberCardComponent
-                  onClick={() => goToProfile(user.user.id)}
-                  index={index}
-                  key={user.user.id}
-                  member={user}
-                />
-              ))}
-            </ul>
-          )}
-          {!loadedFirstTime && (
-            <motion.ul
-              className="flex flex-col gap-[12px] mt-[25px]"
-              initial="hidden"
-              animate="visible"
-              variants={containerVariants}
-            >
-              {chatData?.map((user, index) => (
-                <ChatMemberCardComponent
-                  animated
-                  onClick={() => goToProfile(user.user.id)}
-                  index={index}
-                  key={user.user.id}
-                  member={user}
-                  onAnimationComplete={
-                    index === chatData.length - 1
-                      ? () => setLoadedFirstTime(true)
-                      : undefined
-                  }
-                />
-              ))}
-            </motion.ul>
-          )}
+
+          <motion.ul
+            className="flex flex-col gap-[12px] mt-[25px]"
+            initial="hidden"
+            animate="visible"
+            variants={containerVariants}
+          >
+            {chatData?.map((user, index) => (
+              <ChatMemberCardComponent
+                animated
+                onClick={() => goToProfile(user.user.id)}
+                index={index}
+                key={index}
+                member={user}
+              />
+            ))}
+          </motion.ul>
+
           {!chatData && !isPending && (
             <div className="flex w-full flex-col items-center text-center mt-[120px] gap-[20px]">
               <img src={NotFound} />
