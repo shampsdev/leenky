@@ -36,7 +36,7 @@ export const AboutSecondPage = () => {
         handleButtonClick={goToNextPage}
         imageSrc={AboutSecond}
         contentText={
-          "Рассказывайте о себе и узнавайте больше о других участниках чата"
+          "Рассказывайте о себе и узнавайте больше о других участниках сообщества"
         }
         buttonText={"Далее"}
       />

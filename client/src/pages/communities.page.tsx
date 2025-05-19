@@ -1,4 +1,9 @@
+<<<<<<< HEAD:client/src/pages/communities.page.tsx
 import { useEffect, useRef, useState } from "react";
+=======
+import { useEffect, useState, useCallback, useRef } from "react";
+import ProfileComponent from "../components/profile.component";
+>>>>>>> main:client/src/pages/chats.page.tsx
 import SearchBarComponent from "../components/searchBar.component";
 import { popup } from "@telegram-apps/sdk-react";
 import ChatPreviewComponent from "../components/chatPreview.component";
@@ -18,6 +23,7 @@ const containerVariants = {
     },
   },
 };
+<<<<<<< HEAD:client/src/pages/communities.page.tsx
 const CommunitiesPage = () => {
   const navigate = useNavigate();
 
@@ -35,6 +41,16 @@ const CommunitiesPage = () => {
   };
 
   const deleteHandler = async (chatPreviewData: Community) => {
+=======
+const ChatsPage = () => {
+  const [opened, setOpened] = useState<boolean>(false);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [chats, setChats] = useState<ChatPreviewData[]>([]);
+  const { searchQuery, setSearchQuery, scroll, setScroll } =
+    useChatsSearchStore();
+  const userStore = useUserStore();
+  const deleteHandler = async (chatPreviewData: ChatPreviewData) => {
+>>>>>>> main:client/src/pages/chats.page.tsx
     popup
       .open({
         message:
@@ -75,7 +91,41 @@ const CommunitiesPage = () => {
     if (!isPending) {
       setLoadedFirstTime(true);
     }
+<<<<<<< HEAD:client/src/pages/communities.page.tsx
   }, [isPending]);
+=======
+  }, []);
+
+  useEffect(() => {
+    setOpened(false);
+    fetchUserData();
+  }, []);
+
+  useEffect(() => {
+    fetchChats(searchQuery);
+    setOpened(true);
+  }, [searchQuery]);
+
+  const scrollContainerRef = useRef<HTMLDivElement | null>(null);
+  const handleScroll = () => {
+    if (scrollContainerRef.current) {
+      setScroll(scrollContainerRef.current.scrollTop);
+    }
+  };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      if (scrollContainerRef.current) {
+        console.log(scroll);
+        scrollContainerRef.current.scrollTo({
+          top: scroll,
+          behavior: "smooth",
+        });
+      }
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, [isLoading]);
+>>>>>>> main:client/src/pages/chats.page.tsx
   return (
     <>
       <DBBComponent>
