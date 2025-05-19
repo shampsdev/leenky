@@ -10,6 +10,7 @@ import { motion } from "motion/react";
 import NotFound from "../assets/notFound.svg";
 import useSearchMembers from "../hooks/members/search/useSearchMembers";
 import useCommunity from "../hooks/communities/fetchHooks/useСommunity";
+import Loader from "../components/loader.component";
 const containerVariants = {
   visible: {
     transition: {
@@ -64,7 +65,7 @@ const CommunityPage = () => {
     return () => clearTimeout(timer);
   }, [isPending]);
 
-  if (isPending || isCommunityPending) return null;
+  if (isPending || isCommunityPending) return <Loader />;
   return (
     <EBBComponent>
       <RequireMembershipComponent chatID={communityId}>

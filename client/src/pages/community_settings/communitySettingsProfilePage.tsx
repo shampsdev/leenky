@@ -25,6 +25,7 @@ import { Field } from "../../types/fields/field.interface";
 import { FieldType } from "../../types/fields/field.type";
 import useCommunity from "../../hooks/communities/fetchHooks/useСommunity";
 import usePatchCommunity from "../../hooks/communities/mutations/usePatchCommunity";
+import Loader from "../../components/loader.component";
 export interface ExtendedField extends Field {
   id: string;
 }
@@ -112,7 +113,7 @@ const CommunitySettingsProfilePage = () => {
     if (openedIndex === index) setOpenedIndex(null);
   };
 
-  if (isPending) return null;
+  if (isPending) return <Loader />;
 
   return (
     <EBBComponent>

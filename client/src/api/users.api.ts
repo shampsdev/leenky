@@ -11,7 +11,7 @@ export const getMe = async (initData: string): Promise<UserProfile | null> => {
     return response.data;
   } catch (error) {
     console.error("Ошибка при получении профиля текущего пользователя:", error);
-    return null;
+    throw error;
   }
 };
 
@@ -26,7 +26,7 @@ export const updateMe = async (
     return response.data;
   } catch (error) {
     console.error("Ошибка при изменении профиля", error);
-    return null;
+    throw error;
   }
 };
 
@@ -44,8 +44,8 @@ export const createMe = async (initData: string): Promise<User | null> => {
     return response.data;
   } catch (error) {
     console.error("Ошибка при содании профиля", error);
+    throw error;
   }
-  return null;
 };
 
 export const deleteMe = async (initData: string): Promise<User | null> => {
@@ -58,6 +58,6 @@ export const deleteMe = async (initData: string): Promise<User | null> => {
     return response.data;
   } catch (error) {
     console.error("Ошибка при удалении профиля", error);
+    throw error;
   }
-  return null;
 };

@@ -47,7 +47,7 @@ const AboutComponent = (props: aboutComponentProps) => {
             </button>
           )}
           <button
-            onClick={() => props.handleButtonClick()}
+            onClick={props.handleButtonClick}
             className="px-[30px] py-[12px] z-10 bg-[#20C86E] rounded-[30px] text-white font-semibold"
           >
             {props.buttonText}

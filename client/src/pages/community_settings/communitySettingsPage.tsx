@@ -3,6 +3,7 @@ import EBBComponent from "../../components/enableBackButtonComponent";
 import SettingsButtonComponent from "../../components/settingsButtonComponent";
 import useCommunity from "../../hooks/communities/fetchHooks/useСommunity";
 import useUserStore from "../../stores/user.store";
+import Loader from "../../components/loader.component";
 
 const CommunitySettingsPage = () => {
   const { communityId } = useParams();
@@ -11,7 +12,7 @@ const CommunitySettingsPage = () => {
 
   const navigate = useNavigate();
 
-  if (isPending || !communityData) return null;
+  if (isPending || !communityData) return <Loader />;
 
   const currentMember = communityData.members?.find(
     (member) => member.user.id === userData.id

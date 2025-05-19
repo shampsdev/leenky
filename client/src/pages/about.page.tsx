@@ -46,9 +46,11 @@ export const AboutSecondPage = () => {
 
 export const AboutThirdPage = () => {
   const navigate = useNavigate();
+  const { initData } = useInitDataStore();
   const createMeMutation = useCreateMe();
 
   const registerUser = async () => {
+    console.log(initData);
     try {
       await createMeMutation.mutateAsync().finally(() => navigate("/"));
     } catch (error) {

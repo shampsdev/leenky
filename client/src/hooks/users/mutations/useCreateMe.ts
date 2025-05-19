@@ -9,8 +9,13 @@ const useCreateMe = () => {
 
   return useMutation({
     mutationFn: () => createMe(initData),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["users/me", initData] });
+    onSuccess: async () => {
+      const result = await queryClient.refetchQueries({
+        queryKey: ["users/me", initData],
+        type: "active",
+        exact: true,
+      });
+      console.log("RESULT:", result);
     },
   });
 };
