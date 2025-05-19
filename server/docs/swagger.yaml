@@ -1,84 +1,177 @@
 definitions:
-  domain.Chat:
+  community.SetAvatarResponse:
     properties:
-      avatar:
+      url:
         type: string
-      id:
-        type: string
-      name:
-        type: string
-      telegramId:
-        type: integer
-      users:
-        items:
-          $ref: '#/definitions/domain.User'
-        type: array
     type: object
-  domain.ChatPreview:
+  domain.Community:
     properties:
       avatar:
+        type: string
+      config:
+        $ref: '#/definitions/domain.CommunityConfig'
+      description:
         type: string
       id:
         type: string
       isMember:
         type: boolean
+      members:
+        items:
+          $ref: '#/definitions/domain.Member'
+        type: array
+      membersCount:
+        type: integer
       name:
         type: string
-      telegramId:
-        type: integer
-      usersAmount:
+      tgChatID:
         type: integer
     type: object
-  domain.EditUser:
+  domain.CommunityConfig:
     properties:
-      bio:
+      fields:
+        items:
+          $ref: '#/definitions/domain.Field'
+        type: array
+    type: object
+  domain.CreateCommunity:
+    properties:
+      avatar:
         type: string
-      company:
+      config:
+        $ref: '#/definitions/domain.CommunityConfig'
+      description:
         type: string
+      name:
+        type: string
+    type: object
+  domain.Field:
+    properties:
+      description:
+        type: string
+      textarea:
+        $ref: '#/definitions/domain.FieldTextarea'
+      textinput:
+        $ref: '#/definitions/domain.FieldTextinput'
+      title:
+        type: string
+      type:
+        $ref: '#/definitions/domain.FieldType'
+    type: object
+  domain.FieldTextarea:
+    properties:
+      default:
+        type: string
+    type: object
+  domain.FieldTextinput:
+    properties:
+      default:
+        type: string
+    type: object
+  domain.FieldType:
+    enum:
+    - textinput
+    - textarea
+    type: string
+    x-enum-varnames:
+    - FieldTypeTextinput
+    - FieldTypeTextarea
+  domain.FieldValue:
+    properties:
+      textarea:
+        $ref: '#/definitions/domain.FieldValueTextarea'
+      textinput:
+        $ref: '#/definitions/domain.FieldValueTextinput'
+      type:
+        $ref: '#/definitions/domain.FieldType'
+    type: object
+  domain.FieldValueTextarea:
+    properties:
+      value:
+        type: string
+    type: object
+  domain.FieldValueTextinput:
+    properties:
+      value:
+        type: string
+    type: object
+  domain.Member:
+    properties:
+      community:
+        $ref: '#/definitions/domain.Community'
+      config:
+        $ref: '#/definitions/domain.MemberConfig'
+      isAdmin:
+        type: boolean
+      user:
+        $ref: '#/definitions/domain.User'
+    type: object
+  domain.MemberConfig:
+    properties:
+      fields:
+        additionalProperties:
+          $ref: '#/definitions/domain.FieldValue'
+        description: title to field
+        type: object
+    type: object
+  domain.PatchCommunity:
+    properties:
+      avatar:
+        type: string
+      config:
+        $ref: '#/definitions/domain.CommunityConfig'
+      description:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      tgChatID:
+        type: integer
+    type: object
+  domain.PatchMe:
+    properties:
       firstName:
+        type: string
+      id:
         type: string
       lastName:
         type: string
-      role:
+    type: object
+  domain.PatchMember:
+    properties:
+      config:
+        $ref: '#/definitions/domain.MemberConfig'
+      id:
+        type: string
+      isAdmin:
+        type: boolean
+      userId:
         type: string
     type: object
   domain.User:
     properties:
       avatar:
         type: string
-      bio:
-        type: string
-      company:
-        type: string
       firstName:
         type: string
       id:
         type: string
       lastName:
         type: string
-      role:
-        type: string
       telegramId:
         type: integer
       telegramUsername:
         type: string
     type: object
-  domain.UserPreview:
+  domain.UserProfile:
     properties:
-      avatar:
-        type: string
-      bio:
-        type: string
-      firstName:
-        type: string
-      isRegistered:
-        type: boolean
-      lastName:
-        type: string
-      telegramId:
-        type: integer
-      telegramUsername:
-        type: string
+      members:
+        items:
+          $ref: '#/definitions/domain.Member'
+        type: array
+      user:
+        $ref: '#/definitions/domain.User'
     type: object
 info:
   contact: {}
@@ -86,7 +179,7 @@ info:
   title: TGLinked server
   version: "1.0"
 paths:
-  /chats:
+  /communities:
     get:
       consumes:
       - application/json
@@ -94,10 +187,10 @@ paths:
       - application/json
       responses:
         "200":
-          description: Chats data
+          description: Communities data
           schema:
             items:
-              $ref: '#/definitions/domain.ChatPreview'
+              $ref: '#/definitions/domain.Community'
             type: array
         "400":
           description: Bad Request
@@ -105,15 +198,41 @@ paths:
           description: Internal Server Error
       security:
       - ApiKeyAuth: []
-      summary: Get chat previews
+      summary: Get community previews
       tags:
-      - chats
-  /chats/id/{id}:
+      - communities
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Community data
+        in: body
+        name: community
+        required: true
+        schema:
+          $ref: '#/definitions/domain.CreateCommunity'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Community data
+          schema:
+            $ref: '#/definitions/domain.Community'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      summary: Create community
+      tags:
+      - communities
+  /communities/id/{id}:
     get:
       consumes:
       - application/json
       parameters:
-      - description: Chat ID
+      - description: Community ID
         in: path
         name: id
         required: true
@@ -122,24 +241,80 @@ paths:
       - application/json
       responses:
         "200":
-          description: Chat data
+          description: Community data
           schema:
-            $ref: '#/definitions/domain.Chat'
+            $ref: '#/definitions/domain.Community'
         "400":
           description: Bad Request
         "500":
           description: Internal Server Error
       security:
       - ApiKeyAuth: []
-      summary: Get chat
+      summary: Get community
       tags:
-      - chats
-  /chats/id/{id}/join:
+      - communities
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Community data
+        in: body
+        name: community
+        required: true
+        schema:
+          $ref: '#/definitions/domain.PatchCommunity'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Community data
+          schema:
+            $ref: '#/definitions/domain.Community'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      summary: Patch community
+      tags:
+      - communities
+  /communities/id/{id}/join:
     post:
       consumes:
       - application/json
       parameters:
-      - description: Chat ID
+      - description: Community ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Community config
+        in: body
+        name: config
+        required: true
+        schema:
+          $ref: '#/definitions/domain.MemberConfig'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      summary: Join to community
+      tags:
+      - communities
+  /communities/id/{id}/leave:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: community ID
         in: path
         name: id
         required: true
@@ -155,19 +330,60 @@ paths:
           description: Internal Server Error
       security:
       - ApiKeyAuth: []
-      summary: Join to chat
+      summary: Leave community
       tags:
-      - chats
-  /chats/id/{id}/leave:
-    post:
+      - communities
+  /communities/id/{id}/members/id/{member_id}:
+    get:
       consumes:
       - application/json
       parameters:
-      - description: Chat ID
+      - description: Community ID
         in: path
         name: id
         required: true
         type: string
+      - description: Member id
+        in: path
+        name: member_id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Member
+          schema:
+            $ref: '#/definitions/domain.Member'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      summary: Get member
+      tags:
+      - communities
+    patch:
+      consumes:
+      - application/json
+      parameters:
+      - description: Community ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Member ID
+        in: path
+        name: member_id
+        required: true
+        type: string
+      - description: Community config
+        in: body
+        name: config
+        required: true
+        schema:
+          $ref: '#/definitions/domain.PatchMember'
       produces:
       - application/json
       responses:
@@ -179,41 +395,15 @@ paths:
           description: Internal Server Error
       security:
       - ApiKeyAuth: []
-      summary: Leave chat
+      summary: Patch member
       tags:
-      - chats
-  /chats/id/{id}/preview:
+      - communities
+  /communities/id/{id}/members/search:
     get:
       consumes:
       - application/json
       parameters:
-      - description: Chat ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: Chat data
-          schema:
-            $ref: '#/definitions/domain.ChatPreview'
-        "400":
-          description: Bad Request
-        "500":
-          description: Internal Server Error
-      security:
-      - ApiKeyAuth: []
-      summary: Get chat preview
-      tags:
-      - chats
-  /chats/id/{id}/search:
-    get:
-      consumes:
-      - application/json
-      parameters:
-      - description: Chat ID
+      - description: Community ID
         in: path
         name: id
         required: true
@@ -226,10 +416,10 @@ paths:
       - application/json
       responses:
         "200":
-          description: Users
+          description: Members
           schema:
             items:
-              $ref: '#/definitions/domain.User'
+              $ref: '#/definitions/domain.Member'
             type: array
         "400":
           description: Bad Request
@@ -237,10 +427,67 @@ paths:
           description: Internal Server Error
       security:
       - ApiKeyAuth: []
-      summary: Search users in chat
+      summary: Search members
       tags:
-      - chats
-  /chats/search:
+      - communities
+  /communities/id/{id}/preview:
+    get:
+      consumes:
+      - application/json
+      parameters:
+      - description: Community ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Community preview
+          schema:
+            $ref: '#/definitions/domain.Community'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      summary: Get community preview
+      tags:
+      - communities
+  /communities/id/{id}/set_avatar:
+    post:
+      consumes:
+      - application/json
+      parameters:
+      - description: Community ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Image data
+        in: formData
+        name: file
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: A url to the stored image
+          schema:
+            $ref: '#/definitions/community.SetAvatarResponse'
+        "400":
+          description: Bad Request
+        "500":
+          description: Internal Server Error
+      security:
+      - ApiKeyAuth: []
+      summary: Set avatar for community
+      tags:
+      - communities
+  /communities/search:
     get:
       consumes:
       - application/json
@@ -253,10 +500,10 @@ paths:
       - application/json
       responses:
         "200":
-          description: Chats
+          description: Communities
           schema:
             items:
-              $ref: '#/definitions/domain.ChatPreview'
+              $ref: '#/definitions/domain.Community'
             type: array
         "400":
           description: Bad Request
@@ -264,35 +511,9 @@ paths:
           description: Internal Server Error
       security:
       - ApiKeyAuth: []
-      summary: Search chats
+      summary: Search communities
       tags:
-      - chats
-  /users/id/{id}:
-    get:
-      consumes:
-      - application/json
-      parameters:
-      - description: User ID
-        in: path
-        name: id
-        required: true
-        type: string
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: User data
-          schema:
-            $ref: '#/definitions/domain.User'
-        "400":
-          description: Bad Request
-        "500":
-          description: Internal Server Error
-      security:
-      - ApiKeyAuth: []
-      summary: Get user
-      tags:
-      - users
+      - communities
   /users/me:
     delete:
       consumes:
@@ -322,7 +543,7 @@ paths:
         "200":
           description: User data
           schema:
-            $ref: '#/definitions/domain.User'
+            $ref: '#/definitions/domain.UserProfile'
         "400":
           description: Bad Request
         "500":
@@ -335,13 +556,6 @@ paths:
     post:
       consumes:
       - application/json
-      parameters:
-      - description: User data
-        in: body
-        name: user
-        required: true
-        schema:
-          $ref: '#/definitions/domain.EditUser'
       produces:
       - application/json
       responses:
@@ -367,7 +581,7 @@ paths:
         name: user
         required: true
         schema:
-          $ref: '#/definitions/domain.EditUser'
+          $ref: '#/definitions/domain.PatchMe'
       produces:
       - application/json
       responses:
@@ -382,27 +596,6 @@ paths:
       security:
       - ApiKeyAuth: []
       summary: Update me
-      tags:
-      - users
-  /users/me/preview:
-    get:
-      consumes:
-      - application/json
-      description: Use for bio extraction
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: User data
-          schema:
-            $ref: '#/definitions/domain.UserPreview'
-        "400":
-          description: Bad Request
-        "500":
-          description: Internal Server Error
-      security:
-      - ApiKeyAuth: []
-      summary: Get me preview
       tags:
       - users
 securityDefinitions:

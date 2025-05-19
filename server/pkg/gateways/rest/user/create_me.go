@@ -4,7 +4,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/shampsdev/tglinked/server/pkg/domain"
 	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/ginerr"
 	"github.com/shampsdev/tglinked/server/pkg/gateways/rest/middlewares"
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
@@ -16,7 +15,6 @@ import (
 // @Accept json
 // @Produce json
 // @Schemes http https
-// @Param user body domain.EditUser true "User data"
 // @Success 200 {object} domain.User "User data"
 // @Failure 400 "Bad Request"
 // @Failure 500 "Internal Server Error"
@@ -26,16 +24,7 @@ func CreateMe(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		userTGData := middlewares.MustGetUserTGData(c)
 
-		toCreate := &domain.EditUser{}
-		if err := c.ShouldBindJSON(toCreate); ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to bind user") {
-			return
-		}
-
-		user, err := userCase.CreateUser(usecase.NewContext(c, &domain.User{
-			TelegramID:       userTGData.TelegramID,
-			TelegramUsername: userTGData.TelegramUsername,
-			Avatar:           userTGData.Avatar,
-		}), toCreate)
+		user, err := userCase.Create(c, userTGData)
 		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to create user") {
 			return
 		}

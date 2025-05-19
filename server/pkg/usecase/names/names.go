@@ -12,3 +12,7 @@ func ForUserAvatar(tgID int64, tgAvatar string) string {
 func ForChatAvatar(tgID int64, tgFileID string) string {
 	return fmt.Sprintf("chat/%d/%x", tgID, sha256.Sum256([]byte(tgFileID)))
 }
+
+func ForCommunityAvatar(communityID, key string) string {
+	return fmt.Sprintf("community/%s/%s", communityID, key)
+}

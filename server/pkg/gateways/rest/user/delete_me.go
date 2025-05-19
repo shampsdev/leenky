@@ -24,7 +24,7 @@ func DeleteMe(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)
 
-		err := userCase.DeleteUser(usecase.NewContext(c, user))
+		err := userCase.Delete(usecase.NewContext(c, user), user.ID)
 		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to delete user") {
 			return
 		}
