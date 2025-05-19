@@ -1,35 +1,19 @@
-import { useEffect, useState } from "react";
-import { ChatPreviewData } from "../types/user.interface";
 import { handleImageError } from "../utils/imageErrorHandler";
-import { getChatPreview, joinMe } from "../api/api";
-import { initData, initDataStartParam } from "@telegram-apps/sdk-react";
 import EBBComponent from "../components/enableBackButtonComponent";
 import { useNavigate } from "react-router-dom";
 import DevImage from "../assets/dev.png";
+import useInitDataStore from "../stores/InitData.store";
+import useCommunityPreview from "../hooks/communities/fetchHooks/useCommunityPreview";
+
 const InvitationPage = () => {
   const navigate = useNavigate();
-  const chatId = initDataStartParam() ?? "";
+  const { initDataStartParam: communityId } = useInitDataStore();
 
-  const accept = async () => {
-    const response = await joinMe(initData.raw() ?? "", chatId);
-    if (response) {
-      navigate("/chats", { replace: true });
-      navigate(`/chat/${chatId}`);
-    }
+  const handleAcceptInvitation = () => {
+    navigate(`/registration/${communityId}`, { replace: true });
   };
 
-  const [chatData, setChatData] = useState<ChatPreviewData>();
-
-  const fetchChatData = async () => {
-    const fetchedChatData = await getChatPreview(initData.raw() ?? "", chatId);
-    if (fetchedChatData) {
-      setChatData(fetchedChatData);
-    }
-  };
-
-  useEffect(() => {
-    fetchChatData();
-  }, [chatData]);
+  const { data: chatData } = useCommunityPreview(communityId ?? "");
   return (
     <EBBComponent>
       <div className="flex flex-col justify-center text-center max-w-[90%] mx-auto h-full gap-[40px]">
@@ -40,10 +24,7 @@ const InvitationPage = () => {
           </p>
         </div>
 
-        <div
-          v-if="inviteStore.chat"
-          className="flex flex-col gap-[10px] items-center rounded-lg"
-        >
+        <div className="flex flex-col gap-[10px] items-center rounded-lg">
           <img
             src={chatData?.avatar || DevImage}
             onError={handleImageError}
@@ -54,15 +35,20 @@ const InvitationPage = () => {
               {chatData?.name ?? "название чата"}
             </p>
             <p className="text-hint text-[15px]">
-              Число участников: {chatData?.usersAmount}
+              Число участников: {chatData?.membersCount}
             </p>
+          </div>
+          <div className="mt-[17px] text-[15px] text-[#707579]">
+            {chatData!.description.length > 90
+              ? chatData?.description.slice(0, 90) + "..."
+              : chatData?.description}
           </div>
         </div>
 
         <div className="flex justify-center">
           <button
             className="px-[30px] py-[12px] bg-[#20C86E] rounded-[30px] text-white font-semibold"
-            onClick={accept}
+            onClick={handleAcceptInvitation}
           >
             Хорошо 🤝
           </button>

@@ -1,5 +1,4 @@
 @import "tailwindcss";
-
 /* Telegram Theme Support */
 .bg-tg {
   background-color: var(--tg-bg-color);

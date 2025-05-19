@@ -1,28 +1,25 @@
-import { initData, openTelegramLink } from "@telegram-apps/sdk-react";
-import { useState, useEffect } from "react";
+import { openTelegramLink } from "@telegram-apps/sdk-react";
 import { useParams } from "react-router-dom";
-import { getUserById } from "../api/api";
 import EBBComponent from "../components/enableBackButtonComponent";
 import InfoBlockComponent from "../components/infoBlock.component";
 import InfoParagraphComponent from "../components/infoParagraph.component";
-import { UserData } from "../types/user.interface";
 import { handleImageError } from "../utils/imageErrorHandler";
 import DevImage from "../assets/dev.png";
 import ButtonComponent from "../components/button.component";
 import TGWhite from "../assets/tg_white.svg";
-const ProfilePage = () => {
-  const { userId } = useParams();
-  const [userData, setUserData] = useState<UserData>();
-  const fetchProfileData = async () => {
-    const data = await getUserById(initData.raw() ?? "", userId ?? "");
-    if (data) {
-      setUserData(data);
-    }
-  };
+import useMember from "../hooks/members/fetchHooks/useMember";
+import useCommunity from "../hooks/communities/fetchHooks/useСommunity";
 
-  useEffect(() => {
-    fetchProfileData();
-  }, []);
+const ProfilePage = () => {
+  const { communityId, memberId } = useParams();
+  const { data, isLoading } = useMember(communityId ?? "", memberId ?? "");
+  const { data: communityData } = useCommunity(communityId!);
+
+  if (isLoading || !data) return null;
+
+  const userData = data.user;
+  const fieldsData = data.config.fields;
+  const orderedFieldsPattern = communityData?.config.fields;
 
   return (
     <EBBComponent>
@@ -55,25 +52,20 @@ const ProfilePage = () => {
           />
         </div>
         <div className="rounded-lg mt-[15px] mx-auto">
-          <InfoBlockComponent>
-            <InfoParagraphComponent
-              title="Место работы"
-              content={userData?.company ?? ""}
-            />
-            <InfoParagraphComponent
-              title="Должность"
-              content={userData?.role ?? ""}
-            />
-          </InfoBlockComponent>
-          <div className="px-[16px] text-hint mb-[8px] mt-[15px] text-[13px]">
-            ПОДРОБНЕЕ
-          </div>
-          <InfoBlockComponent>
-            <InfoParagraphComponent
-              title="Описание"
-              content={userData?.bio ?? ""}
-            />
-          </InfoBlockComponent>
+          {orderedFieldsPattern && orderedFieldsPattern?.length > 0 && (
+            <InfoBlockComponent>
+              {orderedFieldsPattern &&
+                orderedFieldsPattern.map((field, index) => {
+                  return (
+                    <InfoParagraphComponent
+                      title={field.title}
+                      content={fieldsData[field.title][field.type]?.value || ""}
+                      key={index}
+                    />
+                  );
+                })}
+            </InfoBlockComponent>
+          )}
         </div>
       </div>
     </EBBComponent>

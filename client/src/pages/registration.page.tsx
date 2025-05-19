@@ -1,213 +1,122 @@
-import { useState, useEffect, useCallback } from "react";
-import InputFieldComponent from "../components/inputField.component";
-import TextareaFieldComponent from "../components/textareaField.component";
-import { UserData } from "../types/user.interface";
+import useCommunityPreview from "../hooks/communities/fetchHooks/useCommunityPreview";
+import useInitDataStore from "../stores/InitData.store";
+import useGetMe from "../hooks/users/fetchHooks/useGetMe";
 import { handleImageError } from "../utils/imageErrorHandler";
-import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
-import {
-  initData,
-  initDataStartParam,
-  initDataUser,
-  retrieveLaunchParams,
-} from "@telegram-apps/sdk-react";
-import EBBComponent from "../components/enableBackButtonComponent";
-import { createMe, getMePreview, joinMe } from "../api/api";
-import { useNavigate } from "react-router-dom";
-import useUserStore from "../stores/user.store";
 import DevImage from "../assets/dev.png";
-import ButtonComponent from "../components/button.component";
+import { useState } from "react";
+import { fieldsToFieldValues } from "../mappers/FieldValues";
+import { MemberConfig } from "../types/member/memberConfig.interface";
+import InputFieldComponent from "../components/form/inputField.component";
+import TextareaFieldComponent from "../components/form/textareaField.component";
+import useJoinCommunity from "../hooks/communities/mutations/useJoinCommunity";
+import { useNavigate } from "react-router-dom";
+import { FieldType } from "../types/fields/field.type";
+import { FieldValue } from "../types/fields/fieldValue.interface";
+import fieldsAreEqual from "../utils/equalFields";
+import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
+import Loader from "../components/loader.component";
 
 const RegistrationPage = () => {
-  const launchParams = retrieveLaunchParams();
+  const { initDataStartParam: communityId } = useInitDataStore();
+  const { data: communityData, isPending } = useCommunityPreview(
+    communityId ?? ""
+  );
+  const { data: userData, isLoading } = useGetMe();
 
-  const startParam = initDataStartParam();
-  const userStore = useUserStore();
+  if (isPending || isLoading) return <Loader />;
+
+  const orderedFieldsPattern = communityData?.config.fields;
+  const baseValues = fieldsToFieldValues(orderedFieldsPattern!);
+  const [fields, setFields] = useState<Record<string, FieldValue>>(baseValues);
+
+  const [isChanged, setIsChanged] = useState<boolean>(false);
+
+  const handleFieldChange = (title: string, value: string, type: FieldType) => {
+    const updatedFields: Record<string, FieldValue> = structuredClone(fields);
+    updatedFields[title][type]!.value = value;
+    setIsChanged(!fieldsAreEqual(updatedFields, baseValues));
+    setFields(updatedFields);
+  };
+
+  const joinCommunityMutation = useJoinCommunity();
   const navigate = useNavigate();
-  const avatar = initDataUser()?.photo_url;
-  const [profileData, setProfileData] = useState<
-    Pick<UserData, "firstName" | "lastName" | "bio" | "role" | "company">
-  >({
-    firstName: initDataUser()?.first_name || "",
-    lastName: initDataUser()?.last_name || "",
-    company: "",
-    role: "",
-    bio: "",
-  });
-  const [isFilled, setIsFilled] = useState<boolean>(false);
-  const isProfileFilled = () => {
-    const isFilled =
-      profileData.firstName?.trim() != "" &&
-      profileData.lastName?.trim() !== "" &&
-      profileData.company?.trim() !== "" &&
-      profileData.role?.trim() !== "" &&
-      profileData.bio?.trim() !== "";
+  const handleSubmit = async () => {
+    if (isChanged) {
+      const config: MemberConfig = {
+        fields: fields,
+      };
 
-    return isFilled;
-  };
-
-  const MAX_INPUT_LENGTH = 40;
-  const MAX_TEXTAREA_LENGTH = 230;
-
-  const handleInputChange = (field: keyof UserData, value: string) => {
-    setProfileData((prevState) => ({
-      ...prevState,
-      [field]: value,
-    }));
-  };
-  const checkAuth = async () => {
-    userStore.setIsLoading(true);
-    const userData = await getMePreview(initData.raw() ?? "");
-    if (userData?.isRegistered) {
-      userStore.authenticate();
-      userStore.setIsLoading(false);
-      userStore.updateUserData(userData);
-    } else {
-      userStore.setIsLoading(false);
+      await joinCommunityMutation.mutateAsync({
+        communityId: communityId ?? "",
+        memberConfig: config,
+      });
+      navigate(`/communities`, { replace: true });
+      navigate(`/community/${communityId}`);
     }
   };
 
-  const registerUser = async () => {
-    const response = await createMe(initData.raw() ?? "", profileData);
-    if (response) {
-      checkAuth();
-      navigate("/chats", { replace: true });
-
-      if (startParam !== undefined && startParam.length > 0) {
-        const joinResponse = await joinMe(initData.raw() ?? "", startParam);
-        if (joinResponse) {
-          navigate(`/chat/${startParam}`);
-        }
-      }
-    }
-  };
-
-  const fetchBio = useCallback(async () => {
-    const data = await getMePreview(initData.raw() ?? "");
-    if (data) {
-      setProfileData((prevState) => ({
-        ...prevState,
-        bio: data.bio,
-      }));
-    }
-  }, []);
-  useEffect(() => {
-    fetchBio();
-  }, []);
-  useEffect(() => {
-    setIsFilled(isProfileFilled());
-  }, [profileData]);
-
-  const [iosKeyboardOpen, setIosKeyboardOpen] = useState<boolean>(false);
-  const [focusedFieldsCount, setFocusedFiledsCount] = useState<number>(0);
-  const onFocusHandler = () => {
-    setFocusedFiledsCount(focusedFieldsCount + 1);
-  };
-  const onBlurHandler = () => {
-    setFocusedFiledsCount(focusedFieldsCount - 1);
-  };
-  const handleFieldsCount = () => {
-    if (launchParams.tgWebAppPlatform === "ios") {
-      if (focusedFieldsCount > 0) {
-        setIosKeyboardOpen(true);
-      }
-      if (focusedFieldsCount === 0) {
-        setIosKeyboardOpen(false);
-      }
-    }
-  };
-  useEffect(handleFieldsCount, [focusedFieldsCount]);
   return (
-    <EBBComponent>
-      <div
-        className={
-          iosKeyboardOpen
-            ? "w-[95%] mx-auto py-4 px-4  h-[140vh]"
-            : "w-[95%] mx-auto py-4 px-4 "
-        }
-      >
-        <div className="flex flex-col items-center gap-[17px]">
-          <img
-            className="w-[115px] h-[115px] rounded-full object-cover"
-            src={avatar || DevImage}
-            onError={handleImageError}
-          />
-        </div>
-        <div className="w-full flex flex-col mt-[25px] gap-[12px] caret-[#20C86E]">
-          <InputFieldComponent
-            onBlur={onBlurHandler}
-            onFocus={onFocusHandler}
-            title="Имя"
-            onChangeFunction={(value) => handleInputChange("firstName", value)}
-            value={profileData.firstName ?? ""}
-            maxLength={MAX_INPUT_LENGTH}
-          />
-          <InputFieldComponent
-            onBlur={onBlurHandler}
-            onFocus={onFocusHandler}
-            title="Фамилия"
-            onChangeFunction={(value) => handleInputChange("lastName", value)}
-            value={profileData.lastName ?? ""}
-            maxLength={MAX_INPUT_LENGTH}
-          />
-          <InputFieldComponent
-            onBlur={onBlurHandler}
-            onFocus={onFocusHandler}
-            title="Место работы"
-            onChangeFunction={(value) => handleInputChange("company", value)}
-            value={profileData.company ?? ""}
-            maxLength={MAX_INPUT_LENGTH}
-          />
-          <InputFieldComponent
-            onBlur={onBlurHandler}
-            onFocus={onFocusHandler}
-            title="Должность"
-            onChangeFunction={(value) => handleInputChange("role", value)}
-            value={profileData.role ?? ""}
-            maxLength={MAX_INPUT_LENGTH}
-          />
-          <TextareaFieldComponent
-            onBlur={onBlurHandler}
-            onFocus={onFocusHandler}
-            onChangeFunction={(value) => handleInputChange("bio", value)}
-            title="Описание"
-            value={profileData.bio ?? ""}
-            maxLength={MAX_TEXTAREA_LENGTH}
-          />
-        </div>
-
-        {launchParams.tgWebAppPlatform !== "ios" && (
-          <div className="pt-[40px] pb-[39px]"></div>
-        )}
-        {launchParams.tgWebAppPlatform === "ios" && (
-          <div
-            onClick={() => {
-              if (isFilled) registerUser();
-            }}
-            className="flex w-full justify-center pt-[20px]"
-          >
-            <ButtonComponent
-              content={"Готово"}
-              handleClick={() => {
-                if (isFilled) registerUser();
-              }}
-              state={isFilled ? "active" : "disabled"}
-            />
-          </div>
-        )}
+    <div className="flex flex-col mt-6 items-center gap-4">
+      <img
+        className="w-[115px] h-[115px] rounded-full object-cover"
+        src={userData?.user?.avatar || DevImage}
+        onError={handleImageError}
+      />
+      <div className="text-center">
+        <p className="font-semibold inline-flex text-lg gap-2 items-center">
+          {userData?.user?.firstName} {userData?.user?.lastName}
+        </p>
+        <p className="text-hint text-sm">{`@${userData?.user?.telegramUsername}`}</p>
       </div>
+      <div className="w-[95%] mx-auto py-4 px-4">
+        <form
+          autoComplete="off"
+          spellCheck={false}
+          className="w-full flex flex-col mt-[25px] gap-[12px] caret-[#20C86E]"
+          onSubmit={(e) => {
+            e.preventDefault();
+          }}
+        >
+          {orderedFieldsPattern &&
+            orderedFieldsPattern.map((field, index) => {
+              if (field.type === "textarea") {
+                return (
+                  <TextareaFieldComponent
+                    key={index}
+                    title={field.title}
+                    value={fields[field.title][field.type]?.value || ""}
+                    maxLength={230}
+                    onChangeFunction={(val: string) =>
+                      handleFieldChange(field.title, val, field.type)
+                    }
+                  />
+                );
+              }
 
-      {launchParams.tgWebAppPlatform !== "ios" && (
-        <div className="absolute bottom-0 flex justify-center w-full pb-[10px]">
+              if (field.type === "textinput") {
+                return (
+                  <InputFieldComponent
+                    key={index}
+                    title={field.title}
+                    value={fields[field.title][field.type]?.value || ""}
+                    maxLength={40}
+                    onChangeFunction={(val: string) =>
+                      handleFieldChange(field.title, val, field.type)
+                    }
+                  />
+                );
+              }
+            })}
+
           <FixedBottomButtonComponent
-            content={"Готово"}
-            handleClick={() => {
-              if (isFilled) registerUser();
-            }}
-            state={isFilled ? "active" : "disabled"}
+            content="Готово"
+            state={isChanged ? "active" : "disabled"}
+            handleClick={() => handleSubmit()}
           />
-        </div>
-      )}
-    </EBBComponent>
+        </form>
+      </div>
+    </div>
   );
 };
+
 export default RegistrationPage;

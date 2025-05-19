@@ -1,49 +1,46 @@
 import { motion } from "framer-motion";
-import { useNavigate } from "react-router-dom";
-import { ChatMemverComponentProps } from "./chatMember.component";
 import { handleImageError } from "../utils/imageErrorHandler";
 import DevImage from "../assets/dev.png";
-import useUserStore from "../stores/user.store";
 import NavImage from "../assets/navigation.svg";
-import Case from "../assets/case.svg";
-import Person from "../assets/person.svg";
+import { Member } from "../types/member/member.interface";
+import { useExtractFields } from "../hooks/utils/extractFields";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
-  visible: (index: number) => ({
+  visible: () => ({
     opacity: 1,
     y: 0,
     transition: {
-      delay: index > 10 ? index * 0.01 : 11 * 0.01,
+      delay: 11 * 0.01,
       duration: 0.4,
       ease: "easeOut",
     },
   }),
 };
 
-const ChatMemberCardComponent = (
-  props: ChatMemverComponentProps & {
-    index: number;
-    animated?: boolean;
-    onAnimationComplete?: () => void;
-  }
-) => {
-  const navigate = useNavigate();
-  const userStore = useUserStore();
+const ChatMemberCardComponent = (props: {
+  onClick?: () => void;
+  index: number;
+  animated?: boolean;
+  onAnimationComplete?: () => void;
+  member: Member;
+}) => {
+  const fields = props.member.config.fields;
+  const { textInputs, textAreas } = useExtractFields(fields);
 
-  const goToProfile = () => {
-    if (props.userData.id !== userStore.userData.id) {
-      navigate(`/profile/${props.userData.id}`);
-    } else {
-      navigate(`/profile`);
-    }
-  };
+  const firstTextInput = textInputs[0]?.value || "";
+  const secondTextInput = textInputs[1]?.value || "";
+  const textArea = textAreas[0]?.value || "";
+
+  if (!fields) {
+    return null;
+  }
 
   if (props.animated) {
     return (
       <motion.li
         className="relative rounded-[18px] flex flex-col w-full items-center cursor-pointer overflow-hidden"
-        onClick={goToProfile}
+        onClick={props.onClick}
         variants={cardVariants}
         initial="hidden"
         animate="visible"
@@ -51,25 +48,29 @@ const ChatMemberCardComponent = (
         onAnimationComplete={props.onAnimationComplete}
       >
         <div className="bg-form flex flex-col px-[10px] rounded-[12px] divide-y divide-[#D9D9D9] w-full py-[15px]">
-          <div className="flex w-full gap-[10px] items-center justify-between flex-row pb-[10px]">
+          <div
+            className={
+              textArea.length > 0
+                ? `flex w-full gap-[10px] items-center justify-between flex-row pb-[10px]`
+                : `flex w-full gap-[10px] items-center justify-between flex-row `
+            }
+          >
             <img
-              src={props.userData.avatar || DevImage}
+              src={props.member.user.avatar || DevImage}
               onError={handleImageError}
               className="w-[70px] h-[70px] rounded-full aspect-square object-cover"
             />
             <div className="flex-1">
               <div className="flex flex-col w-[90%]">
                 <p className="font-normal text-[17px]">
-                  {props.userData.firstName} {props.userData.lastName}
+                  {props.member.user.firstName} {props.member.user.lastName}
                 </p>
                 <div className="flex flex-col">
                   <p className="text-hint flex items-start gap-[4px] text-[13px]">
-                    <img src={Case} className="self-start mt-[3px]" />
-                    {props.userData.company}
+                    {firstTextInput}
                   </p>
                   <p className="text-hint flex items-start gap-[4px] text-[13px]">
-                    <img src={Person} className="self-start mt-[3px]" />
-                    {props.userData.role}
+                    {secondTextInput}
                   </p>
                 </div>
               </div>
@@ -77,11 +78,11 @@ const ChatMemberCardComponent = (
             <img src={NavImage} />
           </div>
 
-          <p className="text-hint font-light text-[13px] pt-[10px]">
-            {props.userData.bio && props.userData.bio.length > 90
-              ? props.userData.bio.slice(0, 90) + "..."
-              : props.userData.bio}
-          </p>
+          {textArea.length > 0 && (
+            <p className="text-hint font-light text-[13px] pt-[10px]">
+              {textArea.length > 90 ? textArea.slice(0, 90) + "..." : textArea}
+            </p>
+          )}
         </div>
       </motion.li>
     );
@@ -90,28 +91,32 @@ const ChatMemberCardComponent = (
     return (
       <li
         className="relative rounded-[18px] flex flex-col w-full items-center cursor-pointer overflow-hidden"
-        onClick={goToProfile}
+        onClick={props.onClick}
       >
         <div className="bg-form flex flex-col px-[10px] rounded-[12px] divide-y divide-[#D9D9D9] w-full py-[15px]">
-          <div className="flex w-full gap-[10px] items-center justify-between flex-row pb-[10px]">
+          <div
+            className={
+              textArea.length > 0
+                ? `flex w-full gap-[10px] items-center justify-between flex-row pb-[10px]`
+                : `flex w-full gap-[10px] items-center justify-between flex-row `
+            }
+          >
             <img
-              src={props.userData.avatar || DevImage}
+              src={props.member.user.avatar || DevImage}
               onError={handleImageError}
               className="w-[70px] h-[70px] rounded-full aspect-square object-cover"
             />
             <div className="flex-1">
               <div className="flex flex-col w-[90%]">
                 <p className="font-normal text-[17px]">
-                  {props.userData.firstName} {props.userData.lastName}
+                  {props.member.user.firstName} {props.member.user.lastName}
                 </p>
                 <div className="flex flex-col">
                   <p className="text-hint flex items-start gap-[4px] text-[13px]">
-                    <img src={Case} className="self-start mt-[3px]" />
-                    {props.userData.company}
+                    {firstTextInput}
                   </p>
                   <p className="text-hint flex items-start gap-[4px] text-[13px]">
-                    <img src={Person} className="self-start mt-[3px]" />
-                    {props.userData.role}
+                    {secondTextInput}
                   </p>
                 </div>
               </div>
@@ -119,15 +124,17 @@ const ChatMemberCardComponent = (
             <img src={NavImage} />
           </div>
 
-          <p className="text-hint font-light text-[13px] pt-[10px]">
-            {props.userData.bio && props.userData.bio.length > 90
-              ? props.userData.bio.slice(0, 90) + "..."
-              : props.userData.bio}
-          </p>
+          {textArea.length > 0 && (
+            <p className="text-hint font-light text-[13px] pt-[10px]">
+              {textArea.length > 90 ? textArea.slice(0, 90) + "..." : textArea}
+            </p>
+          )}
         </div>
       </li>
     );
   }
+
+  return null;
 };
 
 export default ChatMemberCardComponent;

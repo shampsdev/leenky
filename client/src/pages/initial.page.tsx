@@ -1,20 +1,24 @@
-import { initDataStartParam } from "@telegram-apps/sdk-react";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import useInitDataStore from "../stores/InitData.store";
 
 const InitialPage = () => {
-  const startData = initDataStartParam();
+  const { initDataStartParam: startParam, initData } = useInitDataStore();
+  console.log(initData);
   const navigate = useNavigate();
-
   useEffect(() => {
-    if (startData !== undefined && startData.length > 0) {
-      navigate("/chats", { replace: true });
-
-      navigate(`/chat/${startData}`);
+    if (
+      startParam !== undefined &&
+      startParam !== null &&
+      startParam.length > 0
+    ) {
+      navigate("/communities");
+      navigate(`/community/${startParam}`);
     } else {
-      navigate("/chats", { replace: true });
+      navigate("/communities");
     }
   }, []);
+
   return null;
 };
 

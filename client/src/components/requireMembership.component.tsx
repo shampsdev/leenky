@@ -1,49 +1,31 @@
-import { initData, initDataStartParam } from "@telegram-apps/sdk-react";
-import { getChatPreview } from "../api/api";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import useInviteStore from "../stores/invite.store";
+import useInitDataStore from "../stores/InitData.store";
+import useCommunityPreview from "../hooks/communities/fetchHooks/useCommunityPreview";
 
 interface RequireMembershipComponentProps {
   children: React.ReactNode;
   chatID?: string;
 }
+
 const RequireMembershipComponent = (props: RequireMembershipComponentProps) => {
   const navigate = useNavigate();
+  const { initDataStartParam } = useInitDataStore();
 
-  const inviteStore = useInviteStore();
-
-  const initDataRaw = initData.raw();
-  let chatID = props.chatID !== undefined ? props.chatID : initDataStartParam();
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isMember, setIsMember] = useState<boolean>(false);
-
-  const checkMembership = async () => {
-    if (initDataStartParam() !== undefined && !inviteStore.showedOnce) {
-      chatID = initDataStartParam();
-      inviteStore.setShowedOnce();
-    }
-    const data = await getChatPreview(initDataRaw ?? "", chatID || "");
-    if (data !== null && data?.isMember !== null) {
-      setIsMember(data.isMember);
-    }
-    setIsLoading(false);
-  };
+  const chatID = props.chatID ?? initDataStartParam;
+  const { isSuccess, data, isFetching } = useCommunityPreview(chatID || "");
 
   useEffect(() => {
-    checkMembership();
-    if (!isLoading) {
-      if (!isMember) {
-        navigate("/invite", { replace: true });
-      }
+    if (!isFetching && isSuccess && !data?.isMember) {
+      navigate("/invite", { replace: true });
     }
-  }, [isLoading, isMember]);
+  }, [isSuccess, data]);
 
-  if (isLoading) {
+  if (isFetching || (data && !data.isMember)) {
     return null;
   }
 
-  return isMember ? <>{props.children}</> : null;
+  return <>{props.children}</>;
 };
 
 export default RequireMembershipComponent;
