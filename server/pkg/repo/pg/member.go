@@ -82,7 +82,7 @@ func (r *MemberRepo) Filter(ctx context.Context, filter *domain.FilterMember) ([
 	}
 
 	if filter.IncludeCommunity {
-		s = s.Columns("community.name", "community.description", "community.avatar")
+		s = s.Columns("community.name", "community.description", "community.avatar", "community.config")
 		s = s.Join("community ON member.community_id = community.id")
 	}
 
@@ -124,6 +124,7 @@ func (r *MemberRepo) Filter(ctx context.Context, filter *domain.FilterMember) ([
 				&member.Community.Name,
 				&member.Community.Description,
 				&member.Community.Avatar,
+				&member.Community.Config,
 			)
 		}
 
