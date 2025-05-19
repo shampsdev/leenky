@@ -99,6 +99,9 @@ func (c *Community) GetByID(ctx Context, id string) (*domain.Community, error) {
 		return nil, fmt.Errorf("failed to get community: %w", err)
 	}
 	community.Members, err = c.memberRepo.Filter(ctx, &domain.FilterMember{CommunityID: &id, IncludeUser: true})
+	for _, member := range community.Members {
+		member.Config = processConfig(community.Config, member.Config)
+	}
 	if err != nil {
 		return nil, fmt.Errorf("failed to get members: %w", err)
 	}
@@ -186,6 +189,8 @@ func (c *Community) GetMember(ctx Context, communityID, memberID string) (*domai
 		IncludeCommunity: true,
 		IncludeUser:      true,
 	})
+	member.Config = processConfig(member.Community.Config, member.Config)
+
 	if err != nil {
 		return nil, fmt.Errorf("error getting member: %w", err)
 	}
@@ -230,6 +235,32 @@ func (c *Community) validateConfig(config *domain.CommunityConfig, filled *domai
 	}
 
 	return nil
+}
+
+func processConfig(commCfg *domain.CommunityConfig, memberCfg *domain.MemberConfig) *domain.MemberConfig {
+	processed := &domain.MemberConfig{
+		Fields: map[string]domain.FieldValue{},
+	}
+
+	for _, field := range commCfg.Fields {
+		if value, ok := memberCfg.Fields[field.Title]; ok {
+			processed.Fields[field.Title] = value
+		} else {
+			defaultField := domain.FieldValue{Type: field.Type}
+			switch field.Type {
+			case domain.FieldTypeTextarea:
+				defaultField.Textarea = &domain.FieldValueTextarea{
+					Value: field.Textarea.Default,
+				}
+			case domain.FieldTypeTextinput:
+				defaultField.Textinput = &domain.FieldValueTextinput{
+					Value: field.Textinput.Default,
+				}
+			}
+			processed.Fields[field.Title] = defaultField
+		}
+	}
+	return processed
 }
 
 func (c *Community) LeaveCommunity(ctx Context, communityID string) error {
