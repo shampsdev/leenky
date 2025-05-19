@@ -52,15 +52,16 @@ const CommunityCurrentProfilePage = () => {
               <InfoBlockComponent>
                 {orderedFieldsPattern &&
                   orderedFieldsPattern.map((field, index) => {
-                    return (
-                      <InfoParagraphComponent
-                        title={field.title}
-                        content={
-                          fieldsData![field.title][field.type]?.value || ""
-                        }
-                        key={index}
-                      />
-                    );
+                    if (fieldsData![field.title])
+                      return (
+                        <InfoParagraphComponent
+                          title={field.title}
+                          content={
+                            fieldsData![field.title][field.type]?.value || ""
+                          }
+                          key={index}
+                        />
+                      );
                   })}
               </InfoBlockComponent>
             )}
