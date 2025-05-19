@@ -47,6 +47,7 @@ const CommunityWithChatProfilePage = () => {
     fieldsToFieldsWithId(storeFields)
   );
 
+  const [created, setCreated] = useState<boolean>(false);
   const handleContinue = () => {
     const createCommunity = async () => {
       try {
@@ -73,7 +74,11 @@ const CommunityWithChatProfilePage = () => {
     };
 
     setStoreFields(fieldsWithIdToFields(fields));
-    createCommunity();
+    if (!created) {
+      setCreated(true);
+      createCommunity();
+      setCreated(false);
+    }
   };
 
   const sensors = useSensors(
