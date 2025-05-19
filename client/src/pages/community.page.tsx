@@ -3,7 +3,7 @@ import EBBComponent from "../components/enableBackButtonComponent";
 import RequireMembershipComponent from "../components/requireMembership.component";
 import SearchBarComponent from "../components/searchBar.component";
 import ChatPreviewComponent from "../components/chatPreview.component";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import useChatSearchStore from "../stores/chatSearch.store";
 import ChatMemberCardComponent from "../components/chatMember.card.component";
 import { motion } from "motion/react";
@@ -21,7 +21,6 @@ const CommunityPage = () => {
   const navigate = useNavigate();
 
   const { communityId } = useParams();
-  const [loadedFirstTime, setLoadedFirstTime] = useState<boolean>(false);
 
   const { getScroll, saveScroll, getSearchQuery, saveSearchQuery } =
     useChatSearchStore();
@@ -106,11 +105,6 @@ const CommunityPage = () => {
                 index={index}
                 key={index}
                 member={user}
-                onAnimationComplete={
-                  index === chatData.length - 1
-                    ? () => setLoadedFirstTime(true)
-                    : undefined
-                }
               />
             ))}
           </motion.ul>
