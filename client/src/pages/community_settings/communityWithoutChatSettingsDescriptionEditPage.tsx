@@ -20,8 +20,10 @@ const CommunityWithoutChatSettingsDescriptionEditPage = () => {
 
   const [avatar, setAvatar] = useState<File | null>(null);
 
-  const [description, setDescription] = useState<string | null>(null);
-  const [name, setName] = useState<string | null>(null);
+  const [description, setDescription] = useState<string | null>(
+    communityData?.description ?? null
+  );
+  const [name, setName] = useState<string | null>(communityData?.name ?? null);
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(
     avatar ? URL.createObjectURL(avatar) : ""
