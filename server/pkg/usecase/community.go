@@ -189,11 +189,11 @@ func (c *Community) GetMember(ctx Context, communityID, memberID string) (*domai
 		IncludeCommunity: true,
 		IncludeUser:      true,
 	})
-	member.Config = processConfig(member.Community.Config, member.Config)
-
 	if err != nil {
 		return nil, fmt.Errorf("error getting member: %w", err)
 	}
+
+	member.Config = processConfig(member.Community.Config, member.Config)
 	return member, nil
 }
 
