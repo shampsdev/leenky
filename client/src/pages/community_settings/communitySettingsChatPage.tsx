@@ -8,12 +8,13 @@ import { useNavigate, useParams } from "react-router-dom";
 import useCommunity from "../../hooks/communities/fetchHooks/useСommunity";
 import Plus from "../../assets/plus_white.svg";
 import StarByak from "../../assets/star_buka.png";
+import Loader from "../../components/loader.component";
 const CommunitySettingsChatPage = () => {
   const navigate = useNavigate();
   const { communityId } = useParams();
   const { data: communityData, isPending } = useCommunity(communityId!);
 
-  if (isPending) return null;
+  if (isPending) return <Loader />;
 
   if (communityData?.tgChatID !== 0 && communityData?.tgChatID) {
     return (

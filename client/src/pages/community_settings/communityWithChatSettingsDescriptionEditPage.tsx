@@ -5,6 +5,7 @@ import TextareaFieldComponent from "../../components/form/textareaField.componen
 import useCommunity from "../../hooks/communities/fetchHooks/useСommunity";
 import { useState } from "react";
 import usePatchCommunity from "../../hooks/communities/mutations/usePatchCommunity";
+import Loader from "../../components/loader.component";
 
 const CommunityWithChatSettingsDescriptionEditPage = () => {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ const CommunityWithChatSettingsDescriptionEditPage = () => {
     communityData?.description!
   );
 
-  if (isPending) return null;
+  if (isPending) return <Loader />;
 
   const handleClick = async () => {
     try {

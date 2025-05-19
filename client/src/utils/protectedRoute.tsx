@@ -2,10 +2,11 @@ import { Navigate, Outlet } from "react-router-dom";
 import { useEffect } from "react";
 import useGetMe from "../hooks/users/fetchHooks/useGetMe";
 import useUserStore from "../stores/user.store";
+import Loader from "../components/loader.component";
 
 const ProtectedRoute = () => {
   const userStore = useUserStore();
-  const { isPending, data, isSuccess, isLoading } = useGetMe();
+  const { isPending, isLoading, isSuccess, data } = useGetMe();
 
   useEffect(() => {
     if (isSuccess && data) {
@@ -13,9 +14,17 @@ const ProtectedRoute = () => {
     }
   }, [isSuccess, data]);
 
-  if (isPending || isLoading) return null;
+  // console.log({
+  //   isPending,
+  //   isLoading,
+  //   isSuccess,
+  //   isError,
+  //   data,
+  //   userStore: userStore.userData,
+  // });
 
-  if (data?.user.id) return <Outlet />;
+  if (isPending || isLoading) return <Loader />;
+  else if (userStore.userData.id) return <Outlet />;
   else return <Navigate to="/about/1" />;
 };
 

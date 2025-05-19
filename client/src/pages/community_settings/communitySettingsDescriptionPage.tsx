@@ -8,6 +8,7 @@ import FixedBottomButtonComponent from "../../components/fixedBottomButton.compo
 import { handleImageError } from "../../utils/imageErrorHandler";
 import DevImage from "../../assets/dev.png";
 import useCommunityPreview from "../../hooks/communities/fetchHooks/useCommunityPreview";
+import Loader from "../../components/loader.component";
 const CommunitySettingsDescriptionPage = () => {
   const { communityId } = useParams();
   const { data: communityData, isPending } = useCommunity(communityId!);
@@ -15,7 +16,7 @@ const CommunitySettingsDescriptionPage = () => {
   const { userData } = useUserStore();
   const navigate = useNavigate();
 
-  if (isPending || !communityData || isPreviewPending) return null;
+  if (isPending || !communityData || isPreviewPending) return <Loader />;
 
   const currentMember = communityData.members?.find(
     (member) => member.user.id === userData.id

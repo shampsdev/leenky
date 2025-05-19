@@ -14,6 +14,7 @@ import { FieldType } from "../types/fields/field.type";
 import { FieldValue } from "../types/fields/fieldValue.interface";
 import fieldsAreEqual from "../utils/equalFields";
 import FixedBottomButtonComponent from "../components/fixedBottomButton.component";
+import Loader from "../components/loader.component";
 
 const RegistrationPage = () => {
   const { initDataStartParam: communityId } = useInitDataStore();
@@ -22,7 +23,7 @@ const RegistrationPage = () => {
   );
   const { data: userData, isLoading } = useGetMe();
 
-  if (isPending || isLoading) return null;
+  if (isPending || isLoading) return <Loader />;
 
   const orderedFieldsPattern = communityData?.config.fields;
   const baseValues = fieldsToFieldValues(orderedFieldsPattern!);
