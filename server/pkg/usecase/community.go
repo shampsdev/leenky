@@ -246,7 +246,7 @@ func processConfig(commCfg *domain.CommunityConfig, memberCfg *domain.MemberConf
 		if value, ok := memberCfg.Fields[field.Title]; ok {
 			processed.Fields[field.Title] = value
 		} else {
-			defaultValue := domain.FieldValue{}
+			defaultValue := domain.FieldValue{Type: field.Type}
 			switch field.Type {
 			case domain.FieldTypeTextarea:
 				defaultValue.Textarea = &domain.FieldValueTextarea{}
