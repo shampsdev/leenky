@@ -3,7 +3,7 @@ import DevImage from "../assets/dev.png";
 import TrashBin from "../assets/trash_bin.svg";
 import { motion } from "motion/react";
 import { Community } from "../types/community/community.interface";
-
+import InfoIcon from "../assets/community_info.svg";
 interface ChatPreviewComponentProps {
   chatData: Community;
   view?: boolean;
@@ -54,11 +54,19 @@ const ChatPreviewComponent = (
             }
             onClick={props.onClick}
           >
-            <img
-              src={props.chatData.avatar || DevImage}
-              onError={handleImageError}
-              className="w-[60px] h-[60px] rounded-full aspect-square object-cover"
-            />
+            <div className="relative w-[60px] h-[60px] rounded-full aspect-square object-cover">
+              <img
+                src={props.chatData.avatar || DevImage}
+                onError={handleImageError}
+                className="rounded-full aspect-square object-cover"
+              />
+              <img
+                className="absolute top-[-5px] right-[-6px] w-[28px] h-[28px]"
+                src={InfoIcon}
+                alt=""
+              />
+            </div>
+
             <div
               className={
                 "flex flex-row w-full pl-[3px] justify-between py-[12px] items-center gap-[10px]"
