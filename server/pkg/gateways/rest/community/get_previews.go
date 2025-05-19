@@ -1,4 +1,4 @@
-package chat
+package community
 
 import (
 	"net/http"
@@ -9,28 +9,25 @@ import (
 	"github.com/shampsdev/tglinked/server/pkg/usecase"
 )
 
-// JoinChat godoc
-// @Summary Join to chat
-// @Tags chats
+// GetPreviews godoc
+// @Summary Get community previews
+// @Tags communities
 // @Accept json
 // @Produce json
 // @Schemes http https
-// @Param id path string true "Chat ID"
-// @Success 200
+// @Success 200 {object} []domain.Community "Communities data"
 // @Failure 400 "Bad Request"
 // @Failure 500 "Internal Server Error"
 // @Security ApiKeyAuth
-// @Router /chats/id/{id}/join [post]
-func JoinChat(chatCase *usecase.Chat) gin.HandlerFunc {
+// @Router /communities [get]
+func GetPreviews(communityCase *usecase.Community) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user := middlewares.MustGetUser(c)
-		chatID := c.Param("id")
 
-		err := chatCase.JoinChat(usecase.NewContext(c, user), chatID)
-		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to join chat") {
+		communities, err := communityCase.GetPreviews(usecase.NewContext(c, user))
+		if ginerr.AbortIfErr(c, err, http.StatusBadRequest, "failed to get communities") {
 			return
 		}
-
-		c.Status(http.StatusOK)
+		c.JSON(http.StatusOK, communities)
 	}
 }

@@ -11,25 +11,26 @@ import (
 )
 
 type Cases struct {
-	Chat   *Chat
-	User   *User
-	Search *Search
+	Community *Community
+	User      *User
+	Search    *Search
 }
 
 func Setup(ctx context.Context, cfg *config.Config, db *pgxpool.Pool, b *bot.Bot) Cases {
-	chatRepo := pg.NewChatRepo(db)
+	communityRepo := pg.NewCommunityRepo(db)
 	userRepo := pg.NewUserRepo(db)
+	memberRepo := pg.NewMemberRepo(db)
 	storage, err := s3.NewStorage(cfg.S3)
 	if err != nil {
 		panic(err)
 	}
-	chatCase := NewChat(chatRepo, userRepo, storage, b)
-	userCase := NewUser(ctx, userRepo, chatRepo, storage, b)
-	searchCase := NewSearch(chatCase)
+	communityCase := NewCommunity(communityRepo, memberRepo, userRepo, b, storage)
+	userCase := NewUser(ctx, userRepo, communityRepo, memberRepo, storage, b)
+	searchCase := NewSearch(communityCase)
 
 	return Cases{
-		Chat:   chatCase,
-		User:   userCase,
-		Search: searchCase,
+		Community: communityCase,
+		User:      userCase,
+		Search:    searchCase,
 	}
 }

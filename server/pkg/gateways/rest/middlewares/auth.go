@@ -42,7 +42,7 @@ func ExtractUserTGData() gin.HandlerFunc {
 func AuthUser(userCase *usecase.User) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		tgUser := MustGetUserTGData(c)
-		user, err := userCase.GetUserByTGData(c, tgUser)
+		user, err := userCase.GetByTGData(c, tgUser)
 		if ginerr.AbortIfErr(c, err, http.StatusUnauthorized, fmt.Sprintf("user with tg_id %d not found", tgUser.TelegramID)) {
 			return
 		}

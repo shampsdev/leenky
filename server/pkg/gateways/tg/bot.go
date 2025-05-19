@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"log/slog"
+	"strings"
 	"time"
 
 	"github.com/go-telegram/bot"
@@ -72,23 +73,16 @@ func (b *Bot) Run(ctx context.Context) {
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/register", bot.MatchTypePrefix, b.handleCommandRegister)
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/start", bot.MatchTypeExact, b.handleCommandStart)
 	b.RegisterHandler(bot.HandlerTypeMessageText, "/link", bot.MatchTypeExact, b.handleCommandLink)
+	b.RegisterHandler(bot.HandlerTypeMessageText, "/connect", bot.MatchTypePrefix, b.handleCommandConnect)
+
+	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
+		return update.Message != nil && update.Message.MigrateToChatID != 0
+	}, b.handleMigrate)
 
 	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
 		return update.Message != nil &&
 			(len(update.Message.NewChatPhoto) != 0 || update.Message.NewChatTitle != "" || update.Message.DeleteChatPhoto)
 	}, b.handleChatChanged)
-
-	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
-		return update.ChatMember != nil
-	}, b.handleChatMember)
-
-	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
-		return update.Message != nil && update.Message.LeftChatMember != nil
-	}, b.handleLeftChatMember)
-
-	b.RegisterHandlerMatchFunc(func(update *models.Update) bool {
-		return update.Message != nil && update.Message.MigrateFromChatID != 0
-	}, b.handleMigrate)
 
 	b.Start(ctx)
 }
@@ -178,7 +172,7 @@ func (b *Bot) handleCommandStart(ctx context.Context, _ *bot.Bot, update *models
 func (b *Bot) handleCommandLink(ctx context.Context, _ *bot.Bot, update *models.Update) {
 	tgChatID := update.Message.Chat.ID
 	log := slogx.FromCtx(ctx).With("tg_chat_id", tgChatID)
-	chat, err := b.cases.Chat.GetChatByTGID(ctx, tgChatID)
+	chat, err := b.cases.Community.GetPreviewByTGID(ctx, tgChatID)
 	if err != nil {
 		log.Error("error getting chat", slogx.Err(err))
 		return
@@ -199,12 +193,7 @@ func (b *Bot) handleMyChatMember(ctx context.Context, _ *bot.Bot, update *models
 	mcm := update.MyChatMember
 	log := slogx.FromCtx(ctx).With("tg_chat_id", mcm.Chat.ID)
 
-	if mcm.NewChatMember.Type == models.ChatMemberTypeBanned || mcm.NewChatMember.Type == models.ChatMemberTypeLeft {
-		err := b.cases.Chat.ForgetChatByTGID(ctx, mcm.Chat.ID)
-		if err != nil {
-			log.With(slogx.Err(err)).Error("error forgetting chat")
-		}
-	} else {
+	if !(mcm.NewChatMember.Type == models.ChatMemberTypeBanned || mcm.NewChatMember.Type == models.ChatMemberTypeLeft) {
 		// if bot wasn't in chat
 		if mcm.OldChatMember.Type == models.ChatMemberTypeLeft ||
 			mcm.OldChatMember.Type == models.ChatMemberTypeBanned {
@@ -216,9 +205,9 @@ func (b *Bot) handleMyChatMember(ctx context.Context, _ *bot.Bot, update *models
 					log.Info("waiting for migrate event")
 					time.Sleep(b.supergroupDelay)
 
-					_, err := b.cases.Chat.GetChatByTGID(ctx, mcm.Chat.ID)
+					_, err := b.cases.Community.GetPreviewByTGID(ctx, mcm.Chat.ID)
 
-					if errors.Is(err, repo.ErrChatNotFound) {
+					if errors.Is(err, repo.ErrNotFound) {
 						log.Info("chat not found, registering chat")
 						err := b.registerChat(ctx, mcm.Chat.ID)
 						if err != nil {
@@ -244,37 +233,55 @@ func (b *Bot) handleMyChatMember(ctx context.Context, _ *bot.Bot, update *models
 	}
 }
 
-func (b *Bot) handleChatMember(ctx context.Context, _ *bot.Bot, update *models.Update) {
-	cm := update.ChatMember
-	if cm.NewChatMember.Type == models.ChatMemberTypeBanned {
-		err := b.cases.Chat.DetachUserFromChat(ctx, cm.Chat.ID, cm.NewChatMember.Banned.User.ID)
+func (b *Bot) handleCommandConnect(ctx context.Context, _ *bot.Bot, update *models.Update) {
+	msg := update.Message
+	log := slogx.FromCtx(ctx).With("tg_chat_id", msg.Chat.ID, "tg_chat_title", msg.Chat.Title)
+	communityID := strings.TrimPrefix(msg.Text, "/connect ")
+	err := b.cases.Community.ConnectCommunityWithTGChat(ctx, msg.From.ID, communityID, msg.Chat.ID)
+	if err != nil {
+		log.With(slogx.Err(err)).Error("error connecting chat")
+		_, err = b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID: msg.Chat.ID,
+			Text: `Не удалось подключить чат к вашему комьюнити 😢
+- Может быть вы не администратор?
+- А может чат уже подключен?`,
+		})
 		if err != nil {
-			slogx.FromCtxWithErr(ctx, err).Error("error detaching user from chat")
+			log.With(slogx.Err(err)).Error("error sending message")
 		}
-	} else if cm.NewChatMember.Type == models.ChatMemberTypeLeft {
-		err := b.cases.Chat.DetachUserFromChat(ctx, cm.Chat.ID, cm.NewChatMember.Left.User.ID)
-		if err != nil {
-			slogx.FromCtxWithErr(ctx, err).Error("error detaching user from chat")
-		}
-	} else {
-		_, err := b.cases.Chat.CreateOrUpdateChat(ctx, cm.Chat.ID)
-		if err != nil {
-			slogx.FromCtxWithErr(ctx, err).Error("error registering chat")
-		}
+		return
+	}
+	log.Info("chat connected")
+
+	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
+		ChatID: msg.Chat.ID,
+		Text:   "Чат подключен к вашему комьюнити 🎉",
+	})
+	if err != nil {
+		log.With(slogx.Err(err)).Error("error sending message")
+	}
+	err = b.registerChat(ctx, msg.Chat.ID)
+	if err != nil {
+		log.With(slogx.Err(err)).Error("error sending message")
 	}
 }
 
-func (b *Bot) handleLeftChatMember(ctx context.Context, _ *bot.Bot, update *models.Update) {
-	err := b.cases.Chat.DetachUserFromChat(ctx, update.Message.Chat.ID, update.Message.From.ID)
+func (b *Bot) handleMigrate(ctx context.Context, _ *bot.Bot, update *models.Update) {
+	fromChatID := update.Message.From.ID
+	toChatID := update.Message.MigrateToChatID
+
+	err := b.cases.Community.MigrateTGChatID(ctx, fromChatID, toChatID)
 	if err != nil {
-		slogx.FromCtxWithErr(ctx, err).Error("error detaching user from chat")
+		slogx.FromCtxWithErr(ctx, err).Error("error changing chat telegram id")
 	}
+	slogx.Info(ctx, "chat migrated", "from", fromChatID, "to", toChatID)
 }
 
 func (b *Bot) handleChatChanged(ctx context.Context, _ *bot.Bot, update *models.Update) {
-	_, err := b.cases.Chat.CreateOrUpdateChat(ctx, update.Message.Chat.ID)
+	err := b.cases.Community.SyncCommunityWithTGChat(ctx, update.Message.Chat.ID)
 	if err != nil {
-		slogx.FromCtxWithErr(ctx, err).Error("error registering chat")
+		slogx.FromCtxWithErr(ctx, err).Error("error syncing community with tg chat")
+		return
 	}
 
 	_, err = b.SendMessage(ctx, &bot.SendMessageParams{
@@ -286,25 +293,14 @@ func (b *Bot) handleChatChanged(ctx context.Context, _ *bot.Bot, update *models.
 	}
 }
 
-func (b *Bot) handleMigrate(ctx context.Context, _ *bot.Bot, update *models.Update) {
-	fromChatID := update.Message.MigrateFromChatID
-	toChatID := update.Message.Chat.ID
-
-	err := b.cases.Chat.MigrateChatTelegramID(ctx, fromChatID, toChatID)
-	if err != nil {
-		slogx.FromCtxWithErr(ctx, err).Error("error changing chat telegram id")
-	}
-	slogx.Info(ctx, "chat migrated", "from", fromChatID, "to", toChatID)
-}
-
 func (b *Bot) registerChat(ctx context.Context, chatID int64) error {
-	chat, err := b.cases.Chat.CreateOrUpdateChat(ctx, chatID)
+	community, err := b.cases.Community.GetPreviewByTGID(ctx, chatID)
 	if err != nil {
-		return fmt.Errorf("error registering chat: %w", err)
+		return fmt.Errorf("error getting chat: %w", err)
 	}
 
 	msg, err := b.SendPhoto(ctx, &bot.SendPhotoParams{
-		ChatID: chat.TelegramID,
+		ChatID: *community.TGChatID,
 		Photo: &models.InputFileString{
 			Data: "https://s3.ru1.storage.beget.cloud/f5732312921d-shampsdev/tglinked/assets/joinchat.jpg",
 		},
@@ -319,7 +315,7 @@ func (b *Bot) registerChat(ctx context.Context, chatID int64) error {
 		ReplyMarkup: models.InlineKeyboardMarkup{
 			InlineKeyboard: [][]models.InlineKeyboardButton{{{
 				Text: "Открыть",
-				URL:  b.urlForChat(chat.ID),
+				URL:  b.urlForChat(community.ID),
 			}}},
 		},
 	})
@@ -328,7 +324,7 @@ func (b *Bot) registerChat(ctx context.Context, chatID int64) error {
 	}
 
 	_, err = b.PinChatMessage(ctx, &bot.PinChatMessageParams{
-		ChatID:    chat.TelegramID,
+		ChatID:    *community.TGChatID,
 		MessageID: msg.ID,
 	})
 	if err != nil {
