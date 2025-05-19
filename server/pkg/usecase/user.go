@@ -48,13 +48,7 @@ func NewUser(
 
 func (u *User) Create(ctx context.Context, userTGData *domain.UserTGData) (*domain.User, error) {
 	user := &domain.CreateUser{
-		UserTGData: domain.UserTGData{
-			TelegramID:       userTGData.TelegramID,
-			TelegramUsername: userTGData.TelegramUsername,
-			FirstName:        userTGData.FirstName,
-			LastName:         userTGData.LastName,
-			Avatar:           userTGData.Avatar,
-		},
+		UserTGData: *userTGData,
 	}
 
 	var err error
@@ -79,6 +73,11 @@ func (u *User) Patch(ctx context.Context, user *domain.PatchUser) (*domain.User,
 }
 
 func (u *User) Delete(ctx Context, userID string) error {
+	user, err := repo.First(u.userRepo.Filter)(ctx, &domain.FilterUser{ID: &userID})
+	if err != nil {
+		return err
+	}
+	u.tgDataCache.Delete(user.TelegramID)
 	return u.userRepo.Delete(ctx, userID)
 }
 
