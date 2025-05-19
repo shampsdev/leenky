@@ -11,11 +11,10 @@ const useCreateMe = () => {
   return useMutation({
     mutationFn: () => createMe(initData),
     onSuccess: async (user) => {
-      console.log("CREATED", user);
       if (user?.id) {
         userStore.setUserData(user);
       }
-      const result = await queryClient.refetchQueries({
+      await queryClient.refetchQueries({
         queryKey: ["users/me", initData],
         type: "active",
         exact: true,

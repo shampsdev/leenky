@@ -6,7 +6,7 @@ import Loader from "../components/loader.component";
 
 const ProtectedRoute = () => {
   const userStore = useUserStore();
-  const { isPending, isLoading, isSuccess, isError, data } = useGetMe();
+  const { isPending, isLoading, isSuccess, data } = useGetMe();
 
   useEffect(() => {
     if (isSuccess && data) {
@@ -14,14 +14,14 @@ const ProtectedRoute = () => {
     }
   }, [isSuccess, data]);
 
-  console.log({
-    isPending,
-    isLoading,
-    isSuccess,
-    isError,
-    data,
-    userStore: userStore.userData,
-  });
+  // console.log({
+  //   isPending,
+  //   isLoading,
+  //   isSuccess,
+  //   isError,
+  //   data,
+  //   userStore: userStore.userData,
+  // });
 
   if (isPending || isLoading) return <Loader />;
   else if (userStore.userData.id) return <Outlet />;
