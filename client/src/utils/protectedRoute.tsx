@@ -7,7 +7,6 @@ import Loader from "../components/loader.component";
 const ProtectedRoute = () => {
   const userStore = useUserStore();
   const { isPending, isLoading, isSuccess, data } = useGetMe();
-
   useEffect(() => {
     if (isSuccess && data) {
       userStore.setUserData(data.user);
