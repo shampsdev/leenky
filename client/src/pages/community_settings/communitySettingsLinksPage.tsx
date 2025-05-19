@@ -3,29 +3,25 @@ import StarByak from "../../assets/star_buka.png";
 import CopyFieldComponent from "../../components/copyField.component";
 import { BOT_USERNAME } from "../../shared/constants";
 import FixedBottomButtonComponent from "../../components/fixedBottomButton.component";
-import { useRef, useState } from "react";
+import { useState } from "react";
 import useCommunity from "../../hooks/communities/fetchHooks/useСommunity";
-import { QRCodeSVG } from "qrcode.react";
 import { downloadFile } from "@telegram-apps/sdk-react";
+import QrIcon from "../../assets/qr.svg";
+import DownloadIcon from "../../assets/download_black.svg";
 const CommunitySettingsLinksPage = () => {
   const { communityId } = useParams();
   const { data: communityData } = useCommunity(communityId!);
   const [isQrShowing, setIsQrShowing] = useState<boolean>(false);
   const navigate = useNavigate();
 
-  const qrRef = useRef<SVGSVGElement>(null);
-
   const downloadQRCode = async () => {
-    const svg = qrRef.current;
-    if (!svg) return;
+    const filename = `${communityData?.name || "qr-code"}.png`;
 
-    const svgData = new XMLSerializer().serializeToString(svg);
-    const blob = new Blob([svgData], { type: "image/svg+xml" });
-    const url = URL.createObjectURL(blob);
-    const name = `${communityData?.name || "qr-code"}.svg`;
-    console.log(url);
     if (downloadFile.isAvailable()) {
-      await downloadFile(url, name);
+      await downloadFile(
+        `https://api.qrserver.com/v1/create-qr-code/?data=https://t.me/${BOT_USERNAME}/app?startapp=${communityId}&amp;size=150x150`,
+        filename
+      );
     }
   };
 
@@ -47,28 +43,20 @@ const CommunitySettingsLinksPage = () => {
               link
             />
           </div>
-
-          <div
-            onClick={() => {
-              setIsQrShowing(true);
-            }}
-          >
-            QRRR
-          </div>
-          <div className="hidden">
-            {" "}
-            <QRCodeSVG
-              ref={qrRef}
-              size={150}
-              value={`https://t.me/${BOT_USERNAME}/app?startapp=${communityId}`}
+          <div className="flex w-fill flex-row items-center px-[24px] py-[24px] justify-between bg-[#F5F5F5] gap-[16px] rounded-[14px]">
+            <div
+              onClick={downloadQRCode}
+              className="flex gap-[10px] justify-center flex-1 items-center py-[12px] rounded-[14px] bg-white text-black "
+            >
+              <img src={DownloadIcon} alt="" className="" />
+              <p className=" text-[15px] font-semibold">Скачать qr-код</p>
+            </div>
+            <img
+              onClick={() => setIsQrShowing(true)}
+              src={QrIcon}
+              className=" bg-white p-[10.5px] object-fit rounded-[14px]"
             />
           </div>
-          <button
-            onClick={downloadQRCode}
-            className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-          >
-            Скачать QR-код
-          </button>
         </div>
       )}
       {isQrShowing && (
@@ -79,9 +67,11 @@ const CommunitySettingsLinksPage = () => {
               qr-код для присоединения
             </p>
           </div>
-          <QRCodeSVG
-            size={150}
-            value={`https://t.me/${BOT_USERNAME}/app?startapp=${communityId}`}
+          <img
+            src={`https://api.qrserver.com/v1/create-qr-code/?data=https://t.me/${BOT_USERNAME}/app?startapp=${communityId}&amp;size=150x150`}
+            alt=""
+            title=""
+            className="max-w-[50%]"
           />
         </div>
       )}
