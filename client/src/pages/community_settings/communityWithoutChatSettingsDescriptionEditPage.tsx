@@ -154,7 +154,7 @@ const CommunityWithoutChatSettingsDescriptionEditPage = () => {
         <div className="flex w-full justify-center pt-[20px]">
           <FixedBottomButtonComponent
             content="Подтвердить"
-            state={name && description && avatar ? "active" : "disabled"}
+            state={name && description ? "active" : "disabled"}
             handleClick={async () => await handleClick()}
           />
         </div>
