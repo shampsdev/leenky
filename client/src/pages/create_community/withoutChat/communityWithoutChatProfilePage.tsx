@@ -42,38 +42,43 @@ const CommunityWithoutChatProfilePage = () => {
   const [fields, setFields] = useState<ExtendedField[]>(
     fieldsToFieldsWithId(storeFields)
   );
+  const [created, setCreated] = useState<boolean>(false);
   const createCommunityMutation = useCreateCommunity();
   const setCommunityAvatarMutation = useSetCommunityAvatar();
   const handleContinue = async () => {
-    try {
-      const community = await createCommunityMutation.mutateAsync({
-        communityData: {
-          avatar: "",
-          config: {
-            fields: fields.filter((field) => field.title.length > 0),
+    if (!created) {
+      setCreated(true);
+      try {
+        const community = await createCommunityMutation.mutateAsync({
+          communityData: {
+            avatar: "",
+            config: {
+              fields: fields.filter((field) => field.title.length > 0),
+            },
+            description: description,
+            name: name,
           },
-          description: description,
-          name: name,
-        },
-      });
+        });
 
-      if (community) {
-        if (avatar) {
-          await setCommunityAvatarMutation.mutateAsync({
-            communityId: community.id,
-            avatar,
-          });
+        if (community) {
+          if (avatar) {
+            await setCommunityAvatarMutation.mutateAsync({
+              communityId: community.id,
+              avatar,
+            });
+          }
+
+          navigate(`/communities`, { replace: true });
+          navigate(`/profile/current/${community.id}`);
+          navigate(`/profile/current/${community.id}/edit`);
+          navigate(`/community/${community.id}/links`);
+
+          // navigate("/community/create/with_chat/connect_chat");
         }
-
-        navigate(`/communities`, { replace: true });
-        navigate(`/profile/current/${community.id}`);
-        navigate(`/profile/current/${community.id}/edit`);
-        navigate(`/community/${community.id}/links`);
-
-        // navigate("/community/create/with_chat/connect_chat");
+      } catch (error) {
+        alert("Произошла ошибка при создании сообщества или загрузке аватара");
       }
-    } catch (error) {
-      alert("Произошла ошибка при создании сообщества или загрузке аватара");
+      setCreated(false);
     }
   };
 

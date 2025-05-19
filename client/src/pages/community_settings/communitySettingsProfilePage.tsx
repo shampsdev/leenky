@@ -46,7 +46,7 @@ const CommunitySettingsProfilePage = () => {
     try {
       const community = await patchCommunityMutation.mutateAsync({
         communityData: {
-          avatar: "",
+          avatar: data?.avatar!,
           config: {
             fields: fields.filter((field) => field.title.length > 0),
           },
