@@ -48,7 +48,7 @@ const CommunityWithChatConnectPage = () => {
         <div className="flex flex-col gap-[12px]">
           <StepComponent
             stepNumber={3}
-            value="Скопируйте команду с вашим ChatID"
+            value="После этого вернитесь в Leenky и нажмите «Подтвердить»"
           />
           <div className="flex gap-[16px] items-start flex-row">
             <div className=" opacity-0 flex-shrink-0 flex items-center justify-center w-[44px] h-[44px] rounded-full bg-[#20C86E]/20 text-[#20C86E]">
