@@ -6,218 +6,413 @@ const PolicyPage = () => {
   const navigate = useNavigate();
   return (
     <EBBComponent>
-      <div className="w-[95%] mx-auto px-4 overflow-y-auto ">
-        <p className="py-[25px] font-semibold text-[20px] px-[12px]">
-          Политика конфиденциальности
-        </p>
-        {/* <p>
-          Lorem ipsum dolor sit amet consectetur adipisicing elit. Sed animi
-          quos maiores asperiores voluptatum, accusamus saepe itaque nisi dolor
-          est sunt facilis hic accusantium id voluptatibus necessitatibus esse
-          neque, praesentium nam ut, deleniti officia eveniet vero.
-          Perspiciatis, dignissimos veritatis excepturi harum aperiam nobis
-          molestiae iusto dolore reprehenderit repellat possimus fugit,
-          explicabo numquam, magni repudiandae nesciunt aliquid nemo enim amet
-          atque iste sint? Optio officia velit non aliquid maiores animi.
-          Deleniti numquam accusamus accusantium vitae unde earum nulla. Ipsam
-          quasi iusto exercitationem unde voluptas ullam, vel saepe inventore
-          hic minima, consectetur aut totam facilis eligendi architecto
-          accusantium fugiat quia labore cumque mollitia nam obcaecati assumenda
-          excepturi atque. Culpa, aliquid? Nesciunt, nihil ipsam incidunt
-          provident quaerat impedit vitae dolore dicta laborum nisi? Libero in
-          suscipit ipsum pariatur aut consequuntur ipsam, cumque velit quam
-          corporis, molestias quasi hic quibusdam minima eius maiores vitae
-          veniam corrupti, repellat beatae? Quia nihil sapiente animi eum
-          commodi assumenda voluptatem dignissimos, facere, obcaecati officiis
-          expedita distinctio voluptates. Ipsa doloribus esse id est nulla
-          facere impedit amet nam dolore deleniti expedita eveniet, voluptatibus
-          voluptatum officiis eligendi odio cum. Obcaecati aut dolorum ex. Sit
-          laborum quisquam nulla aliquid suscipit quas repudiandae, dicta harum
-          cum iusto autem necessitatibus delectus ad, corporis molestias.
-          Mollitia sunt laboriosam recusandae exercitationem, ex libero odit
-          vitae cumque maxime, autem cum minus totam commodi esse dignissimos!
-          Asperiores necessitatibus deleniti minima est blanditiis natus
-          expedita debitis excepturi ipsum, harum saepe qui quos, vitae
-          molestias, quisquam voluptatum nobis quidem possimus neque. Quas sequi
-          atque debitis accusamus enim necessitatibus dolor praesentium? In,
-          commodi! Debitis iure sint, eveniet est culpa temporibus sapiente vero
-          dolorum ducimus harum quas accusantium tempora odio mollitia
-          consequatur vitae adipisci laborum cumque, possimus iusto! Tempora
-          molestiae fuga voluptatem ullam fugit quod quam minus, cupiditate
-          culpa assumenda repudiandae minima nisi eius eum quae? Optio debitis
-          molestias accusantium porro praesentium quos error delectus quae
-          laboriosam dolor commodi ex, laborum dicta aspernatur cum tenetur
-          animi fugiat quo mollitia totam quibusdam. Voluptates dolore ducimus
-          excepturi et eveniet cupiditate cum aspernatur veniam aliquam
-          similique adipisci quam, alias minima fugiat minus sint ipsam, est
-          dolorem neque incidunt? Sunt sit corporis officia dolorem quasi, omnis
-          tempora. Quos ullam deleniti modi magnam nemo voluptate dolorum nulla
-          ratione impedit possimus maiores odit ipsa eveniet illo ut, ad, et
-          quibusdam quia quidem dignissimos rerum consequatur, quo consectetur
-          accusamus. Illo ipsum doloremque placeat sunt rem. Maiores, ut
-          facilis, excepturi cum eligendi dignissimos ea porro sunt quia dicta
-          voluptatem optio eius assumenda rem tempore. Minus earum veniam amet
-          aut magnam possimus, quam, maiores enim quisquam nulla molestias
-          blanditiis consequatur natus aliquid aperiam tempora quos, quae facere
-          id. Distinctio obcaecati quisquam et, placeat dicta soluta modi
-          repellat repudiandae. A eveniet consequatur totam magni tempora minus
-          officiis, voluptatibus, molestiae dicta deleniti ut eum minima aliquam
-          quo vero culpa, distinctio ratione sunt omnis dolor ea sit nobis
-          deserunt! Earum unde veniam explicabo minus eligendi maxime quia
-          repellendus rerum illo, temporibus placeat vero in sunt id, corrupti
-          recusandae officia minima aspernatur facilis corporis deleniti
-          repudiandae sit qui! Earum exercitationem incidunt doloremque nemo
-          optio cumque, dolores deserunt odit numquam modi corrupti ipsum odio,
-          molestiae tempora reprehenderit veniam facilis quis id soluta maiores
-          dolor aut temporibus ratione. Quas incidunt necessitatibus corrupti
-          voluptas similique labore veritatis ipsam deserunt, ullam sed. Porro
-          numquam illum similique accusantium quidem sapiente nam corporis
-          quisquam, nihil fuga doloremque temporibus. Laborum ex unde odit aut
-          itaque quis quibusdam quos illum iste eos maxime harum necessitatibus
-          minima voluptas explicabo, maiores, tempora consequuntur provident
-          voluptatum a modi, voluptatem eveniet accusamus aliquid. Voluptates,
-          saepe qui consequatur ut omnis vero earum enim, nulla soluta veniam
-          eos praesentium, repellendus totam laudantium cumque ipsa quam nam
-          quidem nostrum mollitia eaque quas. Officiis sed quasi blanditiis
-          earum in est aut rem sit dolore eius. Quisquam atque amet magnam
-          incidunt doloremque ullam suscipit quo laudantium odit quidem dolorum
-          eligendi natus adipisci, aut, officia assumenda dolorem alias tenetur.
-          Repellendus, debitis quaerat! Fugiat sed hic eligendi vel cumque harum
-          obcaecati voluptates veritatis, quo exercitationem praesentium veniam
-          numquam at nobis dolorem explicabo tempora quisquam ipsam totam ipsum
-          iure nostrum ratione. Odio, aspernatur reprehenderit incidunt
-          inventore perspiciatis modi commodi placeat tenetur magnam sed, animi
-          omnis reiciendis? Repudiandae sapiente quisquam minus nesciunt ab
-          maxime. Nam corrupti eligendi laborum. Doloremque eius obcaecati iste
-          architecto maiores. Odit voluptatem vero, nulla alias, mollitia, totam
-          quisquam nesciunt modi ut optio qui iure cumque necessitatibus atque!
-          Eaque odio aperiam, exercitationem itaque sapiente impedit ea
-          cupiditate mollitia dolores quaerat reiciendis nobis quae numquam
-          voluptatem, fugit dolorem maiores? Amet nisi vero, officia, placeat
-          cum modi fugiat nemo quae asperiores dolorum corrupti dolor ab
-          voluptatem recusandae unde. Voluptates in rem asperiores magni
-          voluptatum! Ab quo minus, porro enim dolores iure similique saepe est
-          illo voluptates optio natus blanditiis vitae corrupti sed aut
-          perspiciatis? Voluptas dolorum cum aliquam, praesentium ducimus,
-          commodi debitis nemo molestias recusandae officia a voluptates nisi et
-          hic provident voluptatem laboriosam! Cumque, molestiae! Possimus
-          veritatis quidem velit odit hic, tempore et molestias nemo iusto ipsam
-          blanditiis, asperiores optio rem delectus cupiditate, repellat
-          accusamus voluptatem eaque molestiae quam impedit nostrum non aut
-          similique? Eveniet odio, voluptates mollitia dolorum facilis est
-          quidem aliquid aspernatur voluptatum temporibus maiores eaque nesciunt
-          ducimus illo assumenda sit! Maxime, ipsam nisi eligendi sapiente ut
-          dicta adipisci quibusdam, eum cum quidem molestias assumenda
-          praesentium debitis laborum aut? Accusantium accusamus totam alias
-          incidunt molestias, porro, praesentium explicabo repellendus ipsum
-          libero facilis deleniti nam dignissimos, ratione quisquam quod unde!
-          Quas perspiciatis error corrupti, illo delectus nisi esse, incidunt
-          dolorum doloribus recusandae quos inventore. Sed itaque molestias ipsa
-          quae. Eligendi modi, ullam quisquam magnam ut debitis repellat
-          voluptate sunt architecto sequi fugit consequatur dolores asperiores
-          maiores similique quos laborum labore? Ab atque culpa laudantium
-          reprehenderit distinctio eaque rem saepe veritatis cupiditate fugit
-          dignissimos quis asperiores sed eligendi libero veniam magni unde
-          suscipit illo molestiae accusamus architecto, amet iusto? Soluta
-          facilis, eius sapiente sed perspiciatis, a, aperiam dignissimos earum
-          consectetur odit deserunt quibusdam nihil nostrum sequi qui. Magnam
-          consequatur dolore unde possimus tempore atque animi? Alias animi
-          laboriosam doloremque totam ducimus debitis voluptatum porro adipisci,
-          minima vel magnam cumque in blanditiis odit exercitationem!
-        </p> */}
-        <p>
-          <p className="py-[25px] font-semibold text-[20px] px-[12px]">
-            1. Общие положения
-          </p>
-          Настоящее Соглашение (далее – «Соглашение») регулирует порядок
-          обработки и защиты персональных данных пользователей (далее –
-          «Пользователь»), предоставляемых Обществу с ограниченной
-          ответственностью «Шампстех» (ОГРН: 1247800098820, ИНН: 7842225368,
-          юридический адрес: 191014, Г.САНКТ-ПЕТЕРБУРГ, ВН.ТЕР.Г. МУНИЦИПАЛЬНЫЙ
-          ОКРУГ СМОЛЬНИНСКОЕ, УЛ ВОССТАНИЯ, Д. 43, ЛИТЕРА А, КВ. 15, далее –
-          «Оператор»).
-          <p className="py-[25px] font-semibold text-[20px] px-[12px]">
-            2. Согласие на обработку персональных данных
-          </p>
-          Передавая свои персональные данные, Пользователь дает согласие
-          Оператору на их обработку, включая сбор, систематизацию, накопление,
-          хранение, уточнение (обновление, изменение), использование,
-          обезличивание, блокирование, удаление и уничтожение персональных
-          данных.
-          <p className="py-[25px] font-semibold text-[20px] px-[12px]">
-            3. Перечень персональных данных
-          </p>
-          Персональные данные, на обработку которых дается согласие, могут
-          включать, но не ограничиваться следующей информацией:
-          <br />
-          – Фамилия, имя, отчество;
-          <br />
-          – Контактный номер телефона;
-          <br />
-          – Иные данные, предоставленные Пользователем при взаимодействии с
-          Оператором.
-          <br />
-          <p className="py-[25px] font-semibold text-[20px] px-[12px]">
-            4. Цели обработки персональных данных
-          </p>
-          Оператор обрабатывает персональные данные для следующих целей: –
-          Предоставление доступа к функционалу сайта/сервиса;
-          <br />
-          – Консультирование и обратная связь;
-          <br />
-          – Улучшение качества сервиса и продуктов Оператора.
-          <br />
-          <p className="py-[25px] font-semibold text-[20px] px-[12px]">
-            5. Условия обработки данных
-          </p>
-          – Обработка персональных данных осуществляется в соответствии с
-          Федеральным законом РФ №152-ФЗ «О персональных данных».
-          <br />
-          – Оператор принимает необходимые правовые, организационные и
-          технические меры для защиты персональных данных.
-          <br />
-          – Доступ к персональным данным имеют только уполномоченные сотрудники
-          Оператора.
-          <br />
-          <p className="py-[25px] font-semibold text-[20px] px-[12px]">
-            6. Срок хранения персональных данных
-          </p>
-          Персональные данные хранятся в течение срока, необходимого для
-          достижения целей обработки, либо до момента отзыва согласия
-          Пользователя.
-          <br />
-          <p className="py-[25px] font-semibold text-[20px] px-[12px]">
-            7. Отзыв согласия
-          </p>
-          Пользователь имеет право в любой момент отозвать согласие на обработку
-          персональных данных, направив письменное уведомление на электронную
-          почту: team@shamps.dev, либо по почтовому адресу Оператора.
-          <p className="py-[25px] font-semibold text-[20px] px-[12px]">
-            8. Передача персональных данных третьим лицам
-          </p>
-          Оператор не передает персональные данные третьим лицам, за исключением
-          случаев, предусмотренных законодательством РФ либо с согласия
-          Пользователя.
-          <p className="py-[25px] font-semibold text-[20px] px-[12px]">
-            9. Изменение условий Соглашения
-          </p>
-          Оператор оставляет за собой право вносить изменения в настоящее
-          Соглашение. Новая редакция вступает в силу с момента ее размещения на
-          сайте, если иное не предусмотрено новой редакцией.
-          <p className="py-[25px] font-semibold text-[20px] px-[12px]">
-            10. Контактная информация
-          </p>
-          ООО «Шампстех» Юридический адрес: 191014, Г.САНКТ-ПЕТЕРБУРГ, ВН.ТЕР.Г.
-          МУНИЦИПАЛЬНЫЙ ОКРУГ СМОЛЬНИНСКОЕ, УЛ ВОССТАНИЯ, Д. 43, ЛИТЕРА А, КВ.
-          15 Email: team@shamps.dev
-        </p>
+      <div className="w-[95%] mx-auto px-4 overflow-y-auto">
+        <h1 className="py-6 font-semibold text-2xl px-3">
+          Политика обработки персональных данных
+        </h1>
+        {/* Top‑level нумерованный список */}
+        <ol className="list-decimal ml-4 space-y-6">
+          {/* 1 */}
+          <li>
+            <h2 className="font-semibold text-xl py-4">О чем этот документ?</h2>
+            <p className="mb-2">
+              Настоящая политика обработки персональных данных (далее –
+              «Политика») составлена в соответствии с требованиями Федерального
+              закона от 27.07.2006 № 152‑ФЗ «О персональных данных» (далее –
+              «Закон о персональных данных») и определяет порядок обработки
+              персональных данных и меры по обеспечению безопасности
+              персональных данных,
+              предпринимаемые ООО «ШампсТех», ИНН 7842225368 (далее – «Оператор»
+              / «Мы»), при взаимодействии пользователей с телеграм‑ботом{" "}
+              <a
+                className="text-blue-600 underline"
+                href="https://t.me/leenky_bot/app"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                t.me/leenky_bot/app
+              </a>{" "}
+              (далее – «Бот»).
+            </p>
+            <p>
+              Мы ставим своей важнейшей целью и условием осуществления своей
+              деятельности соблюдение прав и свобод человека и гражданина при
+              обработке его персональных данных, в том числе защиты прав на
+              неприкосновенность частной жизни, личную и семейную тайну.
+            </p>
+          </li>
+
+          {/* 2 */}
+          <li>
+            <h2 className="font-semibold text-xl py-4">Основные термины</h2>
+            <ol className="list-decimal ml-6 space-y-2">
+              <li>
+                <span className="font-semibold">Персональные данные</span> –
+                любая информация, которая прямо или косвенно относится к вам или
+                позволяет вас определить.
+              </li>
+              <li>
+                <span className="font-semibold">
+                  Оператор персональных данных
+                </span>
+                 – юридическое или физическое лицо, осуществляющее обработку
+                персональных данных. При запуске нашего Бота мы являемся
+                оператором ваших персональных данных.
+              </li>
+              <li>
+                <span className="font-semibold">
+                  Обработка персональных данных
+                </span>
+                 – совершение любых действий с персональными данными.
+              </li>
+            </ol>
+          </li>
+
+          {/* 3 */}
+          <li>
+            <h2 className="font-semibold text-xl py-4">
+              Какие у вас есть права?
+            </h2>
+            <ol className="list-decimal ml-6 space-y-2">
+              <li>
+                Право на доступ. Вы вправе запросить копию ваших персональных
+                данных, которые мы обрабатываем.
+              </li>
+              <li>
+                Право на исправление. Вы можете обратиться к нам с просьбой
+                исправить неточные или дополнить неполные персональные данные.
+              </li>
+              <li>
+                Право на отзыв. Вы можете в любое время отозвать своё согласие
+                на обработку персональных данных.
+              </li>
+              <li>
+                Право на обжалование наших действий или бездействий. Если вы
+                считаете, что обработка ваших данных нарушает закон или ваши
+                права, вы можете обжаловать действия Оператора в Роскомнадзоре
+                или в суде.
+              </li>
+              <li>
+                Право на забвение. Вы вправе запросить удаление ваших
+                персональных данных, за исключением случаев, когда их хранение
+                требуется в соответствии с законом.
+              </li>
+            </ol>
+          </li>
+
+          {/* 4 */}
+          <li>
+            <h2 className="font-semibold text-xl py-4">
+              Объем и цели обрабатываемых персональных данных
+            </h2>
+            <p className="mb-2">
+              Для того чтобы зарегистрировать вас в Боте и предоставить доступ к
+              Боту, нам могут понадобиться следующие общие персональные данные:
+            </p>
+            <ol className="list-decimal ml-6 space-y-1">
+              <li>Фамилия, имя, отчество;</li>
+              <li>Имя пользователя в Telegram;</li>
+              <li>Изображение;</li>
+              <li>Дата рождения;</li>
+              <li>Телефон;</li>
+              <li>Электронная почта.</li>
+            </ol>
+            <p className="mt-4">
+              Обрабатываемые персональные данные не относятся к специальным
+              категориям или биометрическим и обрабатываются автоматизированным
+              способом.
+            </p>
+            <p>
+              Основанием для обработки ваших персональных данных в этом процессе
+              является согласие на обработку персональных данных.
+            </p>
+            <p>
+              Мы уничтожим ваши персональные данные в течение 30 дней после
+              того, как вы удалите сообщество/администратор удалит сообщество,
+              либо с момента получения отзыва согласия на обработку персональных
+              данных — в зависимости от того, что произойдёт раньше.
+            </p>
+            <p>
+              Мы обрабатываем только те категории персональных данных, которые
+              прямо указаны в Политике. Вы не должны предоставлять или размещать
+              в Боте иные персональные данные, не предусмотренные Политикой.
+            </p>
+            <p>
+              Мы не инициируем, не запрашиваем и не поощряем предоставление
+              данных, которые не указаны в Политике, а также не осуществляем их
+              целенаправленную обработку. Размещение таких данных осуществляется
+              вами по собственной инициативе и под вашу полную ответственность.
+            </p>
+            <p className="mb-2">
+              В случае, если вы по собственной инициативе предоставляете
+              персональные данные, не указанные в Политике, вы:
+            </p>
+            <ol className="list-decimal ml-6 space-y-1">
+              <li>
+                осознаёте и принимаете, что такие данные могут быть обработаны
+                технически (например, сохранены на сервере);
+              </li>
+              <li>
+                подтверждаете, что делаете это добровольно и под свою
+                ответственность.
+              </li>
+            </ol>
+            <p>
+              Мы оставляем за собой право удалить, ограничить доступ или иным
+              образом ограничить обработку персональных данных, предоставленных
+              вами в нарушение Политики.
+            </p>
+          </li>
+
+          {/* 5 */}
+          <li>
+            <h2 className="font-semibold text-xl py-4">
+              Как мы обрабатываем персональные данные
+            </h2>
+            <p className="mb-2">
+              Мы осуществляем автоматизированную обработку персональных данных.
+              При этом ограничиваемся следующими действиями: сбор, запись,
+              систематизацию, накопление, хранение, уточнение (обновление,
+              изменение), извлечение, использование, блокирование, удаление,
+              уничтожение персональных данных граждан Российской Федерации с
+              использованием баз данных, находящихся на территории Российской
+              Федерации.
+            </p>
+            <p>
+              Мы назначили лицо, ответственное за организацию обработки
+              персональных данных.
+            </p>
+          </li>
+
+          {/* 6 */}
+          <li>
+            <h2 className="font-semibold text-xl py-4">
+              Принципы обработки персональных данных
+            </h2>
+            <ol className="list-decimal ml-6 space-y-2">
+              <li>
+                Обработка персональных данных осуществляется на законной и
+                справедливой основе.
+              </li>
+              <li>
+                Обработка персональных данных ограничивается достижением
+                конкретных, заранее определённых и законных целей. Не
+                допускается обработка персональных данных, несовместимая с
+                целями сбора персональных данных.
+              </li>
+              <li>
+                Не допускается объединение баз данных, содержащих персональные
+                данные, обработка которых осуществляется в целях, несовместимых
+                между собой.
+              </li>
+              <li>
+                Обработке подлежат только персональные данные, которые отвечают
+                целям их обработки.
+              </li>
+              <li>
+                Содержание и объём обрабатываемых персональных данных
+                соответствуют заявленным целям обработки. Не допускается
+                избыточность обрабатываемых персональных данных по отношению к
+                заявленным целям их обработки.
+              </li>
+              <li>
+                При обработке персональных данных обеспечивается точность
+                персональных данных, их достаточность, а в необходимых случаях и
+                актуальность по отношению к целям обработки персональных данных.
+                Оператор принимает необходимые меры и/или обеспечивает их
+                принятие по удалению или уточнению неполных или неточных данных.
+              </li>
+              <li>
+                Хранение персональных данных осуществляется в форме, позволяющей
+                определить субъекта персональных данных, не дольше, чем этого
+                требуют цели обработки персональных данных, если срок хранения
+                не установлен федеральным законом или договором. Обрабатываемые
+                данные уничтожаются либо обезличиваются по достижении целей
+                обработки либо в случае утраты необходимости в их достижении,
+                если иное не предусмотрено законом.
+              </li>
+            </ol>
+          </li>
+
+          {/* 7 */}
+          <li>
+            <h2 className="font-semibold text-xl py-4">
+              Меры по обеспечению безопасности персональных данных
+            </h2>
+            <p className="mb-2">
+              Мы принимаем все необходимые организационные и технические меры
+              для защиты персональных данных субъектов от неправомерного или
+              случайного доступа к ним, уничтожения, изменения, блокирования,
+              распространения, а также от иных неправомерных действий.
+            </p>
+            <p className="mb-2">
+              К мерам обеспечения безопасности персональных данных у Оператора
+              относятся, в том числе, следующие:
+            </p>
+            <ol className="list-decimal ml-6 space-y-1">
+              <li>
+                учёт обрабатываемых в компании категорий и перечня персональных
+                данных, категорий субъектов, сроки хранения и порядок
+                уничтожения таких персональных данных;
+              </li>
+              <li>
+                учёт машинных носителей персональных данных и информационных
+                систем компании, в которых обрабатываются персональные данные;
+              </li>
+              <li>
+                определение необходимого уровня защищённости персональных
+                данных, обрабатываемых в информационных системах компании;
+              </li>
+              <li>
+                определение угроз безопасности персональных данных при их
+                обработке в информационных системах;
+              </li>
+              <li>
+                определение и внедрение перед введением новых процессов
+                обработки персональных данных и новых информационных систем
+                технических и организационных мер, обеспечивающих защиту
+                персональных данных;
+              </li>
+              <li>
+                осуществление и документирование оценки вреда, который может
+                быть причинён субъектам персональных данных в случае нарушения
+                Федерального закона «О персональных данных», соотношение
+                указанного вреда и принимаемых компанией мер;
+              </li>
+              <li>
+                установление правил доступа к персональным данным, а также
+                обеспечение регистрации и учёта действий, совершаемых с
+                персональными данными в информационных системах;
+              </li>
+              <li>
+                применение прошедших в установленном порядке процедуру оценки
+                соответствия средств защиты информации;
+              </li>
+              <li>
+                обнаружение фактов несанкционированного доступа к персональным
+                данным и других инцидентов, принятие мер по ликвидации и
+                митигации последствий;
+              </li>
+              <li>
+                восстановление персональных данных, модифицированных или
+                уничтоженных вследствие несанкционированного доступа к ним;
+              </li>
+              <li>
+                учёт должностей работников компании, доступ которых к
+                персональным данным необходим для выполнения служебных
+                обязанностей;
+              </li>
+              <li>
+                обеспечение ознакомления под подпись работников компании с
+                требованиями законодательства РФ, настоящей Политикой и иными
+                локальными актами компании, а также обучение таких работников;
+              </li>
+              <li>
+                контроль и оценка эффективности применяемых мер по обеспечению
+                безопасности персональных данных до ввода в эксплуатацию
+                информационной системы персональных данных;
+              </li>
+              <li>
+                осуществление регулярного внутреннего контроля/аудита
+                соответствия обработки и обеспечения безопасности персональных
+                данных действующему законодательству РФ.
+              </li>
+            </ol>
+
+            <p className="mt-4 mb-2">
+              Во внутренних документах, обязательных для исполнения всеми
+              работниками Оператора, а также в соответствующих соглашениях с
+              партнёрами, контрагентами и прочими третьими лицами, определяются:
+            </p>
+            <ol className="list-decimal ml-6 space-y-1">
+              <li>процедуры предоставления доступа к информации;</li>
+              <li>
+                процедуры внесения изменений в персональные данные с целью
+                обеспечения их точности и актуальности;
+              </li>
+              <li>
+                процедуры уничтожения либо блокирования персональных данных при
+                необходимости;
+              </li>
+              <li>
+                процедуры обработки обращений субъектов персональных данных и их
+                представителей, включая предоставление информации и
+                удаление/блокирование данных;
+              </li>
+              <li>
+                процедуры обработки запросов уполномоченного органа по защите
+                прав субъектов персональных данных;
+              </li>
+              <li>
+                процедуры получения согласия субъекта персональных данных на
+                обработку данных;
+              </li>
+              <li>процедуры передачи персональных данных третьим лицам;</li>
+              <li>
+                процедуры работы с материальными носителями персональных данных;
+              </li>
+              <li>
+                процедуры уведомления уполномоченного органа по защите прав
+                субъектов персональных данных в сроки, установленные Законом о
+                персональных данных.
+              </li>
+            </ol>
+          </li>
+
+          {/* 8 */}
+          <li>
+            <h2 className="font-semibold text-xl py-4">
+              Трансграничная передача персональных данных
+            </h2>
+            <p className="mb-2">
+              Оператор до начала осуществления трансграничной передачи
+              персональных данных обязан убедиться, что иностранным
+              государством, на территорию которого предполагается передача
+              данных, обеспечивается надёжная защита прав субъектов персональных
+              данных.
+            </p>
+            <p>
+              Передача персональных данных на территории государств, не
+              обеспечивающих требуемого уровня защиты, возможна только при
+              наличии письменного согласия субъекта персональных данных и/или
+              для исполнения договора, стороной которого является субъект
+              персональных данных.
+            </p>
+          </li>
+
+          {/* 9 */}
+          <li>
+            <h2 className="font-semibold text-xl py-4">
+              Контакты для вопросов и обращений
+            </h2>
+            <p className="mb-2">
+              В случае возникновения любых вопросов по обработке персональных
+              данных, в том числе для отзыва согласия, вы можете написать на
+              электронную почту{" "}
+              <a
+                className="text-blue-600 underline"
+                href="mailto:team@shamps.dev"
+              >
+                team@shamps.dev
+              </a>{" "}
+              либо направить письменное обращение по адресу: 191014,
+              г. Санкт‑Петербург, ул. Восстания, д. 43 литера А, кв. 15.
+            </p>
+            <p>
+              Мы отвечаем на ваши запросы в сроки, установленные
+              законодательством Российской Федерации. При необходимости
+              уточнения дополнительной информации Оператор вправе продлить срок
+              ответа до 5 рабочих дней, уведомив вас о причинах продления.
+            </p>
+          </li>
+        </ol>
       </div>
 
-      <div className="pb-[300px]"></div>
+      <div className="pb-[300px]" />
       <FixedBottomButtonComponent
-        content={"Назад"}
+        content="Назад"
         handleClick={() => navigate(-1)}
-        state={"active"}
+        state="active"
       />
     </EBBComponent>
   );
