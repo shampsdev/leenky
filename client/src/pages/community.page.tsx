@@ -106,6 +106,7 @@ const CommunityPage = () => {
                 index={index}
                 key={index}
                 member={user}
+                fieldsOrder={previewChatData?.config.fields ?? []}
               />
             ))}
           </motion.ul>

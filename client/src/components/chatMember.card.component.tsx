@@ -3,7 +3,8 @@ import { handleImageError } from "../utils/imageErrorHandler";
 import DevImage from "../assets/dev.png";
 import NavImage from "../assets/navigation.svg";
 import { Member } from "../types/member/member.interface";
-import { useExtractFields } from "../hooks/utils/extractFields";
+import { Field } from "../types/fields/field.interface";
+import extractFields from "../utils/extractFields";
 
 const cardVariants = {
   hidden: { opacity: 0, y: 20 },
@@ -24,17 +25,17 @@ const ChatMemberCardComponent = (props: {
   animated?: boolean;
   onAnimationComplete?: () => void;
   member: Member;
+  fieldsOrder: Field[];
 }) => {
   const fields = props.member.config.fields;
-  const { textInputs, textAreas } = useExtractFields(fields);
-
-  const firstTextInput = textInputs[0]?.value || "";
-  const secondTextInput = textInputs[1]?.value || "";
-  const textArea = textAreas[0]?.value || "";
 
   if (!fields) {
     return null;
   }
+  const { textArea, firstTextInput, secondTextInput } = extractFields(
+    fields,
+    props.fieldsOrder
+  );
 
   if (props.animated) {
     return (
@@ -96,7 +97,7 @@ const ChatMemberCardComponent = (props: {
         <div className="bg-form flex flex-col px-[10px] rounded-[12px] divide-y divide-[#D9D9D9] w-full py-[15px]">
           <div
             className={
-              textArea.length > 0
+              textArea!.length > 0
                 ? `flex w-full gap-[10px] items-center justify-between flex-row pb-[10px]`
                 : `flex w-full gap-[10px] items-center justify-between flex-row `
             }
@@ -124,9 +125,11 @@ const ChatMemberCardComponent = (props: {
             <img src={NavImage} />
           </div>
 
-          {textArea.length > 0 && (
+          {textArea!.length > 0 && (
             <p className="text-hint font-light text-[13px] pt-[10px]">
-              {textArea.length > 90 ? textArea.slice(0, 90) + "..." : textArea}
+              {textArea!.length > 90
+                ? textArea!.slice(0, 90) + "..."
+                : textArea}
             </p>
           )}
         </div>
