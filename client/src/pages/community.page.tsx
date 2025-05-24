@@ -94,7 +94,7 @@ const CommunityPage = () => {
           />
 
           <motion.ul
-            className="flex flex-col gap-[12px] mt-[25px]"
+            className="flex flex-col gap-[12px] mt-[25px] pb-[25px]"
             initial="hidden"
             animate="visible"
             variants={containerVariants}
