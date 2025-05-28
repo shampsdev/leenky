@@ -4,6 +4,7 @@ import TrashBin from "../assets/trash_bin.svg";
 import { motion } from "motion/react";
 import { Community } from "../types/community/community.interface";
 import InfoIcon from "../assets/community_info.svg";
+import AutoLinkText from "./AutoLinkText";
 interface ChatPreviewComponentProps {
   chatData: Community;
   view?: boolean;
@@ -88,7 +89,7 @@ const ChatPreviewComponent = (
             <>
               <div className="h-[1px] bg-[#D9D9D9]" />
               <p className="mt-[16px] text-[17px] text-[#707579]">
-                {props.chatData.description ?? ""}
+                <AutoLinkText text={props.chatData.description ?? ""} />
               </p>
             </>
           )}
